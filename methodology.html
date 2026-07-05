@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#101412" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Power Window" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>How Power Window Works</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="favicon.svg" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="toolbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">P</span>
+          <div>
+            <h1>Power Window</h1>
+            <p>How recommendations, scores, and grades are calculated.</p>
+          </div>
+        </div>
+
+        <nav class="app-nav" aria-label="App pages">
+          <a href="index.html">Planner</a>
+          <a href="methodology.html" aria-current="page">How it works</a>
+        </nav>
+      </section>
+
+      <section class="hero-panel methodology-hero">
+        <div>
+          <span class="eyebrow">Methodology</span>
+          <h2>We separate timing from consumption.</h2>
+          <p>
+            The app gives one grade for when you run the appliance and one label for the
+            estimated electricity consumed by the selected load.
+          </p>
+        </div>
+      </section>
+
+      <section class="method-grid">
+        <article class="method-card">
+          <span class="eyebrow">1. Price data</span>
+          <h3>Get the day signal</h3>
+          <p>
+            Power Window requests REE's peninsular real-time market price widget for the
+            selected date. It prefers PVPC hourly prices when available and otherwise uses
+            the spot market price series averaged to hourly values.
+          </p>
+        </article>
+
+        <article class="method-card">
+          <span class="eyebrow">2. Cost estimate</span>
+          <h3>Estimate the chosen load</h3>
+          <p>
+            For every candidate window, the app multiplies each hour's price by the selected
+            appliance load. The result is an energy-component estimate, not a full household
+            bill with taxes, tolls, contracted power, or retailer-specific charges.
+          </p>
+          <code>cost = sum((EUR per MWh / 1000) * appliance kW)</code>
+        </article>
+
+        <article class="method-card">
+          <span class="eyebrow">3. Score</span>
+          <h3>Normalize against the day</h3>
+          <p>
+            The cheapest average window gets a score near 100 and the most expensive window
+            gets a score near 0. Midday hours receive a small bonus because they often align
+            with stronger solar production, but price remains the main driver.
+          </p>
+        </article>
+
+        <article class="method-card">
+          <span class="eyebrow">4. Timing grade</span>
+          <h3>Show a simple A-F symbol</h3>
+          <p>
+            The A-F grade is a quick interpretation of the score for the selected day.
+            It says whether the selected time window is efficient relative to the rest of
+            that day.
+          </p>
+          <ul class="grade-list">
+            <li><strong>A</strong> 90-100: excellent timing</li>
+            <li><strong>B</strong> 78-89: very good timing</li>
+            <li><strong>C</strong> 64-77: decent timing</li>
+            <li><strong>D</strong> 50-63: below-average timing</li>
+            <li><strong>E</strong> 35-49: expensive timing</li>
+            <li><strong>F</strong> 0-34: avoid if flexible</li>
+          </ul>
+        </article>
+
+        <article class="method-card">
+          <span class="eyebrow">5. Load label</span>
+          <h3>Estimate appliance-style consumption</h3>
+          <p>
+            The colored A-G load label is inspired by appliance energy labels, but it is not
+            an official EU certificate. It is based on estimated run energy:
+          </p>
+          <code>estimated kWh = selected kW * selected hours</code>
+          <p>
+            A short dishwasher run may show A or B, while a longer EV charge can show E, F,
+            or G because the total electricity consumed is much larger.
+          </p>
+        </article>
+      </section>
+
+      <footer class="source-note">
+        <p>
+          Source: Red Electrica de Espana REData API. Power Window is independent and is not
+          affiliated with or endorsed by Red Electrica.
+        </p>
+      </footer>
+    </main>
+  </body>
+</html>

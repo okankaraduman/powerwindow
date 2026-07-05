@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#101412" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Power Window" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Best Time To Use Power</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="favicon.svg" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="toolbar" aria-label="Power timing controls">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">P</span>
+          <div>
+            <h1>Power Window</h1>
+            <p>Plan flexible loads around Spain's lowest-price hours.</p>
+          </div>
+        </div>
+
+        <nav class="app-nav" aria-label="App pages">
+          <a href="index.html" aria-current="page">Planner</a>
+          <a href="methodology.html">How it works</a>
+        </nav>
+
+        <div class="controls">
+          <label class="field">
+            <span>Date</span>
+            <input id="dateInput" type="date" />
+          </label>
+          <label class="field">
+            <span>Duration</span>
+            <select id="durationInput">
+              <option value="1">1 hour</option>
+              <option value="2" selected>2 hours</option>
+              <option value="3">3 hours</option>
+              <option value="4">4 hours</option>
+              <option value="5">5 hours</option>
+              <option value="6">6 hours</option>
+              <option value="7">7 hours</option>
+              <option value="8">8 hours</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Load</span>
+            <select id="applianceInput">
+              <option value="0.8">Dishwasher</option>
+              <option value="1.2">Washing machine</option>
+              <option value="2.2">Dryer</option>
+              <option value="3.7">EV slow charge</option>
+              <option value="1.5">Heat pump</option>
+            </select>
+          </label>
+          <button id="refreshButton" class="primary-button" type="button">Refresh</button>
+        </div>
+      </section>
+
+      <section class="hero-panel" aria-live="polite">
+        <div>
+          <span class="eyebrow">Recommendation</span>
+          <h2 id="recommendationTitle">Loading REE data...</h2>
+          <p id="bestReason">Prices will appear after the REE response is parsed.</p>
+        </div>
+        <div class="status-meta">
+          <span id="dataStatus">Connecting</span>
+          <span id="lastUpdated">Source pending</span>
+        </div>
+      </section>
+
+      <section class="dashboard-grid">
+        <article class="summary-panel">
+          <div class="score-ring" aria-label="Best slot score">
+            <span id="scoreValue">--</span>
+            <small>score</small>
+          </div>
+          <div class="summary-copy">
+            <span class="eyebrow">Best window</span>
+            <h3 id="bestWindow">--</h3>
+            <p>Start here for the strongest price signal.</p>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <span class="eyebrow">Timing grade</span>
+          <strong id="gradeValue" class="grade-badge">--</strong>
+          <small id="gradeHint">Relative to this day's prices</small>
+        </article>
+
+        <article class="metric-card">
+          <span class="eyebrow">Load label</span>
+          <div id="loadLabel" class="energy-label compact-label" aria-label="Estimated load consumption label">
+            <span>A</span>
+            <span>B</span>
+            <span>C</span>
+            <span>D</span>
+            <span>E</span>
+            <span>F</span>
+            <span>G</span>
+          </div>
+          <small id="loadHint">Estimated consumption class</small>
+        </article>
+
+        <article class="metric-card">
+          <span class="eyebrow">Estimated cost</span>
+          <strong id="costEstimate">--</strong>
+          <small id="costHint">Energy component only</small>
+        </article>
+      </section>
+
+      <section class="chart-section">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Hourly price signal</span>
+            <h2>Lower bars are better moments to run flexible loads.</h2>
+          </div>
+          <div class="legend">
+            <span><i class="legend-best"></i> best window</span>
+            <span><i class="legend-low"></i> low-price hour</span>
+            <span><i class="legend-high"></i> expensive hour</span>
+          </div>
+        </div>
+        <div id="hourChart" class="hour-chart" role="img" aria-label="Hourly market price chart"></div>
+      </section>
+
+      <section class="windows-section">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Ranked windows</span>
+            <h2>Best starts for this load</h2>
+          </div>
+        </div>
+        <div id="windowList" class="window-list"></div>
+      </section>
+
+      <footer class="source-note">
+        <p>
+          Source: Red Electrica de Espana REData API. This app is independent and is not
+          affiliated with or endorsed by Red Electrica. Prices are market data signals, not a
+          full electricity bill calculation.
+        </p>
+      </footer>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("service-worker.js").catch(() => {});
+      }
+    </script>
+  </body>
+</html>

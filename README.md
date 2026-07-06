@@ -5,13 +5,30 @@ time window for flexible electricity use in Spain.
 
 ## Run locally
 
-Open `index.html` directly, or serve the folder:
+Run the backend API:
 
 ```sh
+cd /Users/okankaraduman/Documents/Electricity/backend
+go run ./cmd/server
+```
+
+Then serve the frontend:
+
+```sh
+cd /Users/okankaraduman/Documents/Electricity
 python3 -m http.server 8000
 ```
 
 Then visit `http://localhost:8000`.
+
+The frontend calls `/api/market` in production. During local development, if the backend is
+not available through the same origin, set the browser override once:
+
+```js
+localStorage.setItem("POWER_WINDOW_API_BASE", "http://localhost:8080/api")
+```
+
+Then refresh the page.
 
 ## Check on iPhone without Xcode
 

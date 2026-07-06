@@ -1,4 +1,6 @@
 const API_BASE = "https://apidatos.ree.es/en/datos";
+const BACKEND_API_BASE =
+  window.POWER_WINDOW_API_BASE || localStorage.getItem("POWER_WINDOW_API_BASE") || "/api";
 const MARKET_WIDGET = "mercados/precios-mercados-tiempo-real";
 const MARKET_CACHE_PREFIX = "power-window:market:";
 const MINUTE = 60 * 1000;
@@ -72,7 +74,7 @@ async function loadDate(dateValue, options = {}) {
 
     state.points = points;
     state.source = "api";
-    state.cacheStatus = response.fromCache ? "cache" : "network";
+    state.cacheStatus = response.cacheStatus;
     state.apiMeta = data.data?.attributes || null;
   } catch (error) {
     state.points = makeDemoData(safeDate);
@@ -90,16 +92,38 @@ async function getMarketData(dateValue, options = {}) {
   if (!options.forceRefresh) {
     const cached = readCachedMarketData(dateValue);
     if (cached) {
-      return { payload: cached, fromCache: true };
+      return { payload: cached, cacheStatus: "browser" };
     }
   }
 
-  const data = await fetchMarketData(dateValue);
-  writeCachedMarketData(dateValue, data);
-  return { payload: data, fromCache: false };
+  const response = await fetchMarketData(dateValue, options);
+  writeCachedMarketData(dateValue, response.payload);
+  return response;
 }
 
-async function fetchMarketData(dateValue) {
+async function fetchMarketData(dateValue, options = {}) {
+  const backendURL = new URL(`${BACKEND_API_BASE.replace(/\/$/, "")}/market`, window.location.origin);
+  backendURL.searchParams.set("date", dateValue);
+  if (options.forceRefresh) {
+    backendURL.searchParams.set("refresh", "1");
+  }
+
+  try {
+    const backendResponse = await fetch(backendURL, { headers: { Accept: "application/json" } });
+    if (backendResponse.ok) {
+      const data = await backendResponse.json();
+      if (data.payload) {
+        return {
+          payload: data.payload,
+          cacheStatus:
+            data.cacheStatus === "hit" || data.cacheStatus === "stale" ? "backend" : "network",
+        };
+      }
+    }
+  } catch {
+    // During local development or a backend outage, fall through to direct REE.
+  }
+
   const start = `${dateValue}T00:00`;
   const end = `${dateValue}T23:59`;
   const url = `${API_BASE}/${MARKET_WIDGET}?start_date=${start}&end_date=${end}&time_trunc=hour`;
@@ -113,7 +137,7 @@ async function fetchMarketData(dateValue) {
   if (data.errors?.length) {
     throw new Error(data.errors[0].detail || "REE returned an error.");
   }
-  return data;
+  return { payload: data, cacheStatus: "network" };
 }
 
 function readCachedMarketData(dateValue) {
@@ -166,7 +190,9 @@ function cacheTtlForDate(dateValue) {
 
 function cacheStatusLabel() {
   if (state.source !== "api") return "Demo mode";
-  return state.cacheStatus === "cache" ? "Cached REE data" : "Live REE data";
+  if (state.cacheStatus === "browser") return "Browser cache";
+  if (state.cacheStatus === "backend") return "Backend cache";
+  return "Live REE data";
 }
 
 function parseMarketData(data) {

@@ -1,0 +1,4 @@
+backend/.gocache/
+backend/data/*.json
+backend/data/*.tmp
+backend/powerwindow-api

@@ -17,6 +17,7 @@ const els = {
   refreshButton: document.querySelector("#refreshButton"),
   recommendationTitle: document.querySelector("#recommendationTitle"),
   dataStatus: document.querySelector("#dataStatus"),
+  dataNote: document.querySelector("#dataNote"),
   lastUpdated: document.querySelector("#lastUpdated"),
   scoreValue: document.querySelector("#scoreValue"),
   gradeValue: document.querySelector("#gradeValue"),
@@ -32,9 +33,10 @@ const els = {
 };
 
 function init() {
-  const latestCompleteDay = new Date();
-  latestCompleteDay.setDate(latestCompleteDay.getDate() - 1);
-  els.dateInput.value = formatDateInput(latestCompleteDay);
+  const today = new Date();
+  const tomorrow = addDays(today, 1);
+  els.dateInput.max = formatDateInput(tomorrow);
+  els.dateInput.value = formatDateInput(today);
   state.selectedDate = els.dateInput.value;
 
   els.refreshButton.addEventListener("click", () => loadDate(els.dateInput.value));
@@ -47,11 +49,16 @@ function init() {
 }
 
 async function loadDate(dateValue) {
-  state.selectedDate = dateValue;
+  const safeDate = clampDateValue(dateValue);
+  if (safeDate !== dateValue) {
+    els.dateInput.value = safeDate;
+  }
+
+  state.selectedDate = safeDate;
   setLoading(true);
 
   try {
-    const data = await fetchMarketData(dateValue);
+    const data = await fetchMarketData(safeDate);
     const points = parseMarketData(data);
 
     if (!points.length) {
@@ -62,7 +69,7 @@ async function loadDate(dateValue) {
     state.source = "api";
     state.apiMeta = data.data?.attributes || null;
   } catch (error) {
-    state.points = makeDemoData(dateValue);
+    state.points = makeDemoData(safeDate);
     state.source = "demo";
     state.apiMeta = { "last-update": null, title: "Demo hourly price signal" };
     console.warn(error);
@@ -93,7 +100,7 @@ function parseMarketData(data) {
   const included = Array.isArray(data.included) ? data.included : [];
   const pvpc = findSeries(included, ["PVPC"]);
   const spot = findSeries(included, ["Spot market price", "spot"]);
-  const series = pvpc || spot;
+  const series = hasValues(pvpc) ? pvpc : spot;
 
   if (!series?.attributes?.values?.length) return [];
 
@@ -117,6 +124,7 @@ function parseMarketData(data) {
       datetime: bucket.datetime,
       price: bucket.total / bucket.count,
       label: series.attributes.title || series.type || "Market price",
+      seriesType: series === pvpc ? "pvpc" : "spot",
     };
   }).filter(Boolean);
 }
@@ -126,6 +134,10 @@ function findSeries(included, names) {
     const title = `${item.type || ""} ${item.attributes?.title || ""}`.toLowerCase();
     return names.some((name) => title.includes(name.toLowerCase()));
   });
+}
+
+function hasValues(series) {
+  return Array.isArray(series?.attributes?.values) && series.attributes.values.length > 0;
 }
 
 function render() {
@@ -164,6 +176,8 @@ function render() {
     els.dataStatus.textContent = "Demo mode";
     els.dataStatus.className = "demo";
   }
+  els.dataNote.textContent = dataNoteForSelection();
+  els.dataNote.className = state.source === "demo" ? "demo" : "";
 
   const update = state.apiMeta?.["last-update"];
   els.lastUpdated.textContent = update
@@ -252,6 +266,29 @@ function makeReason(best, worst, duration) {
   return `${sourceText} This ${duration}h window is about ${percent.toFixed(0)}% cheaper than the most expensive comparable window.`;
 }
 
+function dataNoteForSelection() {
+  if (state.source === "demo") {
+    return "Using demo data for unavailable REE dates";
+  }
+
+  const selected = parseDateInput(state.selectedDate);
+  const today = startOfDay(new Date());
+  const tomorrow = addDays(today, 1);
+  const seriesType = state.points[0]?.seriesType;
+
+  if (isSameDay(selected, tomorrow)) {
+    return seriesType === "spot"
+      ? "Tomorrow: day-ahead spot data; PVPC may appear later"
+      : "Tomorrow: day-ahead data available";
+  }
+
+  if (isSameDay(selected, today)) {
+    return seriesType === "spot" ? "Today: spot market data" : "Today: PVPC market data";
+  }
+
+  return seriesType === "spot" ? "Historical spot market data" : "Historical PVPC market data";
+}
+
 function gradeForScore(score) {
   if (score >= 90) return { letter: "A", hint: "Excellent timing" };
   if (score >= 78) return { letter: "B", hint: "Very good timing" };
@@ -305,6 +342,7 @@ function setLoading(isLoading) {
   if (isLoading) {
     els.recommendationTitle.textContent = "Loading REE data...";
     els.dataStatus.textContent = "Connecting";
+    els.dataNote.textContent = "Dates are available through tomorrow";
     els.dataStatus.className = "";
   }
 }
@@ -374,6 +412,44 @@ function formatDateInput(date) {
   const month = pad(date.getMonth() + 1);
   const day = pad(date.getDate());
   return `${year}-${month}-${day}`;
+}
+
+function parseDateInput(value) {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function addDays(date, days) {
+  const copy = new Date(date);
+  copy.setDate(copy.getDate() + days);
+  return copy;
+}
+
+function startOfDay(date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function isSameDay(first, second) {
+  return formatDateInput(first) === formatDateInput(second);
+}
+
+function clampDateValue(value) {
+  if (!value) {
+    return formatDateInput(new Date());
+  }
+
+  const selected = parseDateInput(value);
+  const tomorrow = addDays(startOfDay(new Date()), 1);
+
+  if (Number.isNaN(selected.getTime())) {
+    return formatDateInput(new Date());
+  }
+
+  if (selected > tomorrow) {
+    return formatDateInput(tomorrow);
+  }
+
+  return value;
 }
 
 init();

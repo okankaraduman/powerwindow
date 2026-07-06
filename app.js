@@ -1,11 +1,15 @@
 const API_BASE = "https://apidatos.ree.es/en/datos";
 const MARKET_WIDGET = "mercados/precios-mercados-tiempo-real";
+const MARKET_CACHE_PREFIX = "power-window:market:";
+const MINUTE = 60 * 1000;
+const DAY = 24 * 60 * MINUTE;
 const DEMO_NOTICE =
   "Demo prices are shown because the REE API did not return usable hourly data for this date.";
 
 const state = {
   points: [],
   source: "loading",
+  cacheStatus: "none",
   apiMeta: null,
   selectedDate: "",
 };
@@ -39,7 +43,7 @@ function init() {
   els.dateInput.value = formatDateInput(today);
   state.selectedDate = els.dateInput.value;
 
-  els.refreshButton.addEventListener("click", () => loadDate(els.dateInput.value));
+  els.refreshButton.addEventListener("click", () => loadDate(els.dateInput.value, { forceRefresh: true }));
   els.dateInput.addEventListener("change", () => loadDate(els.dateInput.value));
   els.durationInput.addEventListener("input", render);
   els.durationInput.addEventListener("change", render);
@@ -48,7 +52,7 @@ function init() {
   loadDate(state.selectedDate);
 }
 
-async function loadDate(dateValue) {
+async function loadDate(dateValue, options = {}) {
   const safeDate = clampDateValue(dateValue);
   if (safeDate !== dateValue) {
     els.dateInput.value = safeDate;
@@ -58,7 +62,8 @@ async function loadDate(dateValue) {
   setLoading(true);
 
   try {
-    const data = await fetchMarketData(safeDate);
+    const response = await getMarketData(safeDate, options);
+    const data = response.payload;
     const points = parseMarketData(data);
 
     if (!points.length) {
@@ -67,16 +72,31 @@ async function loadDate(dateValue) {
 
     state.points = points;
     state.source = "api";
+    state.cacheStatus = response.fromCache ? "cache" : "network";
     state.apiMeta = data.data?.attributes || null;
   } catch (error) {
     state.points = makeDemoData(safeDate);
     state.source = "demo";
+    state.cacheStatus = "none";
     state.apiMeta = { "last-update": null, title: "Demo hourly price signal" };
     console.warn(error);
   } finally {
     setLoading(false);
     render();
   }
+}
+
+async function getMarketData(dateValue, options = {}) {
+  if (!options.forceRefresh) {
+    const cached = readCachedMarketData(dateValue);
+    if (cached) {
+      return { payload: cached, fromCache: true };
+    }
+  }
+
+  const data = await fetchMarketData(dateValue);
+  writeCachedMarketData(dateValue, data);
+  return { payload: data, fromCache: false };
 }
 
 async function fetchMarketData(dateValue) {
@@ -94,6 +114,59 @@ async function fetchMarketData(dateValue) {
     throw new Error(data.errors[0].detail || "REE returned an error.");
   }
   return data;
+}
+
+function readCachedMarketData(dateValue) {
+  try {
+    const raw = localStorage.getItem(cacheKeyForDate(dateValue));
+    if (!raw) return null;
+
+    const cached = JSON.parse(raw);
+    const age = Date.now() - Number(cached.cachedAt);
+    if (!cached.payload || age > cacheTtlForDate(dateValue)) {
+      localStorage.removeItem(cacheKeyForDate(dateValue));
+      return null;
+    }
+
+    return cached.payload;
+  } catch {
+    localStorage.removeItem(cacheKeyForDate(dateValue));
+    return null;
+  }
+}
+
+function writeCachedMarketData(dateValue, payload) {
+  try {
+    localStorage.setItem(
+      cacheKeyForDate(dateValue),
+      JSON.stringify({
+        cachedAt: Date.now(),
+        payload,
+      })
+    );
+  } catch {
+    // Storage is best-effort. The app can still use live API data.
+  }
+}
+
+function cacheKeyForDate(dateValue) {
+  return `${MARKET_CACHE_PREFIX}${dateValue}`;
+}
+
+function cacheTtlForDate(dateValue) {
+  const selected = parseDateInput(dateValue);
+  const today = startOfDay(new Date());
+  const tomorrow = addDays(today, 1);
+
+  if (isSameDay(selected, tomorrow)) return 15 * MINUTE;
+  if (isSameDay(selected, today)) return 30 * MINUTE;
+  if (selected < today) return 30 * DAY;
+  return 5 * MINUTE;
+}
+
+function cacheStatusLabel() {
+  if (state.source !== "api") return "Demo mode";
+  return state.cacheStatus === "cache" ? "Cached REE data" : "Live REE data";
 }
 
 function parseMarketData(data) {
@@ -170,7 +243,7 @@ function render() {
   els.costHint.textContent = `${kw.toFixed(1)} kW for ${duration}h, market component estimate`;
 
   if (state.source === "api") {
-    els.dataStatus.textContent = "Live REE data";
+    els.dataStatus.textContent = cacheStatusLabel();
     els.dataStatus.className = "";
   } else {
     els.dataStatus.textContent = "Demo mode";

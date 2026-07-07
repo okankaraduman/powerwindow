@@ -68,7 +68,7 @@
       </section>
 
       <section class="hero-panel" aria-live="polite">
-        <div>
+        <div class="answer-copy">
           <span class="eyebrow">Best window</span>
           <h2 id="recommendationTitle">Loading REE data...</h2>
           <p id="bestReason">Prices will appear after the REE response is parsed.</p>
@@ -82,14 +82,14 @@
 
       <section class="dashboard-grid">
         <article class="summary-panel">
-          <div class="score-ring" aria-label="Best slot score">
-            <span id="scoreValue">--</span>
-            <small>score</small>
-          </div>
           <div class="summary-copy">
-            <span class="eyebrow">Start time</span>
+            <span class="eyebrow">Recommended action</span>
             <h3 id="bestWindow">--</h3>
             <p>Start here for the strongest price signal in the selected duration.</p>
+          </div>
+          <div class="score-meter" aria-label="Best slot score">
+            <span><strong id="scoreValue">--</strong> score</span>
+            <i id="scoreMeter" aria-hidden="true"></i>
           </div>
         </article>
 

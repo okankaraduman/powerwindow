@@ -31,6 +31,7 @@ const els = {
   dataNote: document.querySelector("#dataNote"),
   lastUpdated: document.querySelector("#lastUpdated"),
   scoreValue: document.querySelector("#scoreValue"),
+  scoreMeter: document.querySelector("#scoreMeter"),
   gradeValue: document.querySelector("#gradeValue"),
   gradeHint: document.querySelector("#gradeHint"),
   loadLabel: document.querySelector("#loadLabel"),
@@ -263,6 +264,7 @@ function render() {
 
   els.recommendationTitle.textContent = formatWindow(best.start, duration);
   els.scoreValue.textContent = String(Math.round(best.score));
+  els.scoreMeter.style.width = `${Math.round(best.score)}%`;
   els.gradeValue.textContent = grade.letter;
   els.gradeValue.className = `grade-badge grade-${grade.letter.toLowerCase()}`;
   els.gradeHint.textContent = grade.hint;

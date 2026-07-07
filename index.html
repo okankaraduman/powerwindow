@@ -15,12 +15,12 @@
   </head>
   <body>
     <main class="app-shell">
-      <section class="toolbar" aria-label="Power timing controls">
+      <section class="toolbar" aria-label="App navigation">
         <div class="brand">
           <span class="brand-mark" aria-hidden="true">P</span>
           <div>
             <h1>Power Window</h1>
-            <p>Plan flexible loads around Spain's lowest-price hours.</p>
+            <p>Find the lowest-price hours for flexible electricity use in Spain.</p>
           </div>
         </div>
 
@@ -28,7 +28,13 @@
           <a href="/" aria-current="page">Planner</a>
           <a href="/methodology">How it works</a>
         </nav>
+      </section>
 
+      <section class="planner-panel" aria-label="Power timing controls">
+        <div class="planner-copy">
+          <span class="eyebrow">Planner</span>
+          <h2>Choose the load, get the best start time.</h2>
+        </div>
         <div class="controls">
           <label class="field">
             <span>Date</span>
@@ -50,11 +56,11 @@
           <label class="field">
             <span>Load</span>
             <select id="applianceInput">
-              <option value="0.8">Dishwasher</option>
-              <option value="1.2">Washing machine</option>
-              <option value="2.2">Dryer</option>
-              <option value="3.7">EV slow charge</option>
-              <option value="1.5">Heat pump</option>
+              <option value="0.8">Dishwasher - 0.8 kW</option>
+              <option value="1.2">Washing machine - 1.2 kW</option>
+              <option value="2.2">Dryer - 2.2 kW</option>
+              <option value="3.7">EV slow charge - 3.7 kW</option>
+              <option value="1.5">Heat pump - 1.5 kW</option>
             </select>
           </label>
           <button id="refreshButton" class="primary-button" type="button">Refresh</button>
@@ -63,7 +69,7 @@
 
       <section class="hero-panel" aria-live="polite">
         <div>
-          <span class="eyebrow">Recommendation</span>
+          <span class="eyebrow">Best window</span>
           <h2 id="recommendationTitle">Loading REE data...</h2>
           <p id="bestReason">Prices will appear after the REE response is parsed.</p>
         </div>
@@ -81,9 +87,9 @@
             <small>score</small>
           </div>
           <div class="summary-copy">
-            <span class="eyebrow">Best window</span>
+            <span class="eyebrow">Start time</span>
             <h3 id="bestWindow">--</h3>
-            <p>Start here for the strongest price signal.</p>
+            <p>Start here for the strongest price signal in the selected duration.</p>
           </div>
         </article>
 

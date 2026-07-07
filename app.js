@@ -261,15 +261,14 @@ function render() {
   const grade = gradeForScore(best.score);
   const load = loadLabelForKwh(kw * duration);
 
-  els.recommendationTitle.textContent =
-    best.score >= 82 ? "Run it in the best window" : "Wait for the cheapest window";
+  els.recommendationTitle.textContent = formatWindow(best.start, duration);
   els.scoreValue.textContent = String(Math.round(best.score));
   els.gradeValue.textContent = grade.letter;
   els.gradeValue.className = `grade-badge grade-${grade.letter.toLowerCase()}`;
   els.gradeHint.textContent = grade.hint;
   renderLoadLabel(load);
-  els.bestWindow.textContent = formatWindow(best.start, duration);
-  els.bestReason.textContent = makeReason(best, worst, duration);
+  els.bestWindow.textContent = formatStartTime(best.start);
+  els.bestReason.textContent = makeReason(best, worst, duration, kw);
   els.costEstimate.textContent = formatMoney(best.cost);
   els.costHint.textContent = `${kw.toFixed(1)} kW for ${duration}h, market component estimate`;
 
@@ -360,14 +359,14 @@ function rankWindows(points, duration, kw) {
   });
 }
 
-function makeReason(best, worst, duration) {
+function makeReason(best, worst, duration, kw) {
   const saved = Math.max(0, worst.cost - best.cost);
   const percent = worst.cost > 0 ? (saved / worst.cost) * 100 : 0;
   const sourceText =
     state.source === "api"
       ? "Based on the REE market price series for the selected date."
       : DEMO_NOTICE;
-  return `${sourceText} This ${duration}h window is about ${percent.toFixed(0)}% cheaper than the most expensive comparable window.`;
+  return `${sourceText} For ${loadName()} at ${kw.toFixed(1)} kW, this ${duration}h window is about ${percent.toFixed(0)}% cheaper than the most expensive comparable window.`;
 }
 
 function dataNoteForSelection() {
@@ -474,6 +473,14 @@ function pad(value) {
 
 function formatWindow(start, duration) {
   return `${formatHour(start)}-${formatHour(start + duration)}`;
+}
+
+function formatStartTime(start) {
+  return `Start at ${formatHour(start)}`;
+}
+
+function loadName() {
+  return els.applianceInput.selectedOptions[0]?.textContent.split(" - ")[0] || "this load";
 }
 
 function formatHour(hour) {

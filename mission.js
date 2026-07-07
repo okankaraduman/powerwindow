@@ -91,21 +91,7 @@ function renderMissionNumbers(example) {
 }
 
 async function monthToDateExample(selectedDate) {
-  const dates = monthToDateValues(selectedDate);
-  const results = await Promise.allSettled(
-    dates.map(async (dateValue) => {
-      const payload = await fetchMissionMarketData(dateValue);
-      const points = parseMissionMarketData(payload);
-      if (!points.length) throw new Error(`No hourly data for ${dateValue}`);
-      return {
-        dishwasher: savingsExample(points, 2, 0.8).savings,
-        ev: savingsExample(points, 3, 7.4).savings,
-      };
-    })
-  );
-  const days = results
-    .filter((result) => result.status === "fulfilled")
-    .map((result) => result.value);
+  const days = await fetchMissionMonthData(formatDateInput(selectedDate));
 
   if (!days.length) {
     return { days: 1, monthly: FALLBACK_EXAMPLE.monthly };
@@ -119,13 +105,55 @@ async function monthToDateExample(selectedDate) {
   };
 }
 
-function monthToDateValues(selectedDate) {
-  const first = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
-  const dates = [];
-  for (const date = new Date(first); date <= selectedDate; date.setDate(date.getDate() + 1)) {
-    dates.push(formatDateInput(date));
+async function fetchMissionMonthData(dateValue) {
+  const backendURL = new URL(`${MISSION_API_BASE.replace(/\/$/, "")}/market/month`, window.location.origin);
+  backendURL.searchParams.set("date", dateValue);
+
+  try {
+    const response = await fetch(backendURL, { headers: { Accept: "application/json" } });
+    if (response.ok) {
+      const data = await response.json();
+      if (Array.isArray(data.days)) {
+        return data.days
+          .map((day) => {
+            const points = parseMissionMarketData(day.payload);
+            if (!points.length) return null;
+            return {
+              dishwasher: savingsExample(points, 2, 0.8).savings,
+              ev: savingsExample(points, 3, 7.4).savings,
+            };
+          })
+          .filter(Boolean);
+      }
+    }
+  } catch {
+    // Fall back to client-side fanout when running without the Worker locally.
   }
-  return dates;
+
+  return fetchMissionMonthDataByDay(dateValue);
+}
+
+async function fetchMissionMonthDataByDay(dateValue) {
+  const results = await Promise.allSettled(
+    monthToDateValues(dateValue).map(async (dayValue) => {
+      const payload = await fetchMissionMarketData(dayValue);
+      const points = parseMissionMarketData(payload);
+      if (!points.length) throw new Error(`No hourly data for ${dayValue}`);
+      return {
+        dishwasher: savingsExample(points, 2, 0.8).savings,
+        ev: savingsExample(points, 3, 7.4).savings,
+      };
+    })
+  );
+
+  return results
+    .filter((result) => result.status === "fulfilled")
+    .map((result) => result.value);
+}
+
+function monthToDateValues(dateValue) {
+  const [, , day] = dateValue.split("-").map(Number);
+  return Array.from({ length: day }, (_, index) => `${dateValue.slice(0, 8)}${String(index + 1).padStart(2, "0")}`);
 }
 
 async function fetchMissionMarketData(dateValue) {

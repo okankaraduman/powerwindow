@@ -7,10 +7,9 @@ const ALLOWED_ORIGINS = new Set([
 ]);
 
 const MINUTE = 60;
-const DAY = 24 * 60 * MINUTE;
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     if (request.method === "OPTIONS") {
@@ -22,14 +21,18 @@ export default {
     }
 
     if (url.pathname === "/api/market") {
-      return handleMarket(request, env, url);
+      return handleMarket(request, env, url, ctx);
+    }
+
+    if (url.pathname === "/api/market/month") {
+      return handleMarketMonth(request, env, url, ctx);
     }
 
     return jsonResponse({ error: "not found" }, 404, request);
   }
 };
 
-async function handleMarket(request, env, url) {
+async function handleMarket(request, env, url, ctx) {
   if (request.method !== "GET") {
     return jsonResponse({ error: "method not allowed" }, 405, request);
   }
@@ -55,30 +58,133 @@ async function handleMarket(request, env, url) {
     );
   }
 
-  const cacheKey = `market:${date}`;
   const forceRefresh = url.searchParams.get("refresh") === "1";
-  const ttlSeconds = cacheTtlForDate(date);
+  try {
+    const result = await marketEntryForDate(env, date, { forceRefresh, ctx });
+    return marketResponse(result.cacheStatus, result.entry, request);
+  } catch (error) {
+    return jsonResponse({ error: error.message || "REE request failed" }, 502, request);
+  }
+}
 
-  if (!forceRefresh) {
-    const cached = await readCache(env, cacheKey);
-    if (cached && Date.now() - Date.parse(cached.cachedAt) <= ttlSeconds * 1000) {
-      return marketResponse("hit", cached, request);
+async function handleMarketMonth(request, env, url, ctx) {
+  if (request.method !== "GET") {
+    return jsonResponse({ error: "method not allowed" }, 405, request);
+  }
+
+  if (!env.MARKET_CACHE) {
+    return jsonResponse({ error: "MARKET_CACHE KV binding is not configured" }, 500, request);
+  }
+
+  const date = url.searchParams.get("date") || madridDateString(0);
+  if (!isValidDateValue(date)) {
+    return jsonResponse({ error: "date must be YYYY-MM-DD" }, 400, request);
+  }
+
+  if (date > madridDateString(1)) {
+    return jsonResponse(
+      { error: "REE day-ahead data is only available through tomorrow" },
+      400,
+      request
+    );
+  }
+
+  const dates = monthToDateValues(date);
+  const settled = await Promise.allSettled(
+    dates.map(async (dateValue) => {
+      const result = await marketEntryForDate(env, dateValue, { ctx });
+      return {
+        date: dateValue,
+        cacheStatus: result.cacheStatus,
+        cachedAt: result.entry.cachedAt,
+        payload: result.entry.payload
+      };
+    })
+  );
+  const days = settled
+    .filter((result) => result.status === "fulfilled")
+    .map((result) => result.value);
+
+  if (!days.length) {
+    const reason = settled.find((result) => result.status === "rejected")?.reason;
+    return jsonResponse({ error: reason?.message || "No market data available" }, 502, request);
+  }
+
+  return jsonResponse(
+    {
+      source: "ree",
+      cacheStatus: aggregateCacheStatus(days.map((day) => day.cacheStatus)),
+      days
+    },
+    200,
+    request
+  );
+}
+
+async function marketEntryForDate(env, date, options = {}) {
+  const cacheKey = `market:${date}`;
+  const forceRefresh = options.forceRefresh === true;
+  const ttlSeconds = cacheTtlForDate(date);
+  const cached = forceRefresh ? null : await readCache(env, cacheKey);
+
+  if (cached) {
+    if (isFreshCacheEntry(cached, ttlSeconds)) {
+      return { cacheStatus: "hit", entry: cached };
     }
+
+    scheduleCacheRefresh(env, cacheKey, date, options.ctx);
+    return { cacheStatus: "stale", entry: cached };
   }
 
   try {
-    const payload = await fetchREE(date);
-    const entry = { cachedAt: new Date().toISOString(), payload };
-    await env.MARKET_CACHE.put(cacheKey, JSON.stringify(entry));
-    return marketResponse("miss", entry, request);
+    const entry = await refreshMarketCache(env, cacheKey, date);
+    return { cacheStatus: "miss", entry };
   } catch (error) {
     const stale = await readCache(env, cacheKey);
     if (stale) {
-      return marketResponse("stale", stale, request);
+      return { cacheStatus: "stale", entry: stale };
     }
 
-    return jsonResponse({ error: error.message || "REE request failed" }, 502, request);
+    throw error;
   }
+}
+
+async function refreshMarketCache(env, cacheKey, date) {
+  const payload = await fetchREE(date);
+  const entry = { cachedAt: new Date().toISOString(), payload };
+  await env.MARKET_CACHE.put(cacheKey, JSON.stringify(entry));
+  return entry;
+}
+
+function scheduleCacheRefresh(env, cacheKey, date, ctx) {
+  if (!ctx || date < madridDateString(0)) return;
+
+  ctx.waitUntil(refreshMarketCacheWithLock(env, cacheKey, date));
+}
+
+async function refreshMarketCacheWithLock(env, cacheKey, date) {
+  const lockKey = `refresh:${cacheKey}`;
+  const existingLock = await env.MARKET_CACHE.get(lockKey, { type: "json" });
+  if (existingLock?.startedAt && Date.now() - existingLock.startedAt < 2 * MINUTE * 1000) {
+    return;
+  }
+
+  await env.MARKET_CACHE.put(
+    lockKey,
+    JSON.stringify({ startedAt: Date.now() }),
+    { expirationTtl: 2 * MINUTE }
+  );
+
+  try {
+    await refreshMarketCache(env, cacheKey, date);
+  } finally {
+    await env.MARKET_CACHE.delete(lockKey);
+  }
+}
+
+function isFreshCacheEntry(entry, ttlSeconds) {
+  if (ttlSeconds === Infinity) return true;
+  return Date.now() - Date.parse(entry.cachedAt) <= ttlSeconds * 1000;
 }
 
 async function fetchREE(date) {
@@ -137,8 +243,26 @@ function cacheTtlForDate(date) {
 
   if (date === tomorrow) return 15 * MINUTE;
   if (date === today) return 30 * MINUTE;
-  if (date < today) return 30 * DAY;
+  if (date < today) return Infinity;
   return 5 * MINUTE;
+}
+
+function monthToDateValues(dateValue) {
+  const [year, month, day] = dateValue.split("-").map(Number);
+  return Array.from({ length: day }, (_, index) => {
+    const date = new Date(Date.UTC(year, month - 1, index + 1));
+    return [
+      date.getUTCFullYear(),
+      String(date.getUTCMonth() + 1).padStart(2, "0"),
+      String(date.getUTCDate()).padStart(2, "0")
+    ].join("-");
+  });
+}
+
+function aggregateCacheStatus(statuses) {
+  if (statuses.includes("miss")) return "miss";
+  if (statuses.includes("stale")) return "stale";
+  return "hit";
 }
 
 function isValidDateValue(value) {

@@ -65,9 +65,10 @@ The backend requests:
 https://apidatos.ree.es/en/datos/mercados/precios-mercados-tiempo-real
 ```
 
-The Cloudflare Worker caches successful responses in KV by date. If the backend or REE API
-is unavailable, the frontend clearly switches to demo mode unless browser-cached data is
-available.
+The Cloudflare Worker persists successful responses in KV by date. Historical dates are
+served from KV indefinitely, while today and tomorrow can return cached data immediately and
+refresh in the background. The mission page uses the month endpoint so visitors do not fan
+out separate requests for every day in the current month.
 
 ## Notes
 

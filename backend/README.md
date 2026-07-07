@@ -15,6 +15,7 @@ API:
 ```text
 GET http://localhost:8787/api/market?date=2026-07-06
 GET http://localhost:8787/api/market?date=2026-07-06&refresh=1
+GET http://localhost:8787/api/market/month?date=2026-07-06
 GET http://localhost:8787/healthz
 ```
 
@@ -48,14 +49,19 @@ https://api.powerwindow.energy
 The `routes` entry in `wrangler.toml` keeps that hostname attached as a Worker custom
 domain.
 
-## Cache TTL
+## Persistence
 
-- Tomorrow: 15 minutes
-- Today: 30 minutes
-- Past dates: 30 days
+Successful REE responses are stored in Cloudflare KV by date.
 
-If REE is unavailable and stale cached data exists, the API returns the stale cache instead
-of failing the request.
+- Past dates are treated as stable and served from KV indefinitely.
+- Today and tomorrow are refreshed periodically, but stale KV data is returned immediately
+  while the Worker refreshes in the background.
+- `refresh=1` forces a synchronous refresh for a single date.
+- `/api/market/month?date=YYYY-MM-DD` returns cached day payloads from the first day of
+  that month through the selected date, so clients do not fan out many date requests.
+
+If REE is unavailable and cached data exists, the API returns the cache instead of failing
+the request.
 
 ## Go reference server
 

@@ -1,6 +1,11 @@
 const API_BASE = "https://apidatos.ree.es/en/datos";
+const DEFAULT_BACKEND_API_BASE =
+  window.location.hostname === "powerwindow.energy" ||
+  window.location.hostname === "www.powerwindow.energy"
+    ? "https://api.powerwindow.energy/api"
+    : "/api";
 const BACKEND_API_BASE =
-  window.POWER_WINDOW_API_BASE || localStorage.getItem("POWER_WINDOW_API_BASE") || "/api";
+  window.POWER_WINDOW_API_BASE || localStorage.getItem("POWER_WINDOW_API_BASE") || DEFAULT_BACKEND_API_BASE;
 const MARKET_WIDGET = "mercados/precios-mercados-tiempo-real";
 const MARKET_CACHE_PREFIX = "power-window:market:";
 const MINUTE = 60 * 1000;

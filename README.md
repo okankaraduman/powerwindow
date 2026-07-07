@@ -5,11 +5,11 @@ time window for flexible electricity use in Spain.
 
 ## Run locally
 
-Run the backend API:
+Run the Worker backend:
 
 ```sh
 cd /Users/okankaraduman/Documents/Electricity/backend
-go run ./cmd/server
+npx wrangler dev
 ```
 
 Then serve the frontend:
@@ -21,11 +21,13 @@ python3 -m http.server 8000
 
 Then visit `http://localhost:8000`.
 
-The frontend calls `/api/market` in production. During local development, if the backend is
-not available through the same origin, set the browser override once:
+The production frontend calls `https://api.powerwindow.energy/api/market`.
+
+During local development, if you want the static frontend to use local Wrangler instead of
+falling back to direct REE requests, set the browser override once:
 
 ```js
-localStorage.setItem("POWER_WINDOW_API_BASE", "http://localhost:8080/api")
+localStorage.setItem("POWER_WINDOW_API_BASE", "http://localhost:8787/api")
 ```
 
 Then refresh the page.
@@ -43,14 +45,15 @@ computer, but a phone visiting a LAN IP may not allow every PWA feature over pla
 
 ## Data
 
-The app requests:
+The backend requests:
 
 ```text
 https://apidatos.ree.es/en/datos/mercados/precios-mercados-tiempo-real
 ```
 
-If the API is unavailable or the selected date has no usable hourly data, the app clearly
-switches to demo mode.
+The Cloudflare Worker caches successful responses in KV by date. If the backend or REE API
+is unavailable, the frontend clearly switches to demo mode unless browser-cached data is
+available.
 
 ## Notes
 

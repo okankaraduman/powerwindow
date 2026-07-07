@@ -1,16 +1,12 @@
 name = "powerwindow-api"
 main = "worker/src/index.js"
 compatibility_date = "2026-07-06"
+workers_dev = true
+preview_urls = false
+routes = [
+  { pattern = "api.powerwindow.energy", custom_domain = true }
+]
 
-[[containers]]
-class_name = "PowerWindowAPI"
-image = "./Dockerfile"
-max_instances = 1
-
-[[durable_objects.bindings]]
-name = "POWER_WINDOW_API"
-class_name = "PowerWindowAPI"
-
-[[migrations]]
-tag = "v1"
-new_sqlite_classes = ["PowerWindowAPI"]
+[[kv_namespaces]]
+binding = "MARKET_CACHE"
+id = "01aae04ae16d486da0ae2c56322bc426"

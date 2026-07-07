@@ -1,13 +1,10 @@
 {
-  "name": "powerwindow-api-container",
+  "name": "powerwindow-api-worker",
   "private": true,
   "type": "module",
   "scripts": {
     "deploy": "wrangler deploy",
     "dev": "wrangler dev"
-  },
-  "dependencies": {
-    "@cloudflare/containers": "latest"
   },
   "devDependencies": {
     "wrangler": "latest"

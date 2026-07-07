@@ -69,8 +69,10 @@
               <option value="1.5">Heat pump - 1.5 kW</option>
             </select>
           </label>
-          <button id="saveProfileButton" class="secondary-button" type="button">Save</button>
-          <button id="refreshButton" class="primary-button" type="button">Refresh</button>
+          <div class="button-cluster" aria-label="Planner actions">
+            <button id="saveProfileButton" class="secondary-button" type="button">Save</button>
+            <button id="refreshButton" class="primary-button" type="button">Refresh</button>
+          </div>
         </div>
       </section>
 
@@ -183,7 +185,7 @@
         <div class="section-heading">
           <div>
             <span class="eyebrow">Hourly price signal</span>
-            <h2>Lower bars are better moments to run flexible loads.</h2>
+            <h2>Lower bars are better moments to run flexible loads. Past hours are muted.</h2>
           </div>
           <div class="legend">
             <span><i class="legend-best"></i> best window</span>
@@ -198,7 +200,7 @@
         <div class="section-heading">
           <div>
             <span class="eyebrow">Ranked windows</span>
-            <h2>Best starts for this load</h2>
+            <h2>Remaining starts for this load</h2>
           </div>
         </div>
         <div id="windowList" class="window-list"></div>

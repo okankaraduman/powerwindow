@@ -23,6 +23,7 @@ const state = {
   selectedDate: "",
   profiles: [],
   ranked: [],
+  allRanked: [],
   best: null,
   tomorrow: { status: "idle", points: [], best: null },
   deferredInstallPrompt: null,
@@ -247,6 +248,19 @@ function cacheStatusLabel() {
   return "Live REE data";
 }
 
+function firstAvailableStartHour(dateValue) {
+  const selected = parseDateInput(dateValue);
+  const now = new Date();
+  const today = startOfDay(now);
+
+  if (selected < today) return 24;
+  if (!isSameDay(selected, today)) return 0;
+
+  const hasCurrentHourStarted =
+    now.getMinutes() > 0 || now.getSeconds() > 0 || now.getMilliseconds() > 0;
+  return clamp(now.getHours() + (hasCurrentHourStarted ? 1 : 0), 0, 24);
+}
+
 function parseMarketData(data) {
   const included = Array.isArray(data.included) ? data.included : [];
   const pvpc = findSeries(included, ["PVPC"]);
@@ -298,17 +312,28 @@ function render() {
   const kw = Number(els.applianceInput.value) || 1;
   els.durationInput.value = String(duration);
 
-  const ranked = rankWindows(state.points, duration, kw);
+  const allRanked = rankWindows(state.points, duration, kw);
+  const firstStart = firstAvailableStartHour(state.selectedDate);
+  const ranked = allRanked.filter((item) => item.start >= firstStart);
   const best = ranked[0];
-  const worst = ranked[ranked.length - 1];
-  state.ranked = ranked;
-  state.best = best;
+  const worst = allRanked[allRanked.length - 1];
+  const bestHours = new Set(best?.hours || []);
   const prices = state.points.map((point) => point.price);
   const lowCut = quantile(prices, 0.25);
   const highCut = quantile(prices, 0.75);
-  const bestHours = new Set(best.hours);
-  const grade = gradeForScore(best.score);
+  state.allRanked = allRanked;
+  state.ranked = ranked;
+  state.best = best;
   const load = loadLabelForKwh(kw * duration);
+  renderLoadLabel(load);
+
+  if (!best) {
+    renderNoRemainingWindow(duration, kw, firstStart, bestHours, lowCut, highCut);
+    renderTomorrowComparison(duration);
+    return;
+  }
+
+  const grade = gradeForScore(best.score);
 
   els.recommendationTitle.textContent = formatWindow(best.start, duration);
   els.scoreValue.textContent = String(Math.round(best.score));
@@ -316,12 +341,39 @@ function render() {
   els.gradeValue.textContent = grade.letter;
   els.gradeValue.className = `grade-badge grade-${grade.letter.toLowerCase()}`;
   els.gradeHint.textContent = grade.hint;
-  renderLoadLabel(load);
   els.bestWindow.textContent = formatStartTime(best.start);
   els.bestReason.textContent = makeReason(best, worst, duration, kw);
   els.costEstimate.textContent = formatMoney(best.cost);
   els.costHint.textContent = costHintText(kw, duration);
+  els.reminderButton.disabled = false;
+  renderDataStatus();
 
+  renderChart(state.points, bestHours, lowCut, highCut, firstStart);
+  renderWindowList(ranked.slice(0, 6), duration);
+  renderNowComparison(best, duration);
+  renderTomorrowComparison(duration);
+}
+
+function renderNoRemainingWindow(duration, kw, firstStart, bestHours, lowCut, highCut) {
+  els.recommendationTitle.textContent = "No remaining window";
+  els.scoreValue.textContent = "--";
+  els.scoreMeter.style.width = "0%";
+  els.gradeValue.textContent = "--";
+  els.gradeValue.className = "grade-badge";
+  els.gradeHint.textContent = "Selected run no longer fits today";
+  els.bestWindow.textContent = "Try tomorrow";
+  els.bestReason.textContent = `A ${duration}h run for ${loadName()} at ${kw.toFixed(1)} kW no longer fits in today's remaining hourly data. Select tomorrow or reduce the duration.`;
+  els.costEstimate.textContent = "--";
+  els.costHint.textContent = costHintText(kw, duration);
+  els.reminderButton.disabled = true;
+  els.reminderStatus.textContent = "No remaining start today";
+  renderDataStatus();
+  renderChart(state.points, bestHours, lowCut, highCut, firstStart);
+  renderWindowList([], duration);
+  renderNowComparison(null, duration);
+}
+
+function renderDataStatus() {
   if (state.source === "api") {
     els.dataStatus.textContent = cacheStatusLabel();
     els.dataStatus.className = "";
@@ -336,14 +388,9 @@ function render() {
   els.lastUpdated.textContent = update
     ? `Last REE update: ${formatDateTime(update)}`
     : DEMO_NOTICE;
-
-  renderChart(state.points, bestHours, lowCut, highCut);
-  renderWindowList(ranked.slice(0, 6), duration);
-  renderNowComparison(best, duration);
-  renderTomorrowComparison(duration);
 }
 
-function renderChart(points, bestHours, lowCut, highCut) {
+function renderChart(points, bestHours, lowCut, highCut, firstStart = 0) {
   const max = Math.max(...points.map((point) => point.price));
   const min = Math.min(...points.map((point) => point.price));
   const range = Math.max(max - min, 1);
@@ -355,6 +402,7 @@ function renderChart(points, bestHours, lowCut, highCut) {
       if (bestHours.has(point.hour)) classes.push("best");
       else if (point.price <= lowCut) classes.push("low");
       else if (point.price >= highCut) classes.push("high");
+      if (point.hour < firstStart) classes.push("past");
 
       return `
         <div class="${classes.join(" ")}" title="${formatHour(point.hour)} - ${formatPrice(point.price)}">
@@ -368,6 +416,17 @@ function renderChart(points, bestHours, lowCut, highCut) {
 }
 
 function renderWindowList(windows, duration) {
+  if (!windows.length) {
+    els.windowList.innerHTML = `
+      <article class="window-item empty">
+        <span class="eyebrow">Remaining starts</span>
+        <strong>No slot left today</strong>
+        <small>Pick tomorrow or shorten the duration to get a usable start time.</small>
+      </article>
+    `;
+    return;
+  }
+
   const bestScore = windows[0]?.score || 1;
   els.windowList.innerHTML = windows
     .map((item, index) => {
@@ -434,8 +493,14 @@ function renderNowComparison(best, duration) {
   }
 
   const currentHour = new Date().getHours();
-  const nowWindow = state.ranked.find((item) => item.start === currentHour);
+  const nowWindow = state.allRanked.find((item) => item.start === currentHour);
   if (!nowWindow) {
+    els.nowVsBest.textContent = "Too late today";
+    els.savingsHint.textContent = `A ${duration}h run no longer fits in today's remaining hourly data.`;
+    return;
+  }
+
+  if (!best) {
     els.nowVsBest.textContent = "Too late today";
     els.savingsHint.textContent = `A ${duration}h run no longer fits in today's remaining hourly data.`;
     return;

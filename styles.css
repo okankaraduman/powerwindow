@@ -173,9 +173,10 @@ h1 {
 
 .controls {
   display: grid;
-  grid-template-columns: minmax(170px, 1.15fr) minmax(145px, 0.9fr) minmax(145px, 0.9fr) minmax(230px, 1.3fr) auto auto;
+  grid-template-columns: minmax(150px, 1fr) minmax(130px, 0.75fr) minmax(130px, 0.75fr) minmax(200px, 1.2fr) minmax(178px, auto);
   gap: 10px;
   align-items: end;
+  min-width: 0;
 }
 
 .settings-grid {
@@ -188,6 +189,7 @@ h1 {
 .field {
   display: grid;
   gap: 7px;
+  min-width: 0;
 }
 
 .field input,
@@ -246,6 +248,20 @@ h1 {
 .primary-button:disabled {
   cursor: wait;
   opacity: 0.68;
+}
+
+.button-cluster {
+  display: grid;
+  grid-template-columns: minmax(78px, 0.8fr) minmax(96px, 1fr);
+  gap: 8px;
+  align-items: end;
+  min-width: 0;
+}
+
+.button-cluster .primary-button,
+.button-cluster .secondary-button {
+  width: 100%;
+  padding-inline: 12px;
 }
 
 .hero-panel {
@@ -677,6 +693,14 @@ h1 {
   background: var(--red);
 }
 
+.hour-bar.past {
+  opacity: 0.34;
+}
+
+.hour-bar.past .bar-fill {
+  background: #c7d0db;
+}
+
 .bar-price {
   display: none;
 }
@@ -724,6 +748,11 @@ h1 {
 .window-item small {
   color: var(--muted);
   line-height: 1.36;
+}
+
+.window-item.empty {
+  grid-column: 1 / -1;
+  min-height: 96px;
 }
 
 .methodology-hero h2 {

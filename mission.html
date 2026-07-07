@@ -58,6 +58,26 @@
             power and meter rental do not change when a flexible load moves from one hour to
             another.
           </p>
+          <div class="mission-number-panel" aria-live="polite">
+            <span class="eyebrow">Today's example</span>
+            <div class="mission-number-grid">
+              <div>
+                <strong id="dishwasherSavings">--</strong>
+                <small id="dishwasherSavingsNote">Dishwasher: best vs worst 2h window</small>
+              </div>
+              <div>
+                <strong id="evSavings">--</strong>
+                <small id="evSavingsNote">EV: best vs worst 3h wallbox window</small>
+              </div>
+              <div>
+                <strong id="monthlySavings">--</strong>
+                <small id="monthlySavingsNote">20 dishwasher runs + 4 EV top-ups</small>
+              </div>
+            </div>
+            <p id="missionDataNote">
+              Loading today's hourly data for a live bill-impact example.
+            </p>
+          </div>
         </article>
 
         <article class="method-card mission-card">
@@ -135,5 +155,6 @@
         </p>
       </footer>
     </main>
+    <script src="mission.js"></script>
   </body>
 </html>

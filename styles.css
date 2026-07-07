@@ -914,6 +914,48 @@ h1 {
   min-height: 300px;
 }
 
+.mission-number-panel {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: #f8fafb;
+}
+
+.mission-number-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.mission-number-grid div {
+  display: grid;
+  gap: 8px;
+  min-height: 98px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: #ffffff;
+}
+
+.mission-number-grid strong {
+  font-size: 1.42rem;
+  line-height: 1.04;
+}
+
+.mission-number-grid small,
+#missionDataNote {
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+#missionDataNote {
+  margin-top: 0;
+  font-size: 0.84rem;
+}
+
 .method-card h3 {
   margin-top: 8px;
   font-size: 1.8rem;
@@ -1022,6 +1064,7 @@ h1 {
   .decision-grid,
   .window-list,
   .mission-grid,
+  .mission-number-grid,
   .source-grid,
   .method-grid {
     grid-template-columns: 1fr 1fr;
@@ -1073,6 +1116,7 @@ h1 {
   .decision-grid,
   .window-list,
   .mission-grid,
+  .mission-number-grid,
   .source-grid,
   .method-grid {
     grid-template-columns: 1fr;

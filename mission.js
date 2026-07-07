@@ -10,6 +10,20 @@ const BILL_DEFAULTS = {
   electricityTax: 5.1127,
   adder: 0.075,
 };
+const FALLBACK_EXAMPLE = {
+  date: "2026-07-07",
+  dishwasher: {
+    savings: 0.3299519607260799,
+    best: "2 PM-4 PM",
+    worst: "8 PM-10 PM",
+  },
+  ev: {
+    savings: 4.16885877552452,
+    best: "2 PM-5 PM",
+    worst: "7 PM-10 PM",
+  },
+  monthly: 23.27447431661968,
+};
 
 const missionEls = {
   dishwasherSavings: document.querySelector("#dishwasherSavings"),
@@ -21,6 +35,7 @@ const missionEls = {
   missionDataNote: document.querySelector("#missionDataNote"),
 };
 
+renderFallbackMissionNumbers();
 loadMissionNumbers();
 
 async function loadMissionNumbers() {
@@ -34,23 +49,40 @@ async function loadMissionNumbers() {
     const ev = savingsExample(points, 3, 7.4);
     const monthly = dishwasher.savings * 20 + ev.savings * 4;
 
-    missionEls.dishwasherSavings.textContent = formatMoney(dishwasher.savings);
-    missionEls.dishwasherSavingsNote.textContent =
-      `Dishwasher: ${formatWindow(dishwasher.best.start, 2)} instead of ${formatWindow(dishwasher.worst.start, 2)}`;
-    missionEls.evSavings.textContent = formatMoney(ev.savings);
-    missionEls.evSavingsNote.textContent =
-      `EV: ${formatWindow(ev.best.start, 3)} instead of ${formatWindow(ev.worst.start, 3)}`;
-    missionEls.monthlySavings.textContent = formatMoney(monthly);
-    missionEls.monthlySavingsNote.textContent = "20 dishwasher runs + 4 EV top-ups";
+    renderMissionNumbers({
+      dishwasher: {
+        savings: dishwasher.savings,
+        best: formatWindow(dishwasher.best.start, 2),
+        worst: formatWindow(dishwasher.worst.start, 2),
+      },
+      ev: {
+        savings: ev.savings,
+        best: formatWindow(ev.best.start, 3),
+        worst: formatWindow(ev.worst.start, 3),
+      },
+      monthly,
+    });
     missionEls.missionDataNote.textContent =
       `Calculated from ${dateValue} hourly prices using bill-impact defaults: 21% VAT, 5.1127% electricity tax, and 0.075 EUR/kWh adders.`;
   } catch {
-    missionEls.dishwasherSavings.textContent = "Live data unavailable";
-    missionEls.evSavings.textContent = "--";
-    missionEls.monthlySavings.textContent = "--";
+    renderFallbackMissionNumbers();
     missionEls.missionDataNote.textContent =
-      "The examples use live hourly market data when available. Try again after the REE/backend response is reachable.";
+      "Showing the latest bundled example from 7 July 2026 because live hourly data is not available in this browser session.";
   }
+}
+
+function renderFallbackMissionNumbers() {
+  renderMissionNumbers(FALLBACK_EXAMPLE);
+}
+
+function renderMissionNumbers(example) {
+  missionEls.dishwasherSavings.textContent = formatMoney(example.dishwasher.savings);
+  missionEls.dishwasherSavingsNote.textContent =
+    `Dishwasher: ${example.dishwasher.best} instead of ${example.dishwasher.worst}`;
+  missionEls.evSavings.textContent = formatMoney(example.ev.savings);
+  missionEls.evSavingsNote.textContent = `EV: ${example.ev.best} instead of ${example.ev.worst}`;
+  missionEls.monthlySavings.textContent = formatMoney(example.monthly);
+  missionEls.monthlySavingsNote.textContent = "20 dishwasher runs + 4 EV top-ups";
 }
 
 async function fetchMissionMarketData(dateValue) {

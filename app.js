@@ -8,6 +8,8 @@ const BACKEND_API_BASE =
   window.POWER_WINDOW_API_BASE || localStorage.getItem("POWER_WINDOW_API_BASE") || DEFAULT_BACKEND_API_BASE;
 const MARKET_WIDGET = "mercados/precios-mercados-tiempo-real";
 const MARKET_CACHE_PREFIX = "power-window:market:";
+const PROFILE_STORAGE_KEY = "power-window:profiles";
+const SETTINGS_STORAGE_KEY = "power-window:bill-settings";
 const MINUTE = 60 * 1000;
 const DAY = 24 * 60 * MINUTE;
 const DEMO_NOTICE =
@@ -19,12 +21,24 @@ const state = {
   cacheStatus: "none",
   apiMeta: null,
   selectedDate: "",
+  profiles: [],
+  ranked: [],
+  best: null,
+  tomorrow: { status: "idle", points: [], best: null },
+  deferredInstallPrompt: null,
+  reminderTimer: null,
 };
 
 const els = {
+  profileInput: document.querySelector("#profileInput"),
   dateInput: document.querySelector("#dateInput"),
   durationInput: document.querySelector("#durationInput"),
   applianceInput: document.querySelector("#applianceInput"),
+  saveProfileButton: document.querySelector("#saveProfileButton"),
+  costModeInput: document.querySelector("#costModeInput"),
+  vatInput: document.querySelector("#vatInput"),
+  electricityTaxInput: document.querySelector("#electricityTaxInput"),
+  adderInput: document.querySelector("#adderInput"),
   refreshButton: document.querySelector("#refreshButton"),
   recommendationTitle: document.querySelector("#recommendationTitle"),
   dataStatus: document.querySelector("#dataStatus"),
@@ -40,11 +54,22 @@ const els = {
   bestReason: document.querySelector("#bestReason"),
   costEstimate: document.querySelector("#costEstimate"),
   costHint: document.querySelector("#costHint"),
+  nowVsBest: document.querySelector("#nowVsBest"),
+  savingsHint: document.querySelector("#savingsHint"),
+  tomorrowBest: document.querySelector("#tomorrowBest"),
+  tomorrowHint: document.querySelector("#tomorrowHint"),
+  reminderButton: document.querySelector("#reminderButton"),
+  reminderStatus: document.querySelector("#reminderStatus"),
+  installButton: document.querySelector("#installButton"),
+  installHint: document.querySelector("#installHint"),
   hourChart: document.querySelector("#hourChart"),
   windowList: document.querySelector("#windowList"),
 };
 
 function init() {
+  loadProfiles();
+  loadBillSettings();
+
   const today = new Date();
   const tomorrow = addDays(today, 1);
   els.dateInput.max = formatDateInput(tomorrow);
@@ -52,10 +77,25 @@ function init() {
   state.selectedDate = els.dateInput.value;
 
   els.refreshButton.addEventListener("click", () => loadDate(els.dateInput.value, { forceRefresh: true }));
+  els.saveProfileButton.addEventListener("click", saveCurrentProfile);
+  els.profileInput.addEventListener("change", applySelectedProfile);
   els.dateInput.addEventListener("change", () => loadDate(els.dateInput.value));
   els.durationInput.addEventListener("input", render);
   els.durationInput.addEventListener("change", render);
   els.applianceInput.addEventListener("change", render);
+  els.costModeInput.addEventListener("change", handleBillSettingsChange);
+  els.vatInput.addEventListener("input", handleBillSettingsChange);
+  els.electricityTaxInput.addEventListener("input", handleBillSettingsChange);
+  els.adderInput.addEventListener("input", handleBillSettingsChange);
+  els.reminderButton.addEventListener("click", scheduleReminder);
+  els.installButton.addEventListener("click", installApp);
+
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    state.deferredInstallPrompt = event;
+    els.installButton.disabled = false;
+    els.installHint.textContent = "Ready to install on Android Chrome.";
+  });
 
   loadDate(state.selectedDate);
 }
@@ -67,6 +107,11 @@ async function loadDate(dateValue, options = {}) {
   }
 
   state.selectedDate = safeDate;
+  state.tomorrow = {
+    status: isSameDay(parseDateInput(safeDate), startOfDay(new Date())) ? "loading" : "idle",
+    points: [],
+    best: null,
+  };
   setLoading(true);
 
   try {
@@ -91,6 +136,7 @@ async function loadDate(dateValue, options = {}) {
   } finally {
     setLoading(false);
     render();
+    loadTomorrowComparison(safeDate);
   }
 }
 
@@ -255,6 +301,8 @@ function render() {
   const ranked = rankWindows(state.points, duration, kw);
   const best = ranked[0];
   const worst = ranked[ranked.length - 1];
+  state.ranked = ranked;
+  state.best = best;
   const prices = state.points.map((point) => point.price);
   const lowCut = quantile(prices, 0.25);
   const highCut = quantile(prices, 0.75);
@@ -272,7 +320,7 @@ function render() {
   els.bestWindow.textContent = formatStartTime(best.start);
   els.bestReason.textContent = makeReason(best, worst, duration, kw);
   els.costEstimate.textContent = formatMoney(best.cost);
-  els.costHint.textContent = `${kw.toFixed(1)} kW for ${duration}h, market component estimate`;
+  els.costHint.textContent = costHintText(kw, duration);
 
   if (state.source === "api") {
     els.dataStatus.textContent = cacheStatusLabel();
@@ -291,6 +339,8 @@ function render() {
 
   renderChart(state.points, bestHours, lowCut, highCut);
   renderWindowList(ranked.slice(0, 6), duration);
+  renderNowComparison(best, duration);
+  renderTomorrowComparison(duration);
 }
 
 function renderChart(points, bestHours, lowCut, highCut) {
@@ -344,7 +394,8 @@ function rankWindows(points, duration, kw) {
   return Array.from({ length: maxStart + 1 }, (_, start) => {
     const slice = points.slice(start, start + duration);
     const avgPrice = average(slice.map((point) => point.price));
-    const cost = slice.reduce((sum, point) => sum + (point.price / 1000) * kw, 0);
+    const marketCost = slice.reduce((sum, point) => sum + (point.price / 1000) * kw, 0);
+    const kwh = kw * slice.length;
     const lowPriceScore = 100 - ((avgPrice - dailyMin) / dailyRange) * 100;
     const middayBonus = slice.some((point) => point.hour >= 10 && point.hour <= 17) ? 4 : 0;
 
@@ -352,7 +403,8 @@ function rankWindows(points, duration, kw) {
       start,
       hours: slice.map((point) => point.hour),
       avgPrice,
-      cost,
+      marketCost,
+      cost: estimateBillCost(marketCost, kwh),
       score: clamp(lowPriceScore + middayBonus, 0, 100),
     };
   }).sort((a, b) => {
@@ -369,6 +421,90 @@ function makeReason(best, worst, duration, kw) {
       ? "Based on the REE market price series for the selected date."
       : DEMO_NOTICE;
   return `${sourceText} For ${loadName()} at ${kw.toFixed(1)} kW, this ${duration}h window is about ${percent.toFixed(0)}% cheaper than the most expensive comparable window.`;
+}
+
+function renderNowComparison(best, duration) {
+  const selected = parseDateInput(state.selectedDate);
+  const today = startOfDay(new Date());
+
+  if (!isSameDay(selected, today)) {
+    els.nowVsBest.textContent = "Today only";
+    els.savingsHint.textContent = "Run-now comparison appears when the selected date is today.";
+    return;
+  }
+
+  const currentHour = new Date().getHours();
+  const nowWindow = state.ranked.find((item) => item.start === currentHour);
+  if (!nowWindow) {
+    els.nowVsBest.textContent = "Too late today";
+    els.savingsHint.textContent = `A ${duration}h run no longer fits in today's remaining hourly data.`;
+    return;
+  }
+
+  const savings = nowWindow.cost - best.cost;
+  if (Math.abs(savings) < 0.005 || best.start === currentHour) {
+    els.nowVsBest.textContent = "Run now";
+    els.savingsHint.textContent = `${formatWindow(currentHour, duration)} is already one of the best options.`;
+    return;
+  }
+
+  if (savings > 0) {
+    els.nowVsBest.textContent = `Save ${formatMoney(savings)}`;
+    els.savingsHint.textContent = `Run now: ${formatMoney(nowWindow.cost)}. Best window: ${formatMoney(best.cost)}.`;
+    return;
+  }
+
+  els.nowVsBest.textContent = "Now is cheaper";
+  els.savingsHint.textContent = `Run now: ${formatMoney(nowWindow.cost)}. Best listed window: ${formatMoney(best.cost)}.`;
+}
+
+function renderTomorrowComparison(duration) {
+  if (state.tomorrow.status === "idle") {
+    els.tomorrowBest.textContent = "Today view";
+    els.tomorrowHint.textContent = "Select today to compare against tomorrow's day-ahead data.";
+    return;
+  }
+
+  if (state.tomorrow.status === "loading") {
+    els.tomorrowBest.textContent = "Checking";
+    els.tomorrowHint.textContent = "Tomorrow data is loading in the background.";
+    return;
+  }
+
+  if (state.tomorrow.status === "unavailable" || !state.tomorrow.points.length) {
+    els.tomorrowBest.textContent = "Not available";
+    els.tomorrowHint.textContent = "REE may publish tomorrow's PVPC/spot data later.";
+    return;
+  }
+
+  const kw = Number(els.applianceInput.value) || 1;
+  const best = rankWindows(state.tomorrow.points, duration, kw)[0];
+  state.tomorrow.best = best;
+  els.tomorrowBest.textContent = formatWindow(best.start, duration);
+  els.tomorrowHint.textContent = `${formatMoney(best.cost)} estimated if you wait until tomorrow.`;
+}
+
+async function loadTomorrowComparison(dateValue) {
+  const selected = parseDateInput(dateValue);
+  const today = startOfDay(new Date());
+  if (!isSameDay(selected, today)) {
+    state.tomorrow = { status: "idle", points: [], best: null };
+    renderTomorrowComparison(Number(els.durationInput.value) || 1);
+    return;
+  }
+
+  const tomorrowValue = formatDateInput(addDays(today, 1));
+  try {
+    const response = await getMarketData(tomorrowValue);
+    const points = parseMarketData(response.payload);
+    if (!points.length) throw new Error("No tomorrow data");
+
+    state.tomorrow = { status: "ready", points, best: null };
+  } catch {
+    state.tomorrow = { status: "unavailable", points: [], best: null };
+  }
+
+  renderTomorrowComparison(Number(els.durationInput.value) || 1);
 }
 
 function dataNoteForSelection() {
@@ -485,6 +621,178 @@ function loadName() {
   return els.applianceInput.selectedOptions[0]?.textContent.split(" - ")[0] || "this load";
 }
 
+function estimateBillCost(marketCost, kwh) {
+  const settings = billSettings();
+  if (settings.mode === "market") return marketCost;
+
+  const beforeTaxes = marketCost + kwh * settings.adder;
+  const withElectricityTax = beforeTaxes * (1 + settings.electricityTax / 100);
+  return withElectricityTax * (1 + settings.vat / 100);
+}
+
+function billSettings() {
+  return {
+    mode: els.costModeInput.value,
+    vat: clamp(Number(els.vatInput.value) || 0, 0, 30),
+    electricityTax: clamp(Number(els.electricityTaxInput.value) || 0, 0, 10),
+    adder: clamp(Number(els.adderInput.value) || 0, 0, 0.5),
+  };
+}
+
+function costHintText(kw, duration) {
+  const settings = billSettings();
+  if (settings.mode === "market") {
+    return `${kw.toFixed(1)} kW for ${duration}h, market component only`;
+  }
+
+  return `${kw.toFixed(1)} kW for ${duration}h incl. ${settings.vat}% VAT, ${settings.electricityTax}% electricity tax, and ${formatEurKwh(settings.adder)} adders`;
+}
+
+function handleBillSettingsChange() {
+  saveBillSettings();
+  render();
+}
+
+function loadBillSettings() {
+  try {
+    const settings = JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY) || "{}");
+    if (settings.mode) els.costModeInput.value = settings.mode;
+    if (Number.isFinite(settings.vat)) els.vatInput.value = String(settings.vat);
+    if (Number.isFinite(settings.electricityTax)) {
+      els.electricityTaxInput.value = String(settings.electricityTax);
+    }
+    if (Number.isFinite(settings.adder)) els.adderInput.value = String(settings.adder);
+  } catch {
+    localStorage.removeItem(SETTINGS_STORAGE_KEY);
+  }
+}
+
+function saveBillSettings() {
+  try {
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(billSettings()));
+  } catch {
+    // Settings are optional; rendering can continue with defaults.
+  }
+}
+
+function loadProfiles() {
+  try {
+    state.profiles = JSON.parse(localStorage.getItem(PROFILE_STORAGE_KEY) || "[]").filter(
+      (profile) => profile?.name && Number.isFinite(profile.kw) && Number.isFinite(profile.duration)
+    );
+  } catch {
+    state.profiles = [];
+    localStorage.removeItem(PROFILE_STORAGE_KEY);
+  }
+  renderProfileOptions();
+}
+
+function renderProfileOptions() {
+  const custom = '<option value="">Custom load</option>';
+  const saved = state.profiles
+    .map(
+      (profile, index) =>
+        `<option value="${index}">${escapeHTML(profile.name)} - ${profile.kw.toFixed(1)} kW, ${profile.duration}h</option>`
+    )
+    .join("");
+  els.profileInput.innerHTML = custom + saved;
+}
+
+function saveCurrentProfile() {
+  const fallbackName = loadName() === "this load" ? "My load" : loadName();
+  const name = window.prompt("Profile name", fallbackName);
+  if (!name?.trim()) return;
+
+  const profile = {
+    name: name.trim().slice(0, 40),
+    kw: Number(els.applianceInput.value) || 1,
+    duration: clamp(Math.round(Number(els.durationInput.value) || 1), 1, 8),
+  };
+
+  state.profiles = [...state.profiles.filter((item) => item.name !== profile.name), profile].slice(-8);
+  try {
+    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(state.profiles));
+  } catch {
+    // Profiles are a convenience feature; failure should not break the planner.
+  }
+
+  renderProfileOptions();
+  els.profileInput.value = String(state.profiles.findIndex((item) => item.name === profile.name));
+}
+
+function applySelectedProfile() {
+  const profile = state.profiles[Number(els.profileInput.value)];
+  if (!profile) return;
+
+  els.durationInput.value = String(profile.duration);
+  setApplianceByKw(profile.kw);
+  render();
+}
+
+function setApplianceByKw(kw) {
+  const existing = Array.from(els.applianceInput.options).find(
+    (option) => Number(option.value) === kw
+  );
+  if (existing) {
+    els.applianceInput.value = existing.value;
+  }
+}
+
+async function scheduleReminder() {
+  if (!state.best) return;
+
+  const bestStart = state.best.start;
+  const duration = Number(els.durationInput.value) || 1;
+  const name = loadName();
+  const selected = parseDateInput(state.selectedDate);
+  const reminderAt = new Date(selected);
+  reminderAt.setHours(bestStart, 0, 0, 0);
+  reminderAt.setMinutes(reminderAt.getMinutes() - 10);
+  const delay = reminderAt.getTime() - Date.now();
+
+  if (delay <= 0) {
+    els.reminderStatus.textContent = "Window is soon";
+    return;
+  }
+
+  if ("Notification" in window && Notification.permission === "default") {
+    await Notification.requestPermission();
+  }
+
+  clearTimeout(state.reminderTimer);
+  state.reminderTimer = window.setTimeout(() => {
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification("Power Window", {
+        body: `${name} starts in 10 minutes: ${formatWindow(bestStart, duration)}`,
+      });
+    } else {
+      window.alert(`Power Window: ${name} starts in 10 minutes.`);
+    }
+  }, delay);
+
+  els.reminderStatus.textContent = `Set for ${formatDateTime(reminderAt.toISOString())}`;
+}
+
+async function installApp() {
+  if (!state.deferredInstallPrompt) {
+    els.installHint.textContent = "Open in Android Chrome, then use Add to Home screen.";
+    return;
+  }
+
+  state.deferredInstallPrompt.prompt();
+  await state.deferredInstallPrompt.userChoice;
+  state.deferredInstallPrompt = null;
+  els.installButton.disabled = true;
+  els.installHint.textContent = "Install prompt handled by the browser.";
+}
+
+function escapeHTML(value) {
+  return value.replace(/[&<>"']/g, (char) => {
+    const map = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" };
+    return map[char];
+  });
+}
+
 function formatHour(hour) {
   const normalized = ((hour % 24) + 24) % 24;
   const suffix = normalized >= 12 ? "PM" : "AM";
@@ -511,6 +819,10 @@ function formatMoney(value) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(value);
+}
+
+function formatEurKwh(value) {
+  return `${value.toFixed(3)} EUR/kWh`;
 }
 
 function formatDateTime(value) {

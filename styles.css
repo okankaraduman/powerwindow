@@ -134,6 +134,26 @@ h1 {
   box-shadow: var(--soft-shadow);
 }
 
+.settings-panel {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.85fr) minmax(0, 1.9fr);
+  gap: 20px;
+  align-items: end;
+  margin-top: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px 18px;
+  background: var(--panel);
+  box-shadow: var(--soft-shadow);
+}
+
+.settings-panel h2 {
+  margin-top: 6px;
+  max-width: 430px;
+  font-size: 1.06rem;
+  line-height: 1.25;
+}
+
 .eyebrow,
 .field span {
   color: var(--muted);
@@ -153,7 +173,14 @@ h1 {
 
 .controls {
   display: grid;
-  grid-template-columns: minmax(145px, 1fr) minmax(145px, 1fr) minmax(230px, 1.3fr) auto;
+  grid-template-columns: minmax(170px, 1.15fr) minmax(145px, 0.9fr) minmax(145px, 0.9fr) minmax(230px, 1.3fr) auto auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) repeat(3, minmax(120px, 0.7fr));
   gap: 10px;
   align-items: end;
 }
@@ -190,6 +217,26 @@ h1 {
   color: #ffffff;
   font-weight: 800;
   cursor: pointer;
+}
+
+.secondary-button {
+  min-height: 46px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  padding: 0 14px;
+  background: #ffffff;
+  color: var(--ink);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.secondary-button:hover {
+  border-color: var(--deep);
+}
+
+.secondary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
 }
 
 .primary-button:hover {
@@ -265,6 +312,44 @@ h1 {
   grid-template-columns: minmax(280px, 1.35fr) repeat(3, minmax(150px, 1fr));
   gap: 12px;
   margin-top: 12px;
+}
+
+.decision-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.decision-card {
+  display: grid;
+  gap: 10px;
+  min-height: 132px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  background: var(--panel);
+  box-shadow: var(--soft-shadow);
+}
+
+.decision-card strong {
+  display: block;
+  font-size: 1.32rem;
+  line-height: 1.08;
+}
+
+.decision-card small {
+  color: var(--muted);
+  line-height: 1.38;
+}
+
+.primary-decision {
+  border-color: rgba(18, 131, 111, 0.32);
+  background: #f6fbf9;
+}
+
+.action-card {
+  align-content: space-between;
 }
 
 .summary-panel,
@@ -721,12 +806,15 @@ h1 {
   }
 
   .planner-panel,
+  .settings-panel,
   .hero-panel {
     grid-template-columns: 1fr;
   }
 
   .controls,
+  .settings-grid,
   .dashboard-grid,
+  .decision-grid,
   .window-list,
   .method-grid {
     grid-template-columns: 1fr 1fr;
@@ -772,7 +860,9 @@ h1 {
   }
 
   .controls,
+  .settings-grid,
   .dashboard-grid,
+  .decision-grid,
   .window-list,
   .method-grid {
     grid-template-columns: 1fr;

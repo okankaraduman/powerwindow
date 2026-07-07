@@ -32,16 +32,14 @@ localStorage.setItem("POWER_WINDOW_API_BASE", "http://localhost:8787/api")
 
 Then refresh the page.
 
-## Check on iPhone without Xcode
+## Android install
 
-1. Keep the local server running on your computer.
-2. Make sure your iPhone is on the same Wi-Fi network.
-3. Find your computer's local IP address.
-4. Open `http://YOUR_LOCAL_IP:8000` in Safari on the iPhone.
-5. Use Share -> Add to Home Screen.
+Power Window is now treated as a web-first Android PWA. On Android Chrome, open the
+production site and use the in-app install prompt or Chrome's install menu. The app has a
+manifest and service worker, so it can be launched like a normal Android app after install.
 
-For a true installable/offline PWA on iPhone, serve it over HTTPS. Localhost works on the
-computer, but a phone visiting a LAN IP may not allow every PWA feature over plain HTTP.
+A native Android app can come later if the PWA proves useful enough to justify Play Store
+work, notifications, and native background scheduling.
 
 ## Data
 
@@ -60,7 +58,7 @@ available.
 This is not affiliated with Red Electrica. Prices are used as market signals and are not a
 complete household bill calculation.
 
-## iOS
+## Parked iOS work
 
-A native SwiftUI version lives in `ios/BestTimePower`. Create a new SwiftUI iOS app in
-Xcode named `BestTimePower`, then copy those Swift files into the project.
+The old SwiftUI sketch remains in `ios/BestTimePower`, but it is not the active product
+track. Current focus is the web app and Android PWA install flow.

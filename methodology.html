@@ -57,10 +57,15 @@
           <h3>Estimate the chosen load</h3>
           <p>
             For every candidate window, the app multiplies each hour's price by the selected
-            appliance load. The result is an energy-component estimate, not a full household
-            bill with taxes, tolls, contracted power, or retailer-specific charges.
+            appliance load. Market signal mode keeps this clean. Bill impact mode adds editable
+            per-kWh regulated costs, retailer margin, electricity tax, and VAT.
           </p>
           <code>cost = sum((EUR per MWh / 1000) * appliance kW)</code>
+          <code>bill impact = (market + kWh adders) * electricity tax * VAT</code>
+          <p>
+            Fixed monthly items such as contracted power and meter rental are not used to rank
+            hours because they do not change when you move a dishwasher or EV session.
+          </p>
         </article>
 
         <article class="method-card">
@@ -92,7 +97,17 @@
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">5. Load label</span>
+          <span class="eyebrow">5. Decisions</span>
+          <h3>Compare now, today, and tomorrow</h3>
+          <p>
+            When today's data is selected, Power Window compares running immediately with the
+            best remaining window. It also checks tomorrow's day-ahead data when REE has made it
+            available, so the planner can show whether waiting another day is worth considering.
+          </p>
+        </article>
+
+        <article class="method-card">
+          <span class="eyebrow">6. Load label</span>
           <h3>Estimate appliance-style consumption</h3>
           <p>
             The colored A-G load label is inspired by appliance energy labels, but it is not

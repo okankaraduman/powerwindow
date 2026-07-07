@@ -37,6 +37,12 @@
         </div>
         <div class="controls">
           <label class="field">
+            <span>Profile</span>
+            <select id="profileInput">
+              <option value="">Custom load</option>
+            </select>
+          </label>
+          <label class="field">
             <span>Date</span>
             <input id="dateInput" type="date" />
           </label>
@@ -63,7 +69,36 @@
               <option value="1.5">Heat pump - 1.5 kW</option>
             </select>
           </label>
+          <button id="saveProfileButton" class="secondary-button" type="button">Save</button>
           <button id="refreshButton" class="primary-button" type="button">Refresh</button>
+        </div>
+      </section>
+
+      <section class="settings-panel" aria-label="Cost estimate settings">
+        <div>
+          <span class="eyebrow">Cost mode</span>
+          <h2>Estimate the bill impact, not only the market price.</h2>
+        </div>
+        <div class="settings-grid">
+          <label class="field">
+            <span>Estimate</span>
+            <select id="costModeInput">
+              <option value="market">Market signal</option>
+              <option value="full">Bill impact</option>
+            </select>
+          </label>
+          <label class="field compact-field">
+            <span>VAT</span>
+            <input id="vatInput" type="number" min="0" max="30" step="0.1" value="21" />
+          </label>
+          <label class="field compact-field">
+            <span>Electricity tax</span>
+            <input id="electricityTaxInput" type="number" min="0" max="10" step="0.1" value="5.1127" />
+          </label>
+          <label class="field compact-field">
+            <span>Regulated + margin</span>
+            <input id="adderInput" type="number" min="0" max="0.5" step="0.001" value="0.075" />
+          </label>
         </div>
       </section>
 
@@ -117,6 +152,30 @@
           <span class="eyebrow">Estimated cost</span>
           <strong id="costEstimate">--</strong>
           <small id="costHint">Energy component only</small>
+        </article>
+      </section>
+
+      <section class="decision-grid">
+        <article class="decision-card primary-decision">
+          <span class="eyebrow">Run now vs best</span>
+          <strong id="nowVsBest">--</strong>
+          <small id="savingsHint">Waiting can be compared once today's hourly data is loaded.</small>
+        </article>
+        <article class="decision-card">
+          <span class="eyebrow">Tomorrow check</span>
+          <strong id="tomorrowBest">--</strong>
+          <small id="tomorrowHint">Day-ahead data is checked when available.</small>
+        </article>
+        <article class="decision-card action-card">
+          <span class="eyebrow">Reminder</span>
+          <strong id="reminderStatus">No reminder set</strong>
+          <button id="reminderButton" class="secondary-button" type="button">Remind me</button>
+        </article>
+        <article class="decision-card action-card">
+          <span class="eyebrow">Android</span>
+          <strong>Install as app</strong>
+          <button id="installButton" class="secondary-button" type="button">Install</button>
+          <small id="installHint">Use Chrome on Android for the best install flow.</small>
         </article>
       </section>
 

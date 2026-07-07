@@ -311,7 +311,11 @@ async function fetchMarketData(dateValue, options = {}) {
         return {
           payload: data.payload,
           cacheStatus:
-            data.cacheStatus === "hit" || data.cacheStatus === "stale" ? "backend" : "network",
+            data.cacheStatus === "hit" ||
+            data.cacheStatus === "stale" ||
+            data.cacheStatus === "database"
+              ? "backend"
+              : "network",
         };
       }
     }

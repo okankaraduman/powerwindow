@@ -1,7 +1,7 @@
 # Power Window API
 
 Cloudflare Worker backend for Power Window. It wraps the REData market endpoint and
-persists responses by date in Cloudflare KV.
+persists responses by date in Cloudflare D1, with Cloudflare KV as the fast edge cache.
 
 ## Local Worker run
 
@@ -26,18 +26,30 @@ cd /Users/okankaraduman/Documents/Electricity/backend
 npx wrangler deploy
 ```
 
-The Worker needs this KV binding in `wrangler.toml`:
+The Worker needs these bindings in `wrangler.toml`:
 
 ```toml
 [[kv_namespaces]]
 binding = "MARKET_CACHE"
 id = "01aae04ae16d486da0ae2c56322bc426"
+
+[[d1_databases]]
+binding = "MARKET_DB"
+database_name = "powerwindow-market"
+database_id = "3c9cc7ff-a086-4e80-9e3b-f925acbd5f29"
 ```
 
-If you ever need to recreate it:
+If you ever need to recreate the KV namespace:
 
 ```sh
 npx wrangler kv namespace create MARKET_CACHE --binding MARKET_CACHE
+```
+
+If you ever need to recreate the D1 database:
+
+```sh
+npx wrangler d1 create powerwindow-market
+npx wrangler d1 migrations apply powerwindow-market --remote
 ```
 
 The production API URL is:
@@ -51,11 +63,18 @@ domain.
 
 ## Persistence
 
-Successful REE responses are stored in Cloudflare KV by date.
+Reads follow this ladder:
 
-- Past dates are treated as stable and served from KV indefinitely.
-- Today and tomorrow are refreshed periodically, but stale KV data is returned immediately
-  while the Worker refreshes in the background.
+```text
+Cloudflare KV -> Cloudflare D1 -> REE API
+```
+
+Successful REE responses are written to D1 first, then copied to KV. If KV is empty but D1
+has the date, the Worker serves D1 and repopulates KV.
+
+- Past dates are treated as stable and served from persistence indefinitely.
+- Today and tomorrow are refreshed periodically, but stale persisted data is returned
+  immediately while the Worker refreshes in the background.
 - `refresh=1` forces a synchronous refresh for a single date.
 - `/api/market/month?date=YYYY-MM-DD` returns cached day payloads from the first day of
   that month through the selected date, so clients do not fan out many date requests.

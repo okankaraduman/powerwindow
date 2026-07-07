@@ -37,8 +37,9 @@ async function handleMarket(request, env, url, ctx) {
     return jsonResponse({ error: "method not allowed" }, 405, request);
   }
 
-  if (!env.MARKET_CACHE) {
-    return jsonResponse({ error: "MARKET_CACHE KV binding is not configured" }, 500, request);
+  const bindingError = marketBindingError(env);
+  if (bindingError) {
+    return jsonResponse({ error: bindingError }, 500, request);
   }
 
   const date = url.searchParams.get("date");
@@ -72,8 +73,9 @@ async function handleMarketMonth(request, env, url, ctx) {
     return jsonResponse({ error: "method not allowed" }, 405, request);
   }
 
-  if (!env.MARKET_CACHE) {
-    return jsonResponse({ error: "MARKET_CACHE KV binding is not configured" }, 500, request);
+  const bindingError = marketBindingError(env);
+  if (bindingError) {
+    return jsonResponse({ error: bindingError }, 500, request);
   }
 
   const date = url.searchParams.get("date") || madridDateString(0);
@@ -136,8 +138,17 @@ async function marketEntryForDate(env, date, options = {}) {
     return { cacheStatus: "stale", entry: cached };
   }
 
+  const stored = forceRefresh ? null : await readDatabase(env, date);
+  if (stored) {
+    await writeCache(env, cacheKey, stored);
+    if (!isFreshCacheEntry(stored, ttlSeconds)) {
+      scheduleCacheRefresh(env, cacheKey, date, options.ctx);
+    }
+    return { cacheStatus: "database", entry: stored };
+  }
+
   try {
-    const entry = await refreshMarketCache(env, cacheKey, date);
+    const entry = await refreshMarketData(env, cacheKey, date);
     return { cacheStatus: "miss", entry };
   } catch (error) {
     const stale = await readCache(env, cacheKey);
@@ -145,24 +156,31 @@ async function marketEntryForDate(env, date, options = {}) {
       return { cacheStatus: "stale", entry: stale };
     }
 
+    const storedFallback = await readDatabase(env, date);
+    if (storedFallback) {
+      await writeCache(env, cacheKey, storedFallback);
+      return { cacheStatus: "database", entry: storedFallback };
+    }
+
     throw error;
   }
 }
 
-async function refreshMarketCache(env, cacheKey, date) {
+async function refreshMarketData(env, cacheKey, date) {
   const payload = await fetchREE(date);
   const entry = { cachedAt: new Date().toISOString(), payload };
-  await env.MARKET_CACHE.put(cacheKey, JSON.stringify(entry));
+  await writeDatabase(env, date, entry);
+  await writeCache(env, cacheKey, entry);
   return entry;
 }
 
 function scheduleCacheRefresh(env, cacheKey, date, ctx) {
   if (!ctx || date < madridDateString(0)) return;
 
-  ctx.waitUntil(refreshMarketCacheWithLock(env, cacheKey, date));
+  ctx.waitUntil(refreshMarketDataWithLock(env, cacheKey, date));
 }
 
-async function refreshMarketCacheWithLock(env, cacheKey, date) {
+async function refreshMarketDataWithLock(env, cacheKey, date) {
   const lockKey = `refresh:${cacheKey}`;
   const existingLock = await env.MARKET_CACHE.get(lockKey, { type: "json" });
   if (existingLock?.startedAt && Date.now() - existingLock.startedAt < 2 * MINUTE * 1000) {
@@ -176,7 +194,7 @@ async function refreshMarketCacheWithLock(env, cacheKey, date) {
   );
 
   try {
-    await refreshMarketCache(env, cacheKey, date);
+    await refreshMarketData(env, cacheKey, date);
   } finally {
     await env.MARKET_CACHE.delete(lockKey);
   }
@@ -224,6 +242,44 @@ async function readCache(env, key) {
   }
 }
 
+async function writeCache(env, key, entry) {
+  await env.MARKET_CACHE.put(key, JSON.stringify(entry));
+}
+
+async function readDatabase(env, date) {
+  try {
+    const row = await env.MARKET_DB.prepare(
+      "SELECT cached_at, payload_json FROM market_days WHERE date = ?1"
+    )
+      .bind(date)
+      .first();
+
+    if (!row?.cached_at || !row?.payload_json || Number.isNaN(Date.parse(row.cached_at))) {
+      return null;
+    }
+
+    return {
+      cachedAt: row.cached_at,
+      payload: JSON.parse(row.payload_json)
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function writeDatabase(env, date, entry) {
+  await env.MARKET_DB.prepare(
+    `INSERT INTO market_days (date, cached_at, payload_json, updated_at)
+      VALUES (?1, ?2, ?3, ?2)
+      ON CONFLICT(date) DO UPDATE SET
+        cached_at = excluded.cached_at,
+        payload_json = excluded.payload_json,
+        updated_at = excluded.updated_at`
+  )
+    .bind(date, entry.cachedAt, JSON.stringify(entry.payload))
+    .run();
+}
+
 function marketResponse(cacheStatus, entry, request) {
   return jsonResponse(
     {
@@ -262,7 +318,16 @@ function monthToDateValues(dateValue) {
 function aggregateCacheStatus(statuses) {
   if (statuses.includes("miss")) return "miss";
   if (statuses.includes("stale")) return "stale";
+  if (statuses.includes("database")) return "database";
   return "hit";
+}
+
+function marketBindingError(env) {
+  const missing = [];
+  if (!env.MARKET_CACHE) missing.push("MARKET_CACHE KV");
+  if (!env.MARKET_DB) missing.push("MARKET_DB D1");
+  if (!missing.length) return "";
+  return `${missing.join(" and ")} binding ${missing.length === 1 ? "is" : "are"} not configured`;
 }
 
 function isValidDateValue(value) {

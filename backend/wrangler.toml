@@ -10,3 +10,8 @@ routes = [
 [[kv_namespaces]]
 binding = "MARKET_CACHE"
 id = "01aae04ae16d486da0ae2c56322bc426"
+
+[[d1_databases]]
+binding = "MARKET_DB"
+database_name = "powerwindow-market"
+database_id = "3c9cc7ff-a086-4e80-9e3b-f925acbd5f29"

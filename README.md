@@ -46,6 +46,17 @@ The native wrapper is the current Android starting point. A Trusted Web Activity
 better Play Store path once the app has final icons, screenshots, privacy policy, and Digital
 Asset Links.
 
+## EV charging model
+
+The EV planner estimates energy from the selected battery size and state-of-charge change:
+
+```text
+energy needed = battery kWh * ((target % - current %) / 100)
+```
+
+Charger power is in kW. Energy added is in kWh. Preset vehicle battery sizes are approximate,
+and the `Custom` option lets users enter a different battery size for missing models or trims.
+
 ## Data
 
 The backend requests:

@@ -17,6 +17,99 @@ const DAY = 24 * 60 * MINUTE;
 const DEMO_NOTICE =
   "Demo prices are shown because the REE API did not return usable hourly data for this date.";
 const VEHICLE_PRESETS = {
+  Custom: [{ model: "My EV", batteryKwh: 60 }],
+  Audi: [
+    { model: "Q4 e-tron 45", batteryKwh: 77 },
+    { model: "Q6 e-tron", batteryKwh: 94.9 },
+    { model: "Q8 e-tron 55", batteryKwh: 106 },
+  ],
+  BMW: [
+    { model: "i3 120 Ah", batteryKwh: 37.9 },
+    { model: "i4 eDrive40", batteryKwh: 81.1 },
+    { model: "iX1 xDrive30", batteryKwh: 64.7 },
+    { model: "iX3", batteryKwh: 73.8 },
+  ],
+  BYD: [
+    { model: "Dolphin", batteryKwh: 60.4 },
+    { model: "Atto 3", batteryKwh: 60.5 },
+    { model: "Seal", batteryKwh: 82.5 },
+    { model: "Seal U", batteryKwh: 71.8 },
+  ],
+  Citroen: [
+    { model: "e-C3", batteryKwh: 44 },
+    { model: "e-C4", batteryKwh: 50 },
+    { model: "e-Berlingo", batteryKwh: 50 },
+  ],
+  Cupra: [
+    { model: "Born 58", batteryKwh: 58 },
+    { model: "Born 77", batteryKwh: 77 },
+    { model: "Tavascan", batteryKwh: 77 },
+  ],
+  Dacia: [{ model: "Spring", batteryKwh: 26.8 }],
+  Fiat: [
+    { model: "500e", batteryKwh: 37.3 },
+    { model: "600e", batteryKwh: 51 },
+  ],
+  Ford: [
+    { model: "Explorer EV", batteryKwh: 77 },
+    { model: "Mustang Mach-E Standard", batteryKwh: 72 },
+    { model: "Mustang Mach-E Extended", batteryKwh: 91 },
+  ],
+  Hyundai: [
+    { model: "Kona Electric 48", batteryKwh: 48.4 },
+    { model: "Kona Electric 65", batteryKwh: 65.4 },
+    { model: "Ioniq 5 Standard", batteryKwh: 58 },
+    { model: "Ioniq 5 Long Range", batteryKwh: 77.4 },
+    { model: "Ioniq 6 Long Range", batteryKwh: 77.4 },
+  ],
+  Jeep: [{ model: "Avenger Electric", batteryKwh: 51 }],
+  Kia: [
+    { model: "Niro EV", batteryKwh: 64.8 },
+    { model: "EV3 Standard", batteryKwh: 58.3 },
+    { model: "EV3 Long Range", batteryKwh: 81.4 },
+    { model: "EV4 Standard", batteryKwh: 58.3 },
+    { model: "EV4 Long Range", batteryKwh: 81.4 },
+    { model: "EV6 Long Range", batteryKwh: 77.4 },
+    { model: "EV9", batteryKwh: 99.8 },
+  ],
+  Mazda: [{ model: "MX-30", batteryKwh: 30 }],
+  Mercedes: [
+    { model: "EQA 250+", batteryKwh: 70.5 },
+    { model: "EQB 250+", batteryKwh: 70.5 },
+    { model: "EQE 350+", batteryKwh: 90.6 },
+  ],
+  MG: [
+    { model: "MG4 Standard", batteryKwh: 50.8 },
+    { model: "MG4 Long Range", batteryKwh: 61.7 },
+    { model: "MG4 Extended Range", batteryKwh: 74.4 },
+    { model: "ZS EV Standard", batteryKwh: 49 },
+    { model: "ZS EV Long Range", batteryKwh: 68.3 },
+  ],
+  Mini: [
+    { model: "Cooper E", batteryKwh: 36.6 },
+    { model: "Cooper SE", batteryKwh: 49.2 },
+  ],
+  Nissan: [
+    { model: "Leaf 40", batteryKwh: 39 },
+    { model: "Leaf e+", batteryKwh: 59 },
+    { model: "Ariya 63", batteryKwh: 63 },
+    { model: "Ariya 87", batteryKwh: 87 },
+  ],
+  Opel: [
+    { model: "Corsa Electric", batteryKwh: 51 },
+    { model: "Mokka Electric", batteryKwh: 51 },
+    { model: "Astra Electric", batteryKwh: 54 },
+  ],
+  Peugeot: [
+    { model: "e-208", batteryKwh: 51 },
+    { model: "e-2008", batteryKwh: 54 },
+    { model: "e-308", batteryKwh: 54 },
+    { model: "e-Rifter", batteryKwh: 50 },
+  ],
+  Polestar: [
+    { model: "2 Standard Range", batteryKwh: 67 },
+    { model: "2 Long Range", batteryKwh: 79 },
+  ],
   Tesla: [
     { model: "Model 3 RWD", batteryKwh: 57.5 },
     { model: "Model 3 Long Range", batteryKwh: 75 },
@@ -24,38 +117,27 @@ const VEHICLE_PRESETS = {
     { model: "Model Y Long Range", batteryKwh: 75 },
   ],
   Renault: [
+    { model: "5 E-Tech 40", batteryKwh: 40 },
+    { model: "5 E-Tech 52", batteryKwh: 52 },
     { model: "Zoe ZE50", batteryKwh: 52 },
     { model: "Megane E-Tech", batteryKwh: 60 },
     { model: "Scenic E-Tech", batteryKwh: 87 },
   ],
-  Peugeot: [
-    { model: "e-208", batteryKwh: 51 },
-    { model: "e-2008", batteryKwh: 54 },
-    { model: "e-308", batteryKwh: 54 },
-  ],
-  Dacia: [{ model: "Spring", batteryKwh: 26.8 }],
-  MG: [
-    { model: "MG4 Standard", batteryKwh: 51 },
-    { model: "MG4 Long Range", batteryKwh: 64 },
-    { model: "ZS EV", batteryKwh: 72.6 },
-  ],
-  Hyundai: [
-    { model: "Kona Electric", batteryKwh: 65.4 },
-    { model: "Ioniq 5", batteryKwh: 77.4 },
-  ],
-  Kia: [
-    { model: "Niro EV", batteryKwh: 64.8 },
-    { model: "EV3", batteryKwh: 81.4 },
-    { model: "EV6", batteryKwh: 77.4 },
+  Skoda: [
+    { model: "Enyaq 60", batteryKwh: 58 },
+    { model: "Enyaq 85", batteryKwh: 77 },
   ],
   Volkswagen: [
     { model: "ID.3 Pro", batteryKwh: 58 },
+    { model: "ID.3 Pro S", batteryKwh: 77 },
     { model: "ID.4 Pro", batteryKwh: 77 },
+    { model: "ID.5 Pro", batteryKwh: 77 },
+    { model: "ID.7 Pro", batteryKwh: 77 },
   ],
-  BYD: [
-    { model: "Dolphin", batteryKwh: 60.4 },
-    { model: "Atto 3", batteryKwh: 60.5 },
-    { model: "Seal", batteryKwh: 82.5 },
+  Volvo: [
+    { model: "EX30 Single Motor", batteryKwh: 49 },
+    { model: "EX30 Extended Range", batteryKwh: 64 },
+    { model: "EX40", batteryKwh: 79 },
   ],
 };
 
@@ -81,7 +163,9 @@ const els = {
   applianceInput: document.querySelector("#applianceInput"),
   vehicleBrandInput: document.querySelector("#vehicleBrandInput"),
   vehicleModelInput: document.querySelector("#vehicleModelInput"),
-  chargeNeedInput: document.querySelector("#chargeNeedInput"),
+  vehicleBatteryInput: document.querySelector("#vehicleBatteryInput"),
+  chargeFromInput: document.querySelector("#chargeFromInput"),
+  chargeToInput: document.querySelector("#chargeToInput"),
   chargerPowerInput: document.querySelector("#chargerPowerInput"),
   useVehicleButton: document.querySelector("#useVehicleButton"),
   vehicleHint: document.querySelector("#vehicleHint"),
@@ -136,8 +220,10 @@ function init() {
   els.durationInput.addEventListener("change", render);
   els.applianceInput.addEventListener("change", render);
   els.vehicleBrandInput.addEventListener("change", handleVehicleBrandChange);
-  els.vehicleModelInput.addEventListener("change", handleVehicleSettingsChange);
-  els.chargeNeedInput.addEventListener("input", handleVehicleSettingsChange);
+  els.vehicleModelInput.addEventListener("change", handleVehicleModelChange);
+  els.vehicleBatteryInput.addEventListener("input", handleVehicleSettingsChange);
+  els.chargeFromInput.addEventListener("input", handleVehicleSettingsChange);
+  els.chargeToInput.addEventListener("input", handleVehicleSettingsChange);
   els.chargerPowerInput.addEventListener("change", handleVehicleSettingsChange);
   els.useVehicleButton.addEventListener("click", applyVehiclePlanner);
   els.costModeInput.addEventListener("change", handleBillSettingsChange);
@@ -817,6 +903,12 @@ function renderVehicleModels() {
 
 function handleVehicleBrandChange() {
   renderVehicleModels();
+  syncVehicleBatteryFromModel();
+  handleVehicleSettingsChange();
+}
+
+function handleVehicleModelChange() {
+  syncVehicleBatteryFromModel();
   handleVehicleSettingsChange();
 }
 
@@ -842,14 +934,33 @@ function updateVehicleHint() {
     estimate.rawDuration > MAX_DURATION
       ? ` Capped at ${MAX_DURATION}h for one-day planning.`
       : "";
-  els.vehicleHint.textContent = `${vehicle.model}: about ${vehicle.batteryKwh.toFixed(0)} kWh usable. ${estimate.kwh.toFixed(0)} kWh at ${estimate.kw.toFixed(1)} kW needs about ${estimate.duration}h.${cappedText}`;
+  els.vehicleHint.textContent = `${vehicle.model}: ${estimate.from}% to ${estimate.to}% adds about ${estimate.kwh.toFixed(1)} kWh from a ${estimate.batteryKwh.toFixed(1)} kWh battery. At ${estimate.kw.toFixed(1)} kW, plan about ${estimate.duration}h.${cappedText}`;
 }
 
 function vehicleChargeEstimate() {
-  const kwh = clamp(Number(els.chargeNeedInput.value) || 20, 1, 90);
-  const kw = clamp(Number(els.chargerPowerInput.value) || 3.7, 1, 22);
+  const parsedBattery = Number(els.vehicleBatteryInput.value);
+  const parsedFrom = Number(els.chargeFromInput.value);
+  const parsedTo = Number(els.chargeToInput.value);
+  const parsedKw = Number(els.chargerPowerInput.value);
+  const batteryKwh = clamp(
+    Number.isFinite(parsedBattery) && parsedBattery > 0
+      ? parsedBattery
+      : selectedVehicle().batteryKwh,
+    10,
+    130
+  );
+  const from = clamp(Number.isFinite(parsedFrom) ? Math.round(parsedFrom) : 50, 0, 99);
+  const to = clamp(Number.isFinite(parsedTo) ? Math.round(parsedTo) : 80, from + 1, 100);
+  els.vehicleBatteryInput.value = String(batteryKwh);
+  els.chargeFromInput.value = String(from);
+  els.chargeToInput.value = String(to);
+  const kwh = Math.max(0.5, batteryKwh * ((to - from) / 100));
+  const kw = clamp(Number.isFinite(parsedKw) && parsedKw > 0 ? parsedKw : 3.7, 1, 22);
   const rawDuration = Math.ceil(kwh / kw);
   return {
+    batteryKwh,
+    from,
+    to,
     kwh,
     kw,
     rawDuration,
@@ -863,7 +974,12 @@ function selectedVehicle() {
 }
 
 function vehicleModelsForBrand(brand) {
-  return VEHICLE_PRESETS[brand] || VEHICLE_PRESETS.Tesla;
+  return VEHICLE_PRESETS[brand] || VEHICLE_PRESETS.Custom;
+}
+
+function syncVehicleBatteryFromModel() {
+  const vehicle = selectedVehicle();
+  els.vehicleBatteryInput.value = String(vehicle.batteryKwh);
 }
 
 function loadVehicleSettings() {
@@ -879,8 +995,21 @@ function loadVehicleSettings() {
       );
       if (modelExists) els.vehicleModelInput.value = settings.model;
     }
-    if (Number.isFinite(settings.chargeNeedKwh)) {
-      els.chargeNeedInput.value = String(settings.chargeNeedKwh);
+    if (Number.isFinite(settings.batteryKwh)) {
+      els.vehicleBatteryInput.value = String(settings.batteryKwh);
+    } else {
+      syncVehicleBatteryFromModel();
+    }
+    if (Number.isFinite(settings.chargeFromPercent)) {
+      els.chargeFromInput.value = String(settings.chargeFromPercent);
+    }
+    if (Number.isFinite(settings.chargeToPercent)) {
+      els.chargeToInput.value = String(settings.chargeToPercent);
+    } else if (Number.isFinite(settings.chargeNeedKwh)) {
+      const batteryKwh = Number(els.vehicleBatteryInput.value) || selectedVehicle().batteryKwh;
+      const extraPercent = Math.round((settings.chargeNeedKwh / batteryKwh) * 100);
+      els.chargeFromInput.value = "50";
+      els.chargeToInput.value = String(clamp(50 + extraPercent, 51, 100));
     }
     if (Number.isFinite(settings.chargerKw)) {
       els.chargerPowerInput.value = String(settings.chargerKw);
@@ -892,13 +1021,16 @@ function loadVehicleSettings() {
 
 function saveVehicleSettings() {
   try {
+    const estimate = vehicleChargeEstimate();
     localStorage.setItem(
       VEHICLE_STORAGE_KEY,
       JSON.stringify({
         brand: els.vehicleBrandInput.value,
         model: els.vehicleModelInput.value,
-        chargeNeedKwh: Number(els.chargeNeedInput.value) || 20,
-        chargerKw: Number(els.chargerPowerInput.value) || 3.7,
+        batteryKwh: estimate.batteryKwh,
+        chargeFromPercent: estimate.from,
+        chargeToPercent: estimate.to,
+        chargerKw: estimate.kw,
       })
     );
   } catch {

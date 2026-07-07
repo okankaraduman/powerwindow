@@ -887,7 +887,18 @@ h1 {
   max-width: 820px;
 }
 
+.mission-hero h2 {
+  max-width: 940px;
+}
+
 .method-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.mission-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
@@ -897,6 +908,10 @@ h1 {
 .method-card {
   min-height: 240px;
   padding: clamp(18px, 3vw, 24px);
+}
+
+.mission-card {
+  min-height: 300px;
 }
 
 .method-card h3 {
@@ -947,6 +962,37 @@ h1 {
   line-height: 1.45;
 }
 
+.source-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.source-grid a {
+  display: grid;
+  gap: 10px;
+  min-height: 120px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  background: #ffffff;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.source-grid a:hover {
+  border-color: var(--accent);
+}
+
+.source-grid strong {
+  font-size: 1.05rem;
+}
+
+.source-grid small {
+  color: var(--muted);
+  line-height: 1.42;
+}
+
 .demo {
   color: #805400;
 }
@@ -975,6 +1021,8 @@ h1 {
   .dashboard-grid,
   .decision-grid,
   .window-list,
+  .mission-grid,
+  .source-grid,
   .method-grid {
     grid-template-columns: 1fr 1fr;
   }
@@ -1024,6 +1072,8 @@ h1 {
   .dashboard-grid,
   .decision-grid,
   .window-list,
+  .mission-grid,
+  .source-grid,
   .method-grid {
     grid-template-columns: 1fr;
   }

@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#101412" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Power Window" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Power Window Mission</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="favicon.svg" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="toolbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">P</span>
+          <div>
+            <h1>Power Window</h1>
+            <p>Why flexible electricity timing matters.</p>
+          </div>
+        </div>
+
+        <nav class="app-nav" aria-label="App pages">
+          <a href="/">Planner</a>
+          <a href="/methodology">How it works</a>
+          <a href="/mission" aria-current="page">Mission</a>
+        </nav>
+      </section>
+
+      <section class="hero-panel mission-hero">
+        <div>
+          <span class="eyebrow">Mission</span>
+          <h2>Make flexible power use feel obvious.</h2>
+          <p>
+            Power Window exists for the moments where the exact hour does not matter:
+            charging a car, running a dishwasher, drying clothes, or heating water. If the
+            task can move, the cost and grid impact can move too.
+          </p>
+        </div>
+      </section>
+
+      <section class="mission-grid">
+        <article class="method-card mission-card">
+          <span class="eyebrow">Household finances</span>
+          <h3>Small timing choices compound</h3>
+          <p>
+            A single dishwasher run is not life-changing. An EV charge is larger. Repeated
+            across weeks and months, shifting flexible loads away from expensive hours can
+            reduce the variable part of a household electricity bill.
+          </p>
+          <p>
+            The app is intentionally conservative: it ranks hours using the selected day's
+            hourly market signal and keeps fixed monthly items separate, because contracted
+            power and meter rental do not change when a flexible load moves from one hour to
+            another.
+          </p>
+        </article>
+
+        <article class="method-card mission-card">
+          <span class="eyebrow">Grid usefulness</span>
+          <h3>Demand can help follow supply</h3>
+          <p>
+            Spain has a growing solar-heavy electricity mix, so many low-price windows happen
+            during bright daytime hours. That does not mean midday is always best. It means a
+            planner should check real hourly data and make flexible demand easier to place when
+            the system is already sending a cheaper signal.
+          </p>
+          <p>
+            The wider principle is demand response: shifting or reducing electricity use to
+            help balance the grid. The International Energy Agency describes demand response
+            as increasingly important as grids include more variable wind and solar generation.
+          </p>
+        </article>
+
+        <article class="method-card mission-card">
+          <span class="eyebrow">Why EVs matter</span>
+          <h3>Cars are movable batteries of demand</h3>
+          <p>
+            EV charging is often the largest flexible load at home. A 20 kWh top-up can be
+            many times larger than a dishwasher cycle, and most cars do not need to start
+            charging the moment they are plugged in.
+          </p>
+          <p>
+            Power Window turns that flexibility into a simple choice: set the car, battery
+            level, target, and charger power, then see which remaining hours are cheapest.
+          </p>
+        </article>
+
+        <article class="method-card mission-card">
+          <span class="eyebrow">What we will not claim</span>
+          <h3>This is a signal, not a guarantee</h3>
+          <p>
+            Power Window does not know your network constraint, retailer contract, charger
+            losses, battery limits, or local distribution grid. It is not a grid-control
+            system and it does not promise carbon savings for every hour.
+          </p>
+          <p>
+            The mission is smaller and more practical: make the flexible part of electricity
+            use visible enough that better timing becomes normal.
+          </p>
+        </article>
+      </section>
+
+      <section class="chart-section mission-sources">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Sources</span>
+            <h2>What this page is based on</h2>
+          </div>
+        </div>
+        <div class="source-grid">
+          <a href="https://www.ree.es/en/datos/apidata">
+            <strong>Red Electrica REData API</strong>
+            <small>Hourly market data used by Power Window.</small>
+          </a>
+          <a href="https://www.iea.org/energy-system/energy-efficiency-and-demand/demand-response">
+            <strong>IEA Demand Response</strong>
+            <small>Demand response shifts electricity use to help balance the grid.</small>
+          </a>
+          <a href="https://www.iea.org/reports/electricity-grids-and-secure-energy-transitions">
+            <strong>IEA Electricity Grids</strong>
+            <small>Electric cars, heat pumps, renewables, and grids are growing together.</small>
+          </a>
+        </div>
+      </section>
+
+      <footer class="source-note">
+        <p>
+          Power Window is independent and is not affiliated with or endorsed by Red Electrica
+          or the International Energy Agency.
+        </p>
+      </footer>
+    </main>
+  </body>
+</html>

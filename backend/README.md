@@ -16,6 +16,11 @@ API:
 GET http://localhost:8787/api/market?date=2026-07-06
 GET http://localhost:8787/api/market?date=2026-07-06&refresh=1
 GET http://localhost:8787/api/market/month?date=2026-07-06
+GET http://localhost:8787/api/connectors
+POST http://localhost:8787/api/connectors/mock/pair
+GET http://localhost:8787/api/devices?userId=pw_example_user
+POST http://localhost:8787/api/charge-plans
+POST http://localhost:8787/api/devices/{deviceId}/commands
 GET http://localhost:8787/healthz
 ```
 
@@ -81,6 +86,29 @@ has the date, the Worker serves D1 and repopulates KV.
 
 If REE is unavailable and cached data exists, the API returns the cache instead of failing
 the request.
+
+## Charger connector MVP
+
+The first charger integration is a mock connector. It does not store real charger or car
+credentials. It creates a D1-backed account, device, charge plan, and command log so the
+product flow can be tested safely before adding Enode, Easee, or OCPP.
+
+Reads and writes use these tables:
+
+- `connector_accounts`
+- `devices`
+- `charge_plans`
+- `charge_commands`
+
+The mock connector supports:
+
+- Pairing a `Mock Wallbox`
+- Sending the selected Power Window as a charge schedule
+- Start and stop commands
+- Persisted command logs in D1
+
+Real connector implementations should keep the same API shape and swap the provider adapter
+behind the Worker. Android and the web app should never hold charger credentials directly.
 
 ## Go reference server
 

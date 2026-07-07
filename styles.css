@@ -160,6 +160,19 @@ h1 {
   box-shadow: var(--soft-shadow);
 }
 
+.connector-panel {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.85fr) minmax(0, 1.9fr);
+  gap: 20px;
+  align-items: end;
+  margin-top: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px 18px;
+  background: var(--panel);
+  box-shadow: var(--soft-shadow);
+}
+
 .settings-panel h2 {
   margin-top: 6px;
   max-width: 430px;
@@ -170,6 +183,13 @@ h1 {
 .vehicle-panel h2 {
   margin-top: 6px;
   max-width: 420px;
+  font-size: 1.06rem;
+  line-height: 1.25;
+}
+
+.connector-panel h2 {
+  margin-top: 6px;
+  max-width: 430px;
   font-size: 1.06rem;
   line-height: 1.25;
 }
@@ -299,6 +319,14 @@ h1 {
   min-width: 0;
 }
 
+.connector-grid {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) repeat(4, minmax(92px, auto));
+  gap: 10px;
+  align-items: end;
+  min-width: 0;
+}
+
 .field {
   display: grid;
   gap: 7px;
@@ -387,6 +415,12 @@ h1 {
 }
 
 #vehicleHint {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+#connectorStatus {
   grid-column: 1 / -1;
   color: var(--muted);
   line-height: 1.4;
@@ -1056,6 +1090,7 @@ h1 {
 
   .planner-panel,
   .vehicle-panel,
+  .connector-panel,
   .settings-panel,
   .hero-panel {
     grid-template-columns: 1fr;
@@ -1063,6 +1098,7 @@ h1 {
 
   .controls,
   .vehicle-grid,
+  .connector-grid,
   .settings-grid,
   .dashboard-grid,
   .decision-grid,
@@ -1115,6 +1151,7 @@ h1 {
 
   .controls,
   .vehicle-grid,
+  .connector-grid,
   .settings-grid,
   .dashboard-grid,
   .decision-grid,

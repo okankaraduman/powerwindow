@@ -46,6 +46,17 @@ The native wrapper is the current Android starting point. A Trusted Web Activity
 better Play Store path once the app has final icons, screenshots, privacy policy, and Digital
 Asset Links.
 
+## Charger connector MVP
+
+The backend includes a mock charger connector for testing the smart-charging flow without
+real charger credentials. The planner can connect a `Mock Wallbox`, send the selected best
+window as a charge plan, and issue start/stop commands. These are persisted in D1 through
+`connector_accounts`, `devices`, `charge_plans`, and `charge_commands`.
+
+This mock path is the contract for later real connectors such as Enode, Easee partner API,
+or OCPP. The Android app remains a WebView wrapper, so it exercises the same backend flow as
+the website.
+
 ## EV charging model
 
 The EV planner estimates energy from the selected battery size and state-of-charge change:

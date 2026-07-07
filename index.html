@@ -124,6 +124,26 @@
         </div>
       </section>
 
+      <section class="connector-panel" aria-label="Smart charger connector">
+        <div>
+          <span class="eyebrow">Smart charging</span>
+          <h2>Send the selected window to a charger connector.</h2>
+        </div>
+        <div class="connector-grid">
+          <label class="field">
+            <span>Device</span>
+            <select id="chargerDeviceInput">
+              <option value="">No charger connected</option>
+            </select>
+          </label>
+          <button id="connectMockButton" class="secondary-button" type="button">Connect mock</button>
+          <button id="sendPlanButton" class="primary-button" type="button">Send plan</button>
+          <button id="startMockButton" class="secondary-button" type="button">Start</button>
+          <button id="stopMockButton" class="secondary-button" type="button">Stop</button>
+          <small id="connectorStatus">No charger connector linked yet.</small>
+        </div>
+      </section>
+
       <section class="settings-panel" aria-label="Cost estimate settings">
         <div>
           <span class="eyebrow">Cost mode</span>

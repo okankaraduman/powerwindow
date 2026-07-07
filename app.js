@@ -11,6 +11,7 @@ const MARKET_CACHE_PREFIX = "power-window:market:";
 const PROFILE_STORAGE_KEY = "power-window:profiles";
 const SETTINGS_STORAGE_KEY = "power-window:bill-settings";
 const VEHICLE_STORAGE_KEY = "power-window:vehicle";
+const CONNECTOR_USER_STORAGE_KEY = "power-window:connector-user";
 const MAX_DURATION = 12;
 const MINUTE = 60 * 1000;
 const DAY = 24 * 60 * MINUTE;
@@ -151,6 +152,7 @@ const state = {
   ranked: [],
   allRanked: [],
   best: null,
+  devices: [],
   tomorrow: { status: "idle", points: [], best: null },
   deferredInstallPrompt: null,
   reminderTimer: null,
@@ -169,6 +171,12 @@ const els = {
   chargerPowerInput: document.querySelector("#chargerPowerInput"),
   useVehicleButton: document.querySelector("#useVehicleButton"),
   vehicleHint: document.querySelector("#vehicleHint"),
+  chargerDeviceInput: document.querySelector("#chargerDeviceInput"),
+  connectMockButton: document.querySelector("#connectMockButton"),
+  sendPlanButton: document.querySelector("#sendPlanButton"),
+  startMockButton: document.querySelector("#startMockButton"),
+  stopMockButton: document.querySelector("#stopMockButton"),
+  connectorStatus: document.querySelector("#connectorStatus"),
   saveProfileButton: document.querySelector("#saveProfileButton"),
   costModeInput: document.querySelector("#costModeInput"),
   vatInput: document.querySelector("#vatInput"),
@@ -226,6 +234,11 @@ function init() {
   els.chargeToInput.addEventListener("input", handleVehicleSettingsChange);
   els.chargerPowerInput.addEventListener("change", handleVehicleSettingsChange);
   els.useVehicleButton.addEventListener("click", applyVehiclePlanner);
+  els.chargerDeviceInput.addEventListener("change", renderConnectorPanel);
+  els.connectMockButton.addEventListener("click", connectMockCharger);
+  els.sendPlanButton.addEventListener("click", sendSmartChargePlan);
+  els.startMockButton.addEventListener("click", () => sendDeviceCommand("start"));
+  els.stopMockButton.addEventListener("click", () => sendDeviceCommand("stop"));
   els.costModeInput.addEventListener("change", handleBillSettingsChange);
   els.vatInput.addEventListener("input", handleBillSettingsChange);
   els.electricityTaxInput.addEventListener("input", handleBillSettingsChange);
@@ -240,6 +253,7 @@ function init() {
     els.installHint.textContent = "Ready to install on Android Chrome.";
   });
 
+  loadConnectorDevices();
   loadDate(state.selectedDate);
 }
 
@@ -493,6 +507,7 @@ function render() {
   els.costHint.textContent = costHintText(kw, duration);
   els.reminderButton.disabled = false;
   renderDataStatus();
+  renderConnectorPanel();
 
   renderChart(state.points, bestHours, lowCut, highCut, firstStart);
   renderWindowList(ranked.slice(0, 6), duration);
@@ -514,6 +529,7 @@ function renderNoRemainingWindow(duration, kw, firstStart, bestHours, lowCut, hi
   els.reminderButton.disabled = true;
   els.reminderStatus.textContent = "No remaining start today";
   renderDataStatus();
+  renderConnectorPanel();
   renderChart(state.points, bestHours, lowCut, highCut, firstStart);
   renderWindowList([], duration);
   renderNowComparison(null, duration);
@@ -1040,6 +1056,191 @@ function saveVehicleSettings() {
   } catch {
     // Vehicle settings are optional.
   }
+}
+
+async function loadConnectorDevices() {
+  try {
+    const url = backendUrl("/devices");
+    url.searchParams.set("userId", connectorUserId());
+    const response = await fetch(url, { headers: { Accept: "application/json" } });
+    if (!response.ok) throw new Error(`Device request failed with ${response.status}`);
+    const data = await response.json();
+    state.devices = Array.isArray(data.devices) ? data.devices : [];
+  } catch {
+    state.devices = [];
+  }
+
+  renderConnectorDevices();
+  renderConnectorPanel();
+}
+
+function renderConnectorDevices() {
+  const current = els.chargerDeviceInput.value;
+  const options = state.devices.length
+    ? state.devices
+        .map(
+          (device) =>
+            `<option value="${escapeHTML(device.id)}">${escapeHTML(device.displayName)} - ${escapeHTML(device.status)}</option>`
+        )
+        .join("")
+    : '<option value="">No charger connected</option>';
+
+  els.chargerDeviceInput.innerHTML = options;
+  if (state.devices.some((device) => device.id === current)) {
+    els.chargerDeviceInput.value = current;
+  }
+}
+
+function renderConnectorPanel() {
+  const device = selectedConnectorDevice();
+  const canCommand = Boolean(device);
+  const canPlan = Boolean(device && state.best);
+
+  els.sendPlanButton.disabled = !canPlan;
+  els.startMockButton.disabled = !canCommand;
+  els.stopMockButton.disabled = !canCommand;
+
+  if (!device) {
+    els.connectorStatus.textContent = "Connect the mock charger to test backend scheduling.";
+    return;
+  }
+
+  const windowText = state.best
+    ? `${formatWindow(state.best.start, Number(els.durationInput.value) || 1)} ready`
+    : "No charge window ready";
+  els.connectorStatus.textContent = `${device.displayName}: ${device.status}. ${windowText}.`;
+}
+
+async function connectMockCharger() {
+  setConnectorBusy(true, "Connecting mock charger...");
+  try {
+    const response = await postConnectorJson("/connectors/mock/pair", {
+      userId: connectorUserId(),
+      displayName: "Mock Wallbox",
+      maxKw: Number(els.chargerPowerInput.value) || 7.4,
+    });
+    const device = response.device;
+    await loadConnectorDevices();
+    if (device?.id) els.chargerDeviceInput.value = device.id;
+    els.connectorStatus.textContent = response.reused
+      ? "Mock Wallbox already connected."
+      : "Mock Wallbox connected.";
+  } catch (error) {
+    els.connectorStatus.textContent = error.message || "Could not connect mock charger.";
+  } finally {
+    setConnectorBusy(false);
+    renderConnectorPanel();
+  }
+}
+
+async function sendSmartChargePlan() {
+  const device = selectedConnectorDevice();
+  if (!device || !state.best) return;
+
+  const duration = Number(els.durationInput.value) || 1;
+  const estimate = vehicleChargeEstimate();
+  const windowLabel = formatWindow(state.best.start, duration);
+  setConnectorBusy(true, "Sending smart charge plan...");
+
+  try {
+    const response = await postConnectorJson("/charge-plans", {
+      userId: connectorUserId(),
+      deviceId: device.id,
+      date: state.selectedDate,
+      startHour: state.best.start,
+      durationHours: duration,
+      targetKwh: estimate.kwh,
+      chargerKw: estimate.kw,
+      windowLabel,
+      estimatedCost: state.best.cost,
+      metadata: {
+        brand: els.vehicleBrandInput.value,
+        model: els.vehicleModelInput.value,
+        score: Math.round(state.best.score),
+      },
+    });
+
+    upsertConnectorDevice(response.device);
+    renderConnectorDevices();
+    els.chargerDeviceInput.value = response.device.id;
+    els.connectorStatus.textContent = `Plan sent to ${response.device.displayName}: ${windowLabel}.`;
+  } catch (error) {
+    els.connectorStatus.textContent = error.message || "Could not send plan.";
+  } finally {
+    setConnectorBusy(false);
+    renderConnectorPanel();
+  }
+}
+
+async function sendDeviceCommand(command) {
+  const device = selectedConnectorDevice();
+  if (!device) return;
+
+  setConnectorBusy(true, `${command === "start" ? "Starting" : "Stopping"} charger...`);
+  try {
+    const response = await postConnectorJson(`/devices/${encodeURIComponent(device.id)}/commands`, {
+      userId: connectorUserId(),
+      command,
+    });
+    upsertConnectorDevice(response.device);
+    renderConnectorDevices();
+    els.chargerDeviceInput.value = response.device.id;
+    els.connectorStatus.textContent = `${response.device.displayName}: ${response.device.status}.`;
+  } catch (error) {
+    els.connectorStatus.textContent = error.message || `Could not ${command} charger.`;
+  } finally {
+    setConnectorBusy(false);
+    renderConnectorPanel();
+  }
+}
+
+function selectedConnectorDevice() {
+  return state.devices.find((device) => device.id === els.chargerDeviceInput.value) || state.devices[0] || null;
+}
+
+function upsertConnectorDevice(device) {
+  if (!device?.id) return;
+  state.devices = [device, ...state.devices.filter((item) => item.id !== device.id)];
+}
+
+async function postConnectorJson(path, body) {
+  const response = await fetch(backendUrl(path), {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.error || `Connector request failed with ${response.status}`);
+  }
+  return data;
+}
+
+function backendUrl(path) {
+  return new URL(`${BACKEND_API_BASE.replace(/\/$/, "")}${path}`, window.location.origin);
+}
+
+function connectorUserId() {
+  try {
+    const existing = localStorage.getItem(CONNECTOR_USER_STORAGE_KEY);
+    if (existing) return existing;
+    const value = `pw_${crypto.randomUUID()}`;
+    localStorage.setItem(CONNECTOR_USER_STORAGE_KEY, value);
+    return value;
+  } catch {
+    return "pw_local_browser";
+  }
+}
+
+function setConnectorBusy(isBusy, text = "") {
+  els.connectMockButton.disabled = isBusy;
+  els.sendPlanButton.disabled = isBusy || !selectedConnectorDevice() || !state.best;
+  els.startMockButton.disabled = isBusy || !selectedConnectorDevice();
+  els.stopMockButton.disabled = isBusy || !selectedConnectorDevice();
+  if (text) els.connectorStatus.textContent = text;
 }
 
 function loadProfiles() {

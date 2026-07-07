@@ -147,9 +147,29 @@ h1 {
   box-shadow: var(--soft-shadow);
 }
 
+.vehicle-panel {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.85fr) minmax(0, 1.9fr);
+  gap: 20px;
+  align-items: end;
+  margin-top: 12px;
+  border: 1px solid rgba(18, 131, 111, 0.28);
+  border-radius: 8px;
+  padding: 16px 18px;
+  background: #f6fbf9;
+  box-shadow: var(--soft-shadow);
+}
+
 .settings-panel h2 {
   margin-top: 6px;
   max-width: 430px;
+  font-size: 1.06rem;
+  line-height: 1.25;
+}
+
+.vehicle-panel h2 {
+  margin-top: 6px;
+  max-width: 420px;
   font-size: 1.06rem;
   line-height: 1.25;
 }
@@ -184,6 +204,14 @@ h1 {
   grid-template-columns: minmax(150px, 1fr) repeat(3, minmax(120px, 0.7fr));
   gap: 10px;
   align-items: end;
+}
+
+.vehicle-grid {
+  display: grid;
+  grid-template-columns: minmax(140px, 0.9fr) minmax(180px, 1.2fr) minmax(92px, 0.55fr) minmax(138px, 0.78fr) minmax(118px, auto);
+  gap: 10px;
+  align-items: end;
+  min-width: 0;
 }
 
 .field {
@@ -250,6 +278,15 @@ h1 {
   opacity: 0.68;
 }
 
+.refresh-button {
+  background: var(--accent);
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.14);
+}
+
+.refresh-button:hover {
+  background: #0f725f;
+}
+
 .button-cluster {
   display: grid;
   grid-template-columns: minmax(78px, 0.8fr) minmax(96px, 1fr);
@@ -262,6 +299,12 @@ h1 {
 .button-cluster .secondary-button {
   width: 100%;
   padding-inline: 12px;
+}
+
+#vehicleHint {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  line-height: 1.4;
 }
 
 .hero-panel {
@@ -835,12 +878,14 @@ h1 {
   }
 
   .planner-panel,
+  .vehicle-panel,
   .settings-panel,
   .hero-panel {
     grid-template-columns: 1fr;
   }
 
   .controls,
+  .vehicle-grid,
   .settings-grid,
   .dashboard-grid,
   .decision-grid,
@@ -889,6 +934,7 @@ h1 {
   }
 
   .controls,
+  .vehicle-grid,
   .settings-grid,
   .dashboard-grid,
   .decision-grid,

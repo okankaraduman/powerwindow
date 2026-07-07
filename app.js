@@ -10,10 +10,54 @@ const MARKET_WIDGET = "mercados/precios-mercados-tiempo-real";
 const MARKET_CACHE_PREFIX = "power-window:market:";
 const PROFILE_STORAGE_KEY = "power-window:profiles";
 const SETTINGS_STORAGE_KEY = "power-window:bill-settings";
+const VEHICLE_STORAGE_KEY = "power-window:vehicle";
+const MAX_DURATION = 12;
 const MINUTE = 60 * 1000;
 const DAY = 24 * 60 * MINUTE;
 const DEMO_NOTICE =
   "Demo prices are shown because the REE API did not return usable hourly data for this date.";
+const VEHICLE_PRESETS = {
+  Tesla: [
+    { model: "Model 3 RWD", batteryKwh: 57.5 },
+    { model: "Model 3 Long Range", batteryKwh: 75 },
+    { model: "Model Y RWD", batteryKwh: 57.5 },
+    { model: "Model Y Long Range", batteryKwh: 75 },
+  ],
+  Renault: [
+    { model: "Zoe ZE50", batteryKwh: 52 },
+    { model: "Megane E-Tech", batteryKwh: 60 },
+    { model: "Scenic E-Tech", batteryKwh: 87 },
+  ],
+  Peugeot: [
+    { model: "e-208", batteryKwh: 51 },
+    { model: "e-2008", batteryKwh: 54 },
+    { model: "e-308", batteryKwh: 54 },
+  ],
+  Dacia: [{ model: "Spring", batteryKwh: 26.8 }],
+  MG: [
+    { model: "MG4 Standard", batteryKwh: 51 },
+    { model: "MG4 Long Range", batteryKwh: 64 },
+    { model: "ZS EV", batteryKwh: 72.6 },
+  ],
+  Hyundai: [
+    { model: "Kona Electric", batteryKwh: 65.4 },
+    { model: "Ioniq 5", batteryKwh: 77.4 },
+  ],
+  Kia: [
+    { model: "Niro EV", batteryKwh: 64.8 },
+    { model: "EV3", batteryKwh: 81.4 },
+    { model: "EV6", batteryKwh: 77.4 },
+  ],
+  Volkswagen: [
+    { model: "ID.3 Pro", batteryKwh: 58 },
+    { model: "ID.4 Pro", batteryKwh: 77 },
+  ],
+  BYD: [
+    { model: "Dolphin", batteryKwh: 60.4 },
+    { model: "Atto 3", batteryKwh: 60.5 },
+    { model: "Seal", batteryKwh: 82.5 },
+  ],
+};
 
 const state = {
   points: [],
@@ -35,6 +79,12 @@ const els = {
   dateInput: document.querySelector("#dateInput"),
   durationInput: document.querySelector("#durationInput"),
   applianceInput: document.querySelector("#applianceInput"),
+  vehicleBrandInput: document.querySelector("#vehicleBrandInput"),
+  vehicleModelInput: document.querySelector("#vehicleModelInput"),
+  chargeNeedInput: document.querySelector("#chargeNeedInput"),
+  chargerPowerInput: document.querySelector("#chargerPowerInput"),
+  useVehicleButton: document.querySelector("#useVehicleButton"),
+  vehicleHint: document.querySelector("#vehicleHint"),
   saveProfileButton: document.querySelector("#saveProfileButton"),
   costModeInput: document.querySelector("#costModeInput"),
   vatInput: document.querySelector("#vatInput"),
@@ -70,6 +120,7 @@ const els = {
 function init() {
   loadProfiles();
   loadBillSettings();
+  initVehiclePlanner();
 
   const today = new Date();
   const tomorrow = addDays(today, 1);
@@ -84,6 +135,11 @@ function init() {
   els.durationInput.addEventListener("input", render);
   els.durationInput.addEventListener("change", render);
   els.applianceInput.addEventListener("change", render);
+  els.vehicleBrandInput.addEventListener("change", handleVehicleBrandChange);
+  els.vehicleModelInput.addEventListener("change", handleVehicleSettingsChange);
+  els.chargeNeedInput.addEventListener("input", handleVehicleSettingsChange);
+  els.chargerPowerInput.addEventListener("change", handleVehicleSettingsChange);
+  els.useVehicleButton.addEventListener("click", applyVehiclePlanner);
   els.costModeInput.addEventListener("change", handleBillSettingsChange);
   els.vatInput.addEventListener("input", handleBillSettingsChange);
   els.electricityTaxInput.addEventListener("input", handleBillSettingsChange);
@@ -308,7 +364,7 @@ function hasValues(series) {
 function render() {
   if (!state.points.length) return;
 
-  const duration = clamp(Math.round(Number(els.durationInput.value) || 1), 1, 8);
+  const duration = clamp(Math.round(Number(els.durationInput.value) || 1), 1, MAX_DURATION);
   const kw = Number(els.applianceInput.value) || 1;
   els.durationInput.value = String(duration);
 
@@ -644,7 +700,7 @@ function makeDemoData(dateValue) {
 
 function setLoading(isLoading) {
   els.refreshButton.disabled = isLoading;
-  els.refreshButton.textContent = isLoading ? "Loading" : "Refresh";
+  els.refreshButton.textContent = isLoading ? "Updating" : "Update";
   if (isLoading) {
     els.recommendationTitle.textContent = "Loading REE data...";
     els.dataStatus.textContent = "Connecting";
@@ -740,6 +796,116 @@ function saveBillSettings() {
   }
 }
 
+function initVehiclePlanner() {
+  renderVehicleBrands();
+  loadVehicleSettings();
+  updateVehicleHint();
+}
+
+function renderVehicleBrands() {
+  els.vehicleBrandInput.innerHTML = Object.keys(VEHICLE_PRESETS)
+    .map((brand) => `<option value="${escapeHTML(brand)}">${escapeHTML(brand)}</option>`)
+    .join("");
+}
+
+function renderVehicleModels() {
+  const models = vehicleModelsForBrand(els.vehicleBrandInput.value);
+  els.vehicleModelInput.innerHTML = models
+    .map((vehicle) => `<option value="${escapeHTML(vehicle.model)}">${escapeHTML(vehicle.model)}</option>`)
+    .join("");
+}
+
+function handleVehicleBrandChange() {
+  renderVehicleModels();
+  handleVehicleSettingsChange();
+}
+
+function handleVehicleSettingsChange() {
+  saveVehicleSettings();
+  updateVehicleHint();
+}
+
+function applyVehiclePlanner() {
+  const estimate = vehicleChargeEstimate();
+  els.profileInput.value = "";
+  setApplianceByKw(estimate.kw);
+  els.durationInput.value = String(estimate.duration);
+  saveVehicleSettings();
+  updateVehicleHint();
+  render();
+}
+
+function updateVehicleHint() {
+  const vehicle = selectedVehicle();
+  const estimate = vehicleChargeEstimate();
+  const cappedText =
+    estimate.rawDuration > MAX_DURATION
+      ? ` Capped at ${MAX_DURATION}h for one-day planning.`
+      : "";
+  els.vehicleHint.textContent = `${vehicle.model}: about ${vehicle.batteryKwh.toFixed(0)} kWh usable. ${estimate.kwh.toFixed(0)} kWh at ${estimate.kw.toFixed(1)} kW needs about ${estimate.duration}h.${cappedText}`;
+}
+
+function vehicleChargeEstimate() {
+  const kwh = clamp(Number(els.chargeNeedInput.value) || 20, 1, 90);
+  const kw = clamp(Number(els.chargerPowerInput.value) || 3.7, 1, 22);
+  const rawDuration = Math.ceil(kwh / kw);
+  return {
+    kwh,
+    kw,
+    rawDuration,
+    duration: clamp(rawDuration, 1, MAX_DURATION),
+  };
+}
+
+function selectedVehicle() {
+  const models = vehicleModelsForBrand(els.vehicleBrandInput.value);
+  return models.find((vehicle) => vehicle.model === els.vehicleModelInput.value) || models[0];
+}
+
+function vehicleModelsForBrand(brand) {
+  return VEHICLE_PRESETS[brand] || VEHICLE_PRESETS.Tesla;
+}
+
+function loadVehicleSettings() {
+  try {
+    const settings = JSON.parse(localStorage.getItem(VEHICLE_STORAGE_KEY) || "{}");
+    if (settings.brand && VEHICLE_PRESETS[settings.brand]) {
+      els.vehicleBrandInput.value = settings.brand;
+    }
+    renderVehicleModels();
+    if (settings.model) {
+      const modelExists = vehicleModelsForBrand(els.vehicleBrandInput.value).some(
+        (vehicle) => vehicle.model === settings.model
+      );
+      if (modelExists) els.vehicleModelInput.value = settings.model;
+    }
+    if (Number.isFinite(settings.chargeNeedKwh)) {
+      els.chargeNeedInput.value = String(settings.chargeNeedKwh);
+    }
+    if (Number.isFinite(settings.chargerKw)) {
+      els.chargerPowerInput.value = String(settings.chargerKw);
+    }
+  } catch {
+    localStorage.removeItem(VEHICLE_STORAGE_KEY);
+  }
+}
+
+function saveVehicleSettings() {
+  try {
+    localStorage.setItem(
+      VEHICLE_STORAGE_KEY,
+      JSON.stringify({
+        brand: els.vehicleBrandInput.value,
+        model: els.vehicleModelInput.value,
+        chargeNeedKwh: Number(els.chargeNeedInput.value) || 20,
+        chargerKw: Number(els.chargerPowerInput.value) || 3.7,
+      })
+    );
+  } catch {
+    // Vehicle settings are optional.
+  }
+}
+
 function loadProfiles() {
   try {
     state.profiles = JSON.parse(localStorage.getItem(PROFILE_STORAGE_KEY) || "[]").filter(
@@ -771,7 +937,7 @@ function saveCurrentProfile() {
   const profile = {
     name: name.trim().slice(0, 40),
     kw: Number(els.applianceInput.value) || 1,
-    duration: clamp(Math.round(Number(els.durationInput.value) || 1), 1, 8),
+    duration: clamp(Math.round(Number(els.durationInput.value) || 1), 1, MAX_DURATION),
   };
 
   state.profiles = [...state.profiles.filter((item) => item.name !== profile.name), profile].slice(-8);

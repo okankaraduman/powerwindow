@@ -34,12 +34,17 @@ Then refresh the page.
 
 ## Android install
 
-Power Window is now treated as a web-first Android PWA. On Android Chrome, open the
-production site and use the in-app install prompt or Chrome's install menu. The app has a
-manifest and service worker, so it can be launched like a normal Android app after install.
+Power Window is web-first, with two Android paths:
 
-A native Android app can come later if the PWA proves useful enough to justify Play Store
-work, notifications, and native background scheduling.
+- PWA install: on Android Chrome, open the production site and use the in-app install prompt
+  or Chrome's install menu. The app has a manifest and service worker, so it can be launched
+  like a normal Android app after install.
+- Native wrapper: open `/Users/okankaraduman/Documents/Electricity/android` in Android
+  Studio. This is a small WebView app that loads `https://powerwindow.energy/`.
+
+The native wrapper is the current Android starting point. A Trusted Web Activity is the
+better Play Store path once the app has final icons, screenshots, privacy policy, and Digital
+Asset Links.
 
 ## Data
 
@@ -61,4 +66,5 @@ complete household bill calculation.
 ## Parked iOS work
 
 The old SwiftUI sketch remains in `ios/BestTimePower`, but it is not the active product
-track. Current focus is the web app and Android PWA install flow.
+track. Current focus is the web app, Android PWA install flow, and the Android wrapper in
+`android/`.

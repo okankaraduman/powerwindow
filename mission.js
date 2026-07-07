@@ -12,6 +12,7 @@ const BILL_DEFAULTS = {
 };
 const FALLBACK_EXAMPLE = {
   date: "2026-07-07",
+  monthDays: 7,
   dishwasher: {
     savings: 0.3299519607260799,
     best: "2 PM-4 PM",
@@ -22,7 +23,7 @@ const FALLBACK_EXAMPLE = {
     best: "2 PM-5 PM",
     worst: "7 PM-10 PM",
   },
-  monthly: 23.27447431661968,
+  monthly: 25.988048511449193,
 };
 
 const missionEls = {
@@ -40,16 +41,19 @@ loadMissionNumbers();
 
 async function loadMissionNumbers() {
   try {
-    const dateValue = formatDateInput(new Date());
+    const selectedDate = new Date();
+    const dateValue = formatDateInput(selectedDate);
     const payload = await fetchMissionMarketData(dateValue);
     const points = parseMissionMarketData(payload);
     if (!points.length) throw new Error("No hourly market data");
 
     const dishwasher = savingsExample(points, 2, 0.8);
     const ev = savingsExample(points, 3, 7.4);
-    const monthly = dishwasher.savings * 20 + ev.savings * 4;
+    const month = await monthToDateExample(selectedDate);
 
     renderMissionNumbers({
+      date: dateValue,
+      monthDays: month.days,
       dishwasher: {
         savings: dishwasher.savings,
         best: formatWindow(dishwasher.best.start, 2),
@@ -60,10 +64,10 @@ async function loadMissionNumbers() {
         best: formatWindow(ev.best.start, 3),
         worst: formatWindow(ev.worst.start, 3),
       },
-      monthly,
+      monthly: month.monthly,
     });
     missionEls.missionDataNote.textContent =
-      `Calculated from ${dateValue} hourly prices using bill-impact defaults: 21% VAT, 5.1127% electricity tax, and 0.075 EUR/kWh adders.`;
+      `Today uses ${dateValue} hourly prices. The month card averages ${month.days} available day${month.days === 1 ? "" : "s"} from this month, then scales to 20 dishwasher runs and 4 EV top-ups.`;
   } catch {
     renderFallbackMissionNumbers();
     missionEls.missionDataNote.textContent =
@@ -82,7 +86,46 @@ function renderMissionNumbers(example) {
   missionEls.evSavings.textContent = formatMoney(example.ev.savings);
   missionEls.evSavingsNote.textContent = `EV: ${example.ev.best} instead of ${example.ev.worst}`;
   missionEls.monthlySavings.textContent = formatMoney(example.monthly);
-  missionEls.monthlySavingsNote.textContent = "20 dishwasher runs + 4 EV top-ups";
+  missionEls.monthlySavingsNote.textContent =
+    `This month: ${example.monthDays || 1} day${example.monthDays === 1 ? "" : "s"} averaged`;
+}
+
+async function monthToDateExample(selectedDate) {
+  const dates = monthToDateValues(selectedDate);
+  const results = await Promise.allSettled(
+    dates.map(async (dateValue) => {
+      const payload = await fetchMissionMarketData(dateValue);
+      const points = parseMissionMarketData(payload);
+      if (!points.length) throw new Error(`No hourly data for ${dateValue}`);
+      return {
+        dishwasher: savingsExample(points, 2, 0.8).savings,
+        ev: savingsExample(points, 3, 7.4).savings,
+      };
+    })
+  );
+  const days = results
+    .filter((result) => result.status === "fulfilled")
+    .map((result) => result.value);
+
+  if (!days.length) {
+    return { days: 1, monthly: FALLBACK_EXAMPLE.monthly };
+  }
+
+  const averageDishwasher = average(days.map((day) => day.dishwasher));
+  const averageEv = average(days.map((day) => day.ev));
+  return {
+    days: days.length,
+    monthly: averageDishwasher * 20 + averageEv * 4,
+  };
+}
+
+function monthToDateValues(selectedDate) {
+  const first = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+  const dates = [];
+  for (const date = new Date(first); date <= selectedDate; date.setDate(date.getDate() + 1)) {
+    dates.push(formatDateInput(date));
+  }
+  return dates;
 }
 
 async function fetchMissionMarketData(dateValue) {

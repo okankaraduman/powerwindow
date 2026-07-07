@@ -12,7 +12,7 @@ const BILL_DEFAULTS = {
 };
 const FALLBACK_EXAMPLE = {
   date: "2026-07-07",
-  monthDays: 7,
+  days: 7,
   dishwasher: {
     savings: 0.3299519607260799,
     best: "2 PM-4 PM",
@@ -23,7 +23,15 @@ const FALLBACK_EXAMPLE = {
     best: "2 PM-5 PM",
     worst: "7 PM-10 PM",
   },
-  monthly: 25.988048511449193,
+  laundry: {
+    savings: 0.28870796563531994,
+    best: "2 PM-4 PM",
+    worst: "8 PM-10 PM",
+  },
+  weekly: {
+    low: 15.093291205061076,
+    high: 19.776800166520974,
+  },
 };
 
 const missionEls = {
@@ -31,8 +39,10 @@ const missionEls = {
   dishwasherSavingsNote: document.querySelector("#dishwasherSavingsNote"),
   evSavings: document.querySelector("#evSavings"),
   evSavingsNote: document.querySelector("#evSavingsNote"),
-  monthlySavings: document.querySelector("#monthlySavings"),
-  monthlySavingsNote: document.querySelector("#monthlySavingsNote"),
+  laundrySavings: document.querySelector("#laundrySavings"),
+  laundrySavingsNote: document.querySelector("#laundrySavingsNote"),
+  weeklySavings: document.querySelector("#weeklySavings"),
+  weeklySavingsNote: document.querySelector("#weeklySavingsNote"),
   missionDataNote: document.querySelector("#missionDataNote"),
 };
 
@@ -49,11 +59,12 @@ async function loadMissionNumbers() {
 
     const dishwasher = savingsExample(points, 2, 0.8);
     const ev = savingsExample(points, 3, 7.4);
-    const month = await monthToDateExample(selectedDate);
+    const laundry = savingsExample(points, 2, 0.7);
+    const week = await weeklyBasketExample(selectedDate);
 
     renderMissionNumbers({
       date: dateValue,
-      monthDays: month.days,
+      days: week.days,
       dishwasher: {
         savings: dishwasher.savings,
         best: formatWindow(dishwasher.best.start, 2),
@@ -64,14 +75,19 @@ async function loadMissionNumbers() {
         best: formatWindow(ev.best.start, 3),
         worst: formatWindow(ev.worst.start, 3),
       },
-      monthly: month.monthly,
+      laundry: {
+        savings: laundry.savings,
+        best: formatWindow(laundry.best.start, 2),
+        worst: formatWindow(laundry.worst.start, 2),
+      },
+      weekly: week.weekly,
     });
     missionEls.missionDataNote.textContent =
-      `Today uses ${dateValue} hourly prices. The month card averages ${month.days} available day${month.days === 1 ? "" : "s"} from this month, then scales to 20 dishwasher runs and 4 EV top-ups.`;
+      `Today uses ${dateValue} hourly prices. The weekly basket averages ${week.days} available day${week.days === 1 ? "" : "s"} from this month, then applies 2 dishwasher runs, 1 laundry load, and 3-4 EV wallbox top-ups.`;
   } catch {
     renderFallbackMissionNumbers();
     missionEls.missionDataNote.textContent =
-      "Showing the latest bundled example from 7 July 2026 because live hourly data is not available in this browser session.";
+      "Showing the latest bundled weekly example from 7 July 2026 because live hourly data is not available in this browser session.";
   }
 }
 
@@ -85,23 +101,30 @@ function renderMissionNumbers(example) {
     `Dishwasher: ${example.dishwasher.best} instead of ${example.dishwasher.worst}`;
   missionEls.evSavings.textContent = formatMoney(example.ev.savings);
   missionEls.evSavingsNote.textContent = `EV: ${example.ev.best} instead of ${example.ev.worst}`;
-  missionEls.monthlySavings.textContent = formatMoney(example.monthly);
-  missionEls.monthlySavingsNote.textContent =
-    `This month: ${example.monthDays || 1} day${example.monthDays === 1 ? "" : "s"} averaged`;
+  missionEls.laundrySavings.textContent = formatMoney(example.laundry.savings);
+  missionEls.laundrySavingsNote.textContent =
+    `Laundry: ${example.laundry.best} instead of ${example.laundry.worst}`;
+  missionEls.weeklySavings.textContent = formatMoneyRange(example.weekly.low, example.weekly.high);
+  missionEls.weeklySavingsNote.textContent =
+    `${example.days || 1}-day avg: 2 dishwasher, 1 laundry, 3-4 EV top-ups`;
 }
 
-async function monthToDateExample(selectedDate) {
+async function weeklyBasketExample(selectedDate) {
   const days = await fetchMissionMonthData(formatDateInput(selectedDate));
 
   if (!days.length) {
-    return { days: 1, monthly: FALLBACK_EXAMPLE.monthly };
+    return { days: 1, weekly: FALLBACK_EXAMPLE.weekly };
   }
 
   const averageDishwasher = average(days.map((day) => day.dishwasher));
   const averageEv = average(days.map((day) => day.ev));
+  const averageLaundry = average(days.map((day) => day.laundry));
   return {
     days: days.length,
-    monthly: averageDishwasher * 20 + averageEv * 4,
+    weekly: {
+      low: averageDishwasher * 2 + averageLaundry + averageEv * 3,
+      high: averageDishwasher * 2 + averageLaundry + averageEv * 4,
+    },
   };
 }
 
@@ -121,6 +144,7 @@ async function fetchMissionMonthData(dateValue) {
             return {
               dishwasher: savingsExample(points, 2, 0.8).savings,
               ev: savingsExample(points, 3, 7.4).savings,
+              laundry: savingsExample(points, 2, 0.7).savings,
             };
           })
           .filter(Boolean);
@@ -142,6 +166,7 @@ async function fetchMissionMonthDataByDay(dateValue) {
       return {
         dishwasher: savingsExample(points, 2, 0.8).savings,
         ev: savingsExample(points, 3, 7.4).savings,
+        laundry: savingsExample(points, 2, 0.7).savings,
       };
     })
   );
@@ -272,6 +297,11 @@ function formatMoney(value) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(value);
+}
+
+function formatMoneyRange(low, high) {
+  if (Math.abs(low - high) < 0.005) return formatMoney(low);
+  return `${formatMoney(low)}-${formatMoney(high)}`;
 }
 
 function formatDateInput(date) {

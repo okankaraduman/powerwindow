@@ -1101,7 +1101,7 @@ function renderConnectorPanel() {
   els.stopMockButton.disabled = !canCommand;
 
   if (!device) {
-    els.connectorStatus.textContent = "Connect the mock charger to test backend scheduling.";
+    els.connectorStatus.textContent = "Demo only. Connect the demo wallbox to test scheduling.";
     return;
   }
 
@@ -1112,21 +1112,21 @@ function renderConnectorPanel() {
 }
 
 async function connectMockCharger() {
-  setConnectorBusy(true, "Connecting mock charger...");
+  setConnectorBusy(true, "Connecting demo wallbox...");
   try {
     const response = await postConnectorJson("/connectors/mock/pair", {
       userId: connectorUserId(),
-      displayName: "Mock Wallbox",
+      displayName: "Demo Wallbox",
       maxKw: Number(els.chargerPowerInput.value) || 7.4,
     });
     const device = response.device;
     await loadConnectorDevices();
     if (device?.id) els.chargerDeviceInput.value = device.id;
     els.connectorStatus.textContent = response.reused
-      ? "Mock Wallbox already connected."
-      : "Mock Wallbox connected.";
+      ? "Demo Wallbox already connected."
+      : "Demo Wallbox connected. No real charger is controlled.";
   } catch (error) {
-    els.connectorStatus.textContent = error.message || "Could not connect mock charger.";
+    els.connectorStatus.textContent = error.message || "Could not connect demo wallbox.";
   } finally {
     setConnectorBusy(false);
     renderConnectorPanel();

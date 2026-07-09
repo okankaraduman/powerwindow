@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">
+      <rect width="1024" height="500" fill="#f7f8fa"/>
+      <rect x="56" y="56" width="912" height="388" rx="26" fill="#121817"/>
+      <rect x="96" y="96" width="74" height="74" rx="18" fill="#0b100f"/>
+      <path d="M138 111 113 152h19l-5 32 32-52h-20z" fill="#f2c84b"/>
+      <text x="200" y="136" fill="#ffffff" font-size="54" font-family="Inter, Arial, sans-serif" font-weight="800">Power Window</text>
+      <text x="200" y="188" fill="#b9c6c0" font-size="28" font-family="Inter, Arial, sans-serif">Find the cheapest hours for flexible electricity use in Spain.</text>
+      <text x="96" y="330" fill="#ffffff" font-size="94" font-family="Inter, Arial, sans-serif" font-weight="900">2 PM-4 PM</text>
+      <rect x="660" y="290" width="196" height="52" rx="26" fill="#123e36" stroke="#12836f" stroke-width="2"/>
+      <text x="690" y="325" fill="#8af0d3" font-size="24" font-family="Inter, Arial, sans-serif" font-weight="800">Live REE data</text>
+      <text x="664" y="375" fill="#b9c6c0" font-size="26" font-family="Inter, Arial, sans-serif">Demo charger connector ready</text>
+    </svg>
+  

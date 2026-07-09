@@ -63,7 +63,7 @@ async function handleConnectors(request) {
       connectors: [
         {
           id: "mock",
-          name: "Mock Wallbox",
+          name: "Demo Wallbox",
           status: "available",
           capabilities: ["schedule", "start", "stop"],
           credentialMode: "none"
@@ -114,7 +114,7 @@ async function handleMockPair(request, env) {
     userId,
     provider: "mock",
     externalDeviceId: `mock-wallbox:${userId}`,
-    displayName: cleanText(body.displayName, 60) || "Mock Wallbox",
+    displayName: cleanText(body.displayName, 60) || "Demo Wallbox",
     kind: "charger",
     status: "available",
     maxKw: clampNumber(body.maxKw, 1, 22, 7.4),
@@ -244,7 +244,7 @@ async function handleChargePlans(request, env) {
     },
     response: {
       connector: device.provider,
-      message: "Mock schedule accepted",
+      message: "Demo schedule accepted",
       windowLabel: plan.windowLabel
     }
   };
@@ -331,7 +331,7 @@ async function handleDeviceCommand(request, env, deviceId) {
     request: safeObject(body),
     response: {
       connector: device.provider,
-      message: `Mock ${commandName} accepted`
+      message: `Demo ${commandName} accepted`
     }
   };
 

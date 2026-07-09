@@ -89,7 +89,7 @@ the request.
 
 ## Charger connector MVP
 
-The first charger integration is a mock connector. It does not store real charger or car
+The first charger integration is a demo connector. It does not store real charger or car
 credentials. It creates a D1-backed account, device, charge plan, and command log so the
 product flow can be tested safely before adding Enode, Easee, or OCPP.
 
@@ -102,7 +102,7 @@ Reads and writes use these tables:
 
 The mock connector supports:
 
-- Pairing a `Mock Wallbox`
+- Pairing a `Demo Wallbox`
 - Sending the selected Power Window as a charge schedule
 - Start and stop commands
 - Persisted command logs in D1

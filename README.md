@@ -48,14 +48,27 @@ Asset Links.
 
 ## Charger connector MVP
 
-The backend includes a mock charger connector for testing the smart-charging flow without
-real charger credentials. The planner can connect a `Mock Wallbox`, send the selected best
+The backend includes a demo charger connector for testing the smart-charging flow without
+real charger credentials. The planner can connect a `Demo Wallbox`, send the selected best
 window as a charge plan, and issue start/stop commands. These are persisted in D1 through
 `connector_accounts`, `devices`, `charge_plans`, and `charge_commands`.
 
-This mock path is the contract for later real connectors such as Enode, Easee partner API,
+This demo path is the contract for later real connectors such as Enode, Easee partner API,
 or OCPP. The Android app remains a WebView wrapper, so it exercises the same backend flow as
 the website.
+
+## Store release prep
+
+Release-prep assets live under `store/`:
+
+- Privacy policy page: `/privacy`
+- Play listing draft: `store/play-store-listing.md`
+- Data Safety draft: `store/data-safety.md`
+- Store icon, feature graphic, and screenshots: `store/assets/`
+- Android release checklist: `store/release-checklist.md`
+
+The Android project now includes a Gradle wrapper, adaptive launcher icon, and release
+signing configuration. A real release still needs a local keystore and a signed AAB build.
 
 ## EV charging model
 

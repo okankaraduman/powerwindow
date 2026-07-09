@@ -23,15 +23,15 @@ https://powerwindow.energy/
 ```
 
 After Cloudflare Pages deploys the latest `main`, the Android app will show the same planner
-and mock smart-charging connector as the website.
+and demo smart-charging connector as the website.
 
 ## Build From Terminal
 
-If Android Studio or Android Gradle tooling is installed:
+If Java 11 or newer and the Android SDK are installed:
 
 ```sh
 cd /Users/okankaraduman/Documents/Electricity/android
-gradle assembleDebug
+./gradlew assembleDebug
 ```
 
 The debug APK will be created under:
@@ -40,8 +40,39 @@ The debug APK will be created under:
 android/app/build/outputs/apk/debug/
 ```
 
-This repo does not currently include a Gradle wrapper, so `./gradlew` will not work until one
-is added. Android Studio is the easiest test path.
+Android Studio is still the easiest test path because it brings a compatible JDK, Android SDK,
+emulator, and device tooling. A local Java 8 runtime is not enough for the current Android
+Gradle plugin.
+
+## Signed Release Bundle
+
+Create a release keystore outside the repo, then copy:
+
+```text
+android/keystore.properties.example
+```
+
+to:
+
+```text
+android/keystore.properties
+```
+
+Fill in the keystore path and passwords. `android/keystore.properties` must stay local and
+should not be committed.
+
+Then build the Play Store bundle:
+
+```sh
+cd /Users/okankaraduman/Documents/Electricity/android
+./gradlew bundleRelease
+```
+
+The release AAB will be created under:
+
+```text
+android/app/build/outputs/bundle/release/
+```
 
 ## Quickest Android Test
 
@@ -49,7 +80,7 @@ is added. Android Studio is the easiest test path.
 2. Visit `https://powerwindow.energy/`.
 3. Use Chrome's install option to install the PWA.
 4. Open Power Window from the launcher.
-5. In the planner, use `Connect mock`, then `Send plan`, then `Start` / `Stop`.
+5. In the planner, use `Connect demo`, then `Send plan`, then `Start` / `Stop`.
 
 That tests the production backend and the same UI the native wrapper loads.
 

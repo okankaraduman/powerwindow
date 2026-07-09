@@ -2,6 +2,25 @@ plugins {
     id "com.android.application"
 }
 
+def localKeystoreProperties = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+if (localKeystoreProperties.exists()) {
+    localKeystoreProperties.withInputStream { stream ->
+        keystoreProperties.load(stream)
+    }
+}
+
+def releaseStoreFile =
+        System.getenv("POWERWINDOW_KEYSTORE_FILE") ?: keystoreProperties["storeFile"]
+def releaseStorePassword =
+        System.getenv("POWERWINDOW_KEYSTORE_PASSWORD") ?: keystoreProperties["storePassword"]
+def releaseKeyAlias =
+        System.getenv("POWERWINDOW_KEY_ALIAS") ?: keystoreProperties["keyAlias"]
+def releaseKeyPassword =
+        System.getenv("POWERWINDOW_KEY_PASSWORD") ?: keystoreProperties["keyPassword"]
+def hasReleaseSigning =
+        releaseStoreFile && releaseStorePassword && releaseKeyAlias && releaseKeyPassword
+
 android {
     namespace "energy.powerwindow.app"
     compileSdk 35
@@ -12,5 +31,26 @@ android {
         targetSdk 35
         versionCode 1
         versionName "1.0"
+    }
+
+    signingConfigs {
+        release {
+            if (hasReleaseSigning) {
+                storeFile file(releaseStoreFile)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+            if (hasReleaseSigning) {
+                signingConfig signingConfigs.release
+            }
+        }
     }
 }

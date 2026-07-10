@@ -36,6 +36,7 @@ struct Appliance: Identifiable, Hashable {
         Appliance(name: "Dishwasher", kilowatts: 0.8),
         Appliance(name: "Washing machine", kilowatts: 1.2),
         Appliance(name: "Dryer", kilowatts: 2.2),
+        Appliance(name: "Air conditioner", kilowatts: 1.2),
         Appliance(name: "EV slow charge", kilowatts: 3.7),
         Appliance(name: "Heat pump", kilowatts: 1.5)
     ]

@@ -103,7 +103,7 @@ def make_phone(path, title, main, subline, metrics):
 
     rounded(draw, (88, 1546, 992, 1734), 22, COLORS["accent_soft"], "#b9ddd4", 2)
     text(draw, (124, 1588), "Plan flexible loads", 30, COLORS["accent"], True)
-    text(draw, (124, 1642), "Dishwasher, laundry, EV charging, and demo smart-charging flow.", 28, COLORS["muted"])
+    text(draw, (124, 1642), "AC, dishwasher, laundry, EV charging, and demo connector flow.", 28, COLORS["muted"])
     img.save(SCREENSHOT_DIR / path)
 
 

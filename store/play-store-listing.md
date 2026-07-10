@@ -9,7 +9,7 @@ Find lower-price hours for flexible electricity use in Spain.
 ## Full Description
 Power Window helps households in Spain plan flexible electricity use around better hourly price windows.
 
-Choose a load such as a dishwasher, washing machine, dryer, heat pump, or EV charging session. The app reads hourly market data, ranks the remaining start windows, estimates bill impact with editable tax and per-kWh assumptions, and shows a simple timing grade.
+Choose a load such as a dishwasher, washing machine, dryer, air conditioner, heat pump, or EV charging session. The app reads hourly market data, ranks the remaining start windows, estimates bill impact with editable tax and per-kWh assumptions, and shows a simple timing grade.
 
 For EV charging, select a vehicle brand/model, current battery percentage, target percentage, and charger power. Power Window estimates the required energy and suggests the best available charging window.
 

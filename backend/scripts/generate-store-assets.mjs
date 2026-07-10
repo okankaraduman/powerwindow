@@ -107,7 +107,7 @@ function phoneScreenshotSvg(title, main, subline, metrics) {
       ${metricCards}
       <rect x="88" y="1546" width="904" height="188" rx="22" fill="#f6fbf9" stroke="#b9ddd4" stroke-width="2"/>
       <text x="124" y="1606" fill="${palette.accent}" font-size="30" font-family="Inter, Arial, sans-serif" font-weight="900">Plan flexible loads</text>
-      <text x="124" y="1660" fill="${palette.muted}" font-size="28" font-family="Inter, Arial, sans-serif">Dishwasher, laundry, EV charging, and demo smart-charging flow.</text>
+      <text x="124" y="1660" fill="${palette.muted}" font-size="28" font-family="Inter, Arial, sans-serif">AC, dishwasher, laundry, EV charging, and demo connector flow.</text>
     </svg>
   `;
 }

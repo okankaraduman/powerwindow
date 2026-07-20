@@ -142,7 +142,7 @@ function renderStatistics({ date, market, generation, cacheStatus, cachedAt }) {
     `${formatEnergy(generation.windSolar)} procedieron de eólica y solar.`;
   statsEls.lowestPvpcHour.textContent = formatHour(market.lowest.hour);
   statsEls.lowestPvpcHint.textContent =
-    `${formatEuroPerKwh(market.lowest.price / 1000)} de componente de precio, ${formatPriceMwh(market.lowest.price)}.`;
+    `${formatEuroPerKwh(market.lowest.price / 1000)} de componente de precio.`;
   statsEls.timingSpread.textContent = formatMoney(timingSpread);
   statsEls.timingSpreadHint.textContent =
     `Un consumo flexible de 10 kWh cambia alrededor de un ${formatPercent(spreadPercent / 100)} entre la hora más barata y la más cara.`;
@@ -153,7 +153,7 @@ function renderStatistics({ date, market, generation, cacheStatus, cachedAt }) {
   renderGenerationRows(generation);
 
   statsEls.priceShapeNote.textContent =
-    `Componente PVPC medio: ${formatEuroPerKwh(market.average / 1000)}. Hora más cara: ${formatHour(market.highest.hour)}.`;
+    `Componente PVPC medio: ${formatEuroPerKwh(market.average / 1000)}. Hora más cara: ${formatHour(market.highest.hour)}. Precios en €/kWh.`;
   renderPriceChart(market.points, market.lowest.hour, market.highest.hour);
 }
 
@@ -223,7 +223,7 @@ function renderPriceChart(points, lowestHour, highestHour) {
 
     const fill = document.createElement("span");
     fill.style.height = `${18 + ((point.price - min) / range) * 78}%`;
-    fill.title = `${formatHour(point.hour)}: ${formatPriceMwh(point.price)}`;
+    fill.title = `${formatHour(point.hour)}: ${formatPriceKwh(point.price)}`;
 
     const label = document.createElement("small");
     label.textContent = formatShortHour(point.hour);
@@ -465,11 +465,14 @@ function formatMoney(value) {
 }
 
 function formatEuroPerKwh(value) {
-  return `${formatMoney(value)}/kWh`;
+  return `${new Intl.NumberFormat("es-ES", {
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3
+  }).format(value || 0)} €/kWh`;
 }
 
-function formatPriceMwh(value) {
-  return `${new Intl.NumberFormat("es-ES", { maximumFractionDigits: 2 }).format(value || 0)} €/MWh`;
+function formatPriceKwh(value) {
+  return formatEuroPerKwh((value || 0) / 1000);
 }
 
 function formatEnergy(value) {

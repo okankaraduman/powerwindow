@@ -1388,8 +1388,11 @@ function formatHourShort(hour) {
 }
 
 function formatPrice(value, compact = false) {
-  const suffix = compact ? "" : " €/MWh";
-  return `${Math.round(value)}${suffix}`;
+  const price = new Intl.NumberFormat("es-ES", {
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3,
+  }).format((value || 0) / 1000);
+  return compact ? price : `${price} €/kWh`;
 }
 
 function formatMoney(value) {
@@ -1402,7 +1405,10 @@ function formatMoney(value) {
 }
 
 function formatEurKwh(value) {
-  return `${value.toFixed(3)} €/kWh`;
+  return `${new Intl.NumberFormat("es-ES", {
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3,
+  }).format(value || 0)} €/kWh`;
 }
 
 function formatDateTime(value) {

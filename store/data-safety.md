@@ -1,54 +1,51 @@
-# Google Play Data Safety Draft
+# Borrador de Seguridad de Datos de Google Play
 
-This is a draft for Play Console. Review it before submission.
+Este es un borrador para Play Console. Revísalo antes de enviarlo.
 
-## Data Collected
+## Datos recogidos
 
-### App Activity
-Collected: Yes
+### Actividad en la app
+Se recoge: Sí
 
-Examples:
-- Planner settings such as selected load, duration, and cost assumptions are stored locally.
-- Demo charger plans and command logs are stored in the backend when the demo connector is used.
-- If the user allows analytics, Google Analytics measures page views and basic app interaction
-  patterns.
+Ejemplos:
+- Los ajustes del planificador, como consumo seleccionado, duración y supuestos de coste, se guardan localmente.
+- Los planes del cargador demo y los registros de comandos se guardan en el backend cuando se usa el conector demo.
+- Si el usuario permite la analítica, Google Analytics mide vistas de página y patrones básicos de interacción con la app.
 
-Purpose:
-- App functionality
-- Analytics and product improvement
-- Support for demo connector behavior
+Finalidad:
+- Funcionalidad de la app.
+- Analítica y mejora del producto.
+- Soporte del comportamiento del conector demo.
 
-Shared:
-- No sale of data.
-- Cloudflare acts as hosting/infrastructure service provider.
-- Google acts as analytics service provider only after the user allows analytics.
+Compartido:
+- No se venden datos.
+- Cloudflare actúa como proveedor de alojamiento e infraestructura.
+- Google actúa como proveedor de analítica solo después de que el usuario permita la medición.
 
-### Personal Info
-Collected: No account name, email, phone number, or address in the current release.
+### Información personal
+Se recoge: No se recoge nombre de cuenta, correo electrónico, teléfono ni dirección en la versión actual.
 
-### Location
-Collected: No precise or approximate location permission.
+### Ubicación
+Se recoge: No se solicita permiso de ubicación precisa ni aproximada.
 
-### Financial Info
-Collected: No payment card, bank account, credit, or purchase history.
+### Información financiera
+Se recoge: No se recoge tarjeta de pago, cuenta bancaria, crédito ni historial de compras.
 
-### Device or Other IDs
-Collected: The app creates a random app user ID in local storage for demo connector state. If
-analytics is allowed, Google Analytics may use app/browser identifiers for measurement. The app
-does not use Android advertising ID.
+### Dispositivo u otros identificadores
+Se recoge: La app crea un ID aleatorio en almacenamiento local para el estado del conector demo. Si se permite la analítica, Google Analytics puede usar identificadores de app o navegador para medición. La app no usa el ID de publicidad de Android.
 
-Purpose:
-- App functionality
-- Analytics
+Finalidad:
+- Funcionalidad de la app.
+- Analítica.
 
-## Security Practices
+## Prácticas de seguridad
 
-- Data is encrypted in transit over HTTPS.
-- Users can request deletion of demo connector records through privacy@powerwindow.energy.
-- The current release does not store real car or charger credentials.
+- Los datos se cifran en tránsito mediante HTTPS.
+- Los usuarios pueden solicitar la eliminación de registros del conector demo en privacy@powerwindow.energy.
+- La versión actual no guarda credenciales reales de coche ni cargador.
 
-## Notes Before Submission
+## Notas antes del envío
 
-- Confirm that privacy@powerwindow.energy is active before publishing.
-- If real charger connectors are added later, update Data Safety for credentials, OAuth tokens, device status, and command history.
-- Confirm the final Google Analytics and Play Console classifications before production release.
+- Confirmar que privacy@powerwindow.energy está activo antes de publicar.
+- Si más adelante se añaden conectores reales de cargadores, actualizar Seguridad de Datos para credenciales, tokens OAuth, estado de dispositivos e historial de comandos.
+- Confirmar las clasificaciones finales de Google Analytics y Play Console antes de la publicación en producción.

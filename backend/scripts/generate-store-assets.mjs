@@ -23,26 +23,26 @@ await writeSvg(new URL("icon-512.svg", assetDir), appIconSvg(512));
 await writeSvg(new URL("feature-graphic.svg", assetDir), featureGraphicSvg());
 await writeSvg(
   new URL("phone-01-planner.svg", screenshotDir),
-  phoneScreenshotSvg("Find the best power window", "2 PM-4 PM", "Live REE data", [
-    ["Timing grade", "A"],
-    ["Estimated cost", "EUR 0.22"],
-    ["Run now vs best", "Save EUR 1.64"]
+  phoneScreenshotSvg("Encuentra la mejor franja", "2 PM-4 PM", "Datos REE en directo", [
+    ["Nota de horario", "A"],
+    ["Coste estimado", "0,22 EUR"],
+    ["Ahora vs mejor", "Ahorra 1,64 EUR"]
   ])
 );
 await writeSvg(
   new URL("phone-02-ev.svg", screenshotDir),
-  phoneScreenshotSvg("Plan EV charging by model", "Tesla Model 3", "Demo Wallbox ready", [
-    ["Battery", "50% -> 80%"],
-    ["Charger", "7.4 kW"],
-    ["Plan", "Send window"]
+  phoneScreenshotSvg("Carga tu coche por modelo", "Tesla Model 3", "Wallbox demo lista", [
+    ["Batería", "50% -> 80%"],
+    ["Cargador", "7,4 kW"],
+    ["Plan", "Enviar franja"]
   ])
 );
 await writeSvg(
   new URL("phone-03-mission.svg", screenshotDir),
-  phoneScreenshotSvg("See weekly timing impact", "EUR 15-20", "Example flexible-load week", [
-    ["Dishwasher", "2 runs"],
-    ["Laundry", "1 load"],
-    ["EV", "3-4 top-ups"]
+  phoneScreenshotSvg("Impacto semanal estimado", "EUR 15-20", "Semana flexible de ejemplo", [
+    ["Lavavajillas", "2 usos"],
+    ["Lavadora", "1 lavado"],
+    ["Coche eléctrico", "3-4 recargas"]
   ])
 );
 
@@ -67,11 +67,11 @@ function featureGraphicSvg() {
       <rect x="96" y="96" width="74" height="74" rx="18" fill="#0b100f"/>
       <path d="M138 111 113 152h19l-5 32 32-52h-20z" fill="${palette.gold}"/>
       <text x="200" y="136" fill="#ffffff" font-size="54" font-family="Inter, Arial, sans-serif" font-weight="800">Power Window</text>
-      <text x="200" y="188" fill="#b9c6c0" font-size="28" font-family="Inter, Arial, sans-serif">Find the cheapest hours for flexible electricity use in Spain.</text>
+      <text x="200" y="188" fill="#b9c6c0" font-size="28" font-family="Inter, Arial, sans-serif">Planifica consumos flexibles en España.</text>
       <text x="96" y="330" fill="#ffffff" font-size="94" font-family="Inter, Arial, sans-serif" font-weight="900">2 PM-4 PM</text>
       <rect x="660" y="290" width="196" height="52" rx="26" fill="#123e36" stroke="${palette.accent}" stroke-width="2"/>
-      <text x="690" y="325" fill="#8af0d3" font-size="24" font-family="Inter, Arial, sans-serif" font-weight="800">Live REE data</text>
-      <text x="664" y="375" fill="#b9c6c0" font-size="26" font-family="Inter, Arial, sans-serif">Demo charger connector ready</text>
+      <text x="690" y="325" fill="#8af0d3" font-size="24" font-family="Inter, Arial, sans-serif" font-weight="800">Datos REE</text>
+      <text x="664" y="375" fill="#b9c6c0" font-size="26" font-family="Inter, Arial, sans-serif">Conector demo listo</text>
     </svg>
   `;
 }
@@ -95,19 +95,19 @@ function phoneScreenshotSvg(title, main, subline, metrics) {
       <rect x="88" y="104" width="74" height="74" rx="18" fill="${palette.deep}"/>
       <path d="M130 119 105 160h19l-5 32 32-52h-20z" fill="${palette.gold}"/>
       <text x="190" y="148" fill="${palette.ink}" font-size="40" font-family="Inter, Arial, sans-serif" font-weight="900">Power Window</text>
-      <text x="190" y="188" fill="${palette.muted}" font-size="24" font-family="Inter, Arial, sans-serif">Spain electricity timing planner</text>
+      <text x="190" y="188" fill="${palette.muted}" font-size="24" font-family="Inter, Arial, sans-serif">Planificador eléctrico para España</text>
       <rect x="88" y="252" width="904" height="606" rx="30" fill="${palette.deep}"/>
       <text x="128" y="334" fill="#aab4b0" font-size="28" font-family="Inter, Arial, sans-serif" font-weight="800">${escapeXml(title)}</text>
       <text x="128" y="500" fill="#ffffff" font-size="116" font-family="Inter, Arial, sans-serif" font-weight="900">${escapeXml(main)}</text>
       <text x="128" y="592" fill="#c7d0cc" font-size="34" font-family="Inter, Arial, sans-serif">${escapeXml(subline)}</text>
       <rect x="128" y="684" width="254" height="60" rx="30" fill="#123e36" stroke="${palette.accent}" stroke-width="2"/>
-      <text x="158" y="724" fill="#8af0d3" font-size="28" font-family="Inter, Arial, sans-serif" font-weight="800">Backend cache</text>
+      <text x="158" y="724" fill="#8af0d3" font-size="28" font-family="Inter, Arial, sans-serif" font-weight="800">Caché backend</text>
       <rect x="418" y="684" width="248" height="60" rx="30" fill="#2b2514" stroke="${palette.gold}" stroke-width="2"/>
-      <text x="448" y="724" fill="#ffe391" font-size="28" font-family="Inter, Arial, sans-serif" font-weight="800">Best window</text>
+      <text x="448" y="724" fill="#ffe391" font-size="28" font-family="Inter, Arial, sans-serif" font-weight="800">Mejor franja</text>
       ${metricCards}
       <rect x="88" y="1546" width="904" height="188" rx="22" fill="#f6fbf9" stroke="#b9ddd4" stroke-width="2"/>
-      <text x="124" y="1606" fill="${palette.accent}" font-size="30" font-family="Inter, Arial, sans-serif" font-weight="900">Plan flexible loads</text>
-      <text x="124" y="1660" fill="${palette.muted}" font-size="28" font-family="Inter, Arial, sans-serif">AC, dishwasher, laundry, EV charging, and demo connector flow.</text>
+      <text x="124" y="1606" fill="${palette.accent}" font-size="30" font-family="Inter, Arial, sans-serif" font-weight="900">Planifica consumos flexibles</text>
+      <text x="124" y="1660" fill="${palette.muted}" font-size="28" font-family="Inter, Arial, sans-serif">AC, lavavajillas, lavadora, coche eléctrico y conector demo.</text>
     </svg>
   `;
 }

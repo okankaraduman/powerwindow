@@ -70,11 +70,11 @@ def make_feature():
     rounded(draw, (96, 96, 170, 170), 18, "#0b100f")
     lightning(draw, 87, 86, 1.45)
     text(draw, (200, 104), "Power Window", 58, COLORS["white"], True)
-    text(draw, (200, 170), "Find the cheapest hours for flexible electricity use in Spain.", 28, "#b9c6c0")
+    text(draw, (200, 170), "Planifica consumos flexibles en España.", 28, "#b9c6c0")
     text(draw, (96, 292), "2 PM-4 PM", 96, COLORS["white"], True)
     rounded(draw, (660, 292, 858, 344), 26, "#123e36", COLORS["accent"], 2)
-    text(draw, (690, 306), "Live REE data", 24, "#8af0d3", True)
-    text(draw, (664, 366), "Demo charger connector ready", 26, "#b9c6c0")
+    text(draw, (690, 306), "Datos REE", 24, "#8af0d3", True)
+    text(draw, (664, 366), "Conector demo listo", 26, "#b9c6c0")
     img.save(ASSET_DIR / "feature-graphic.png")
 
 
@@ -85,15 +85,15 @@ def make_phone(path, title, main, subline, metrics):
     rounded(draw, (88, 104, 162, 178), 18, COLORS["deep"])
     lightning(draw, 80, 95, 1.4)
     text(draw, (190, 112), "Power Window", 40, COLORS["ink"], True)
-    text(draw, (190, 162), "Spain electricity timing planner", 24, COLORS["muted"])
+    text(draw, (190, 162), "Planificador eléctrico para España", 24, COLORS["muted"])
     rounded(draw, (88, 252, 992, 858), 30, COLORS["deep"])
     text(draw, (128, 318), title, 28, "#aab4b0", True)
     text(draw, (128, 420), main, 100, COLORS["white"], True)
     text(draw, (128, 562), subline, 34, "#c7d0cc")
     rounded(draw, (128, 684, 382, 744), 30, "#123e36", COLORS["accent"], 2)
-    text(draw, (158, 702), "Backend cache", 28, "#8af0d3", True)
+    text(draw, (158, 702), "Caché backend", 28, "#8af0d3", True)
     rounded(draw, (418, 684, 666, 744), 30, "#2b2514", COLORS["gold"], 2)
-    text(draw, (448, 702), "Best window", 28, "#ffe391", True)
+    text(draw, (448, 702), "Mejor franja", 28, "#ffe391", True)
 
     for index, (label, value) in enumerate(metrics):
         y = 980 + index * 176
@@ -102,8 +102,8 @@ def make_phone(path, title, main, subline, metrics):
         text(draw, (124, y + 76), value, 46, COLORS["ink"], True)
 
     rounded(draw, (88, 1546, 992, 1734), 22, COLORS["accent_soft"], "#b9ddd4", 2)
-    text(draw, (124, 1588), "Plan flexible loads", 30, COLORS["accent"], True)
-    text(draw, (124, 1642), "AC, dishwasher, laundry, EV charging, and demo connector flow.", 28, COLORS["muted"])
+    text(draw, (124, 1588), "Planifica consumos flexibles", 30, COLORS["accent"], True)
+    text(draw, (124, 1642), "AC, lavavajillas, lavadora, coche eléctrico y conector demo.", 28, COLORS["muted"])
     img.save(SCREENSHOT_DIR / path)
 
 
@@ -111,22 +111,22 @@ make_icon()
 make_feature()
 make_phone(
     "phone-01-planner.png",
-    "Find the best power window",
+    "Encuentra la mejor franja",
     "2 PM-4 PM",
-    "Live REE data",
-    [("Timing grade", "A"), ("Estimated cost", "EUR 0.22"), ("Run now vs best", "Save EUR 1.64")],
+    "Datos REE en directo",
+    [("Nota de horario", "A"), ("Coste estimado", "0,22 EUR"), ("Ahora vs mejor", "Ahorra 1,64 EUR")],
 )
 make_phone(
     "phone-02-ev.png",
-    "Plan EV charging by model",
+    "Carga tu coche por modelo",
     "Tesla Model 3",
-    "Demo Wallbox ready",
-    [("Battery", "50% -> 80%"), ("Charger", "7.4 kW"), ("Plan", "Send window")],
+    "Wallbox demo lista",
+    [("Batería", "50% -> 80%"), ("Cargador", "7,4 kW"), ("Plan", "Enviar franja")],
 )
 make_phone(
     "phone-03-mission.png",
-    "See weekly timing impact",
+    "Impacto semanal estimado",
     "EUR 15-20",
-    "Example flexible-load week",
-    [("Dishwasher", "2 runs"), ("Laundry", "1 load"), ("EV", "3-4 top-ups")],
+    "Semana flexible de ejemplo",
+    [("Lavavajillas", "2 usos"), ("Lavadora", "1 lavado"), ("Coche eléctrico", "3-4 recargas")],
 )

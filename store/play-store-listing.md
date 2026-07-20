@@ -1,37 +1,37 @@
-# Power Window Play Store Listing Draft
+# Borrador de ficha de Google Play de Power Window
 
-## App Name
+## Nombre de la app
 Power Window
 
-## Short Description
-Find lower-price hours for flexible electricity use in Spain.
+## Descripción breve
+Encuentra horas más baratas para consumos eléctricos flexibles en España.
 
-## Full Description
-Power Window helps households in Spain plan flexible electricity use around better hourly price windows.
+## Descripción completa
+Power Window ayuda a los hogares en España a planificar consumos eléctricos flexibles alrededor de mejores franjas de precio horario.
 
-Choose a load such as a dishwasher, washing machine, dryer, air conditioner, heat pump, or EV charging session. The app reads hourly market data, ranks the remaining start windows, estimates bill impact with editable tax and per-kWh assumptions, and shows a simple timing grade.
+Elige un consumo como lavavajillas, lavadora, secadora, aire acondicionado, bomba de calor o una sesión de carga de coche eléctrico. La app lee datos horarios del mercado, ordena las franjas de inicio disponibles, estima el impacto en la factura con impuestos y supuestos por kWh editables, y muestra una nota sencilla de horario.
 
-The statistics page shows the selected day's PVPC price shape, lowest-price hour, renewable generation rate, wind plus solar share, and generation mix.
+La página de estadísticas muestra la forma del precio PVPC del día seleccionado, la hora de menor precio, la tasa de generación renovable, la cuota de eólica más solar y el mix de generación.
 
-For EV charging, select a vehicle brand/model, current battery percentage, target percentage, and charger power. Power Window estimates the required energy and suggests the best available charging window.
+Para cargar el coche eléctrico, selecciona marca y modelo, porcentaje actual de batería, porcentaje objetivo y potencia del cargador. Power Window estima la energía necesaria y sugiere la mejor franja de carga disponible.
 
-The current smart-charging connector is a demo connector only. It lets you test how scheduling, start, and stop commands would work without controlling real hardware. Real charger integrations are planned for future releases.
+El conector de carga inteligente actual es solo de demostración. Permite probar cómo funcionarían la programación y los comandos de inicio y parada sin controlar hardware real. Las integraciones con cargadores reales están previstas para futuras versiones.
 
-Power Window is independent and is not affiliated with or endorsed by Red Electrica.
+Power Window es independiente y no está afiliada ni respaldada por Red Eléctrica.
 
-## Category
-House & Home or Tools
+## Categoría
+Casa y hogar o Herramientas
 
-## Tags
-electricity, energy, EV charging, Spain, household planning
+## Etiquetas
+electricidad, energía, carga de coche eléctrico, España, planificación doméstica
 
-## Privacy Policy URL
+## URL de política de privacidad
 https://powerwindow.energy/privacy
 
-## Feature Graphic
+## Gráfico destacado
 store/assets/feature-graphic.png
 
-## Phone Screenshots
+## Capturas de teléfono
 - store/assets/screenshots/phone-01-planner.png
 - store/assets/screenshots/phone-02-ev.png
 - store/assets/screenshots/phone-03-mission.png

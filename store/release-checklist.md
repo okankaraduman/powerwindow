@@ -1,17 +1,17 @@
-# Android Closed Test Checklist
+# Checklist para prueba cerrada de Android
 
 ## Web
 
 - [x] Privacy page at `https://powerwindow.energy/privacy`
-- [x] Demo Wallbox clearly labeled as demo-only
+- [x] Wallbox demo claramente etiquetada como solo demostración
 - [x] PWA manifest includes PNG icon
 - [ ] Confirm Cloudflare Pages has deployed latest `main`
 
 ## Android
 
-- [x] Gradle wrapper files added
-- [x] Adaptive launcher icon resources added
-- [x] Release signing configuration added
+- [x] Gradle wrapper añadido
+- [x] Recursos de icono adaptativo añadidos
+- [x] Configuración de firma release añadida
 - [ ] Install Android Studio or Java + Android SDK
 - [ ] Create release keystore
 - [ ] Copy `android/keystore.properties.example` to `android/keystore.properties`
@@ -19,13 +19,13 @@
 
 ## Google Play
 
-- [x] Store icon generated: `store/assets/icon-512.png`
-- [x] Feature graphic generated: `store/assets/feature-graphic.png`
-- [x] Phone screenshots generated under `store/assets/screenshots/`
-- [x] Listing draft written in `store/play-store-listing.md`
-- [x] Data Safety draft written in `store/data-safety.md`
+- [x] Icono de tienda generado: `store/assets/icon-512.png`
+- [x] Gráfico destacado generado: `store/assets/feature-graphic.png`
+- [x] Capturas de teléfono generadas en `store/assets/screenshots/`
+- [x] Borrador de ficha escrito en `store/play-store-listing.md`
+- [x] Borrador de Seguridad de Datos escrito en `store/data-safety.md`
 - [ ] Create app in Play Console
-- [ ] Fill App Content forms
-- [ ] Add privacy policy URL
-- [ ] Upload signed AAB to internal or closed test
-- [ ] For new personal developer accounts, recruit 12 testers for 14 continuous days
+- [ ] Completar formularios de contenido de la app
+- [ ] Añadir URL de política de privacidad
+- [ ] Subir AAB firmado a prueba interna o cerrada
+- [ ] En cuentas personales nuevas, reclutar 12 testers durante 14 días continuos

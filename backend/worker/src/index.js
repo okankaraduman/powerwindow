@@ -54,13 +54,13 @@ export default {
       return handleDeviceCommand(request, env, commandMatch[1]);
     }
 
-    return jsonResponse({ error: "not found" }, 404, request);
+    return jsonResponse({ error: "ruta no encontrada" }, 404, request);
   }
 };
 
 async function handleConnectors(request) {
   if (request.method !== "GET") {
-    return jsonResponse({ error: "method not allowed" }, 405, request);
+    return jsonResponse({ error: "método no permitido" }, 405, request);
   }
 
   return jsonResponse(
@@ -68,7 +68,7 @@ async function handleConnectors(request) {
       connectors: [
         {
           id: "mock",
-          name: "Demo Wallbox",
+          name: "Wallbox demo",
           status: "available",
           capabilities: ["schedule", "start", "stop"],
           credentialMode: "none"
@@ -82,7 +82,7 @@ async function handleConnectors(request) {
 
 async function handleMockPair(request, env) {
   if (request.method !== "POST") {
-    return jsonResponse({ error: "method not allowed" }, 405, request);
+    return jsonResponse({ error: "método no permitido" }, 405, request);
   }
 
   const bindingError = connectorBindingError(env);
@@ -93,7 +93,7 @@ async function handleMockPair(request, env) {
   const body = await readJsonBody(request);
   const userId = normalizeUserId(body.userId);
   if (!userId) {
-    return jsonResponse({ error: "missing userId" }, 400, request);
+    return jsonResponse({ error: "falta userId" }, 400, request);
   }
 
   const existing = await firstDeviceForProvider(env, userId, "mock");
@@ -107,7 +107,7 @@ async function handleMockPair(request, env) {
     userId,
     provider: "mock",
     externalAccountId: `mock-account:${userId}`,
-    displayName: "Power Window Sandbox",
+    displayName: "Entorno de pruebas de Power Window",
     status: "connected",
     createdAt: now,
     updatedAt: now,
@@ -119,7 +119,7 @@ async function handleMockPair(request, env) {
     userId,
     provider: "mock",
     externalDeviceId: `mock-wallbox:${userId}`,
-    displayName: cleanText(body.displayName, 60) || "Demo Wallbox",
+    displayName: cleanText(body.displayName, 60) || "Wallbox demo",
     kind: "charger",
     status: "available",
     maxKw: clampNumber(body.maxKw, 1, 22, 7.4),
@@ -157,7 +157,7 @@ async function handleMockPair(request, env) {
 
 async function handleDevices(request, env, url) {
   if (request.method !== "GET") {
-    return jsonResponse({ error: "method not allowed" }, 405, request);
+    return jsonResponse({ error: "método no permitido" }, 405, request);
   }
 
   const bindingError = connectorBindingError(env);
@@ -167,7 +167,7 @@ async function handleDevices(request, env, url) {
 
   const userId = normalizeUserId(url.searchParams.get("userId"));
   if (!userId) {
-    return jsonResponse({ error: "missing userId" }, 400, request);
+    return jsonResponse({ error: "falta userId" }, 400, request);
   }
 
   const { results } = await env.MARKET_DB.prepare(
@@ -183,7 +183,7 @@ async function handleDevices(request, env, url) {
 
 async function handleChargePlans(request, env) {
   if (request.method !== "POST") {
-    return jsonResponse({ error: "method not allowed" }, 405, request);
+    return jsonResponse({ error: "método no permitido" }, 405, request);
   }
 
   const bindingError = connectorBindingError(env);
@@ -194,22 +194,22 @@ async function handleChargePlans(request, env) {
   const body = await readJsonBody(request);
   const userId = normalizeUserId(body.userId);
   if (!userId) {
-    return jsonResponse({ error: "missing userId" }, 400, request);
+    return jsonResponse({ error: "falta userId" }, 400, request);
   }
 
   const device = await deviceForUser(env, cleanText(body.deviceId, 80), userId);
   if (!device) {
-    return jsonResponse({ error: "device not found" }, 404, request);
+    return jsonResponse({ error: "dispositivo no encontrado" }, 404, request);
   }
 
   if (!isValidDateValue(body.date || "")) {
-    return jsonResponse({ error: "date must be YYYY-MM-DD" }, 400, request);
+    return jsonResponse({ error: "la fecha debe tener formato YYYY-MM-DD" }, 400, request);
   }
 
   const startHour = clampInteger(body.startHour, 0, 23, null);
   const durationHours = clampInteger(body.durationHours, 1, 12, null);
   if (startHour === null || durationHours === null || startHour + durationHours > 24) {
-    return jsonResponse({ error: "invalid charging window" }, 400, request);
+    return jsonResponse({ error: "franja de carga no válida" }, 400, request);
   }
 
   const now = new Date().toISOString();
@@ -249,7 +249,7 @@ async function handleChargePlans(request, env) {
     },
     response: {
       connector: device.provider,
-      message: "Demo schedule accepted",
+      message: "Programación demo aceptada",
       windowLabel: plan.windowLabel
     }
   };
@@ -291,7 +291,7 @@ async function handleChargePlans(request, env) {
 
 async function handleDeviceCommand(request, env, deviceId) {
   if (request.method !== "POST") {
-    return jsonResponse({ error: "method not allowed" }, 405, request);
+    return jsonResponse({ error: "método no permitido" }, 405, request);
   }
 
   const bindingError = connectorBindingError(env);
@@ -302,7 +302,7 @@ async function handleDeviceCommand(request, env, deviceId) {
   const body = await readJsonBody(request);
   const userId = normalizeUserId(body.userId);
   if (!userId) {
-    return jsonResponse({ error: "missing userId" }, 400, request);
+    return jsonResponse({ error: "falta userId" }, 400, request);
   }
 
   const commandName = cleanText(body.command, 32);
@@ -314,12 +314,12 @@ async function handleDeviceCommand(request, env, deviceId) {
   };
   const nextStatus = nextStatusByCommand[commandName];
   if (!nextStatus) {
-    return jsonResponse({ error: "unsupported command" }, 400, request);
+    return jsonResponse({ error: "comando no compatible" }, 400, request);
   }
 
   const device = await deviceForUser(env, cleanText(deviceId, 80), userId);
   if (!device) {
-    return jsonResponse({ error: "device not found" }, 404, request);
+    return jsonResponse({ error: "dispositivo no encontrado" }, 404, request);
   }
 
   const now = new Date().toISOString();
@@ -336,7 +336,7 @@ async function handleDeviceCommand(request, env, deviceId) {
     request: safeObject(body),
     response: {
       connector: device.provider,
-      message: `Demo ${commandName} accepted`
+      message: `Comando demo ${commandName} aceptado`
     }
   };
 
@@ -352,7 +352,7 @@ async function handleDeviceCommand(request, env, deviceId) {
 
 async function handleMarket(request, env, url, ctx) {
   if (request.method !== "GET") {
-    return jsonResponse({ error: "method not allowed" }, 405, request);
+    return jsonResponse({ error: "método no permitido" }, 405, request);
   }
 
   const bindingError = marketBindingError(env);
@@ -362,16 +362,16 @@ async function handleMarket(request, env, url, ctx) {
 
   const date = url.searchParams.get("date");
   if (!date) {
-    return jsonResponse({ error: "missing date" }, 400, request);
+    return jsonResponse({ error: "falta fecha" }, 400, request);
   }
 
   if (!isValidDateValue(date)) {
-    return jsonResponse({ error: "date must be YYYY-MM-DD" }, 400, request);
+    return jsonResponse({ error: "la fecha debe tener formato YYYY-MM-DD" }, 400, request);
   }
 
   if (date > madridDateString(1)) {
     return jsonResponse(
-      { error: "REE day-ahead data is only available through tomorrow" },
+      { error: "los datos REE de precios diarios solo están disponibles hasta mañana" },
       400,
       request
     );
@@ -382,13 +382,13 @@ async function handleMarket(request, env, url, ctx) {
     const result = await marketEntryForDate(env, date, { forceRefresh, ctx });
     return marketResponse(result.cacheStatus, result.entry, request);
   } catch (error) {
-    return jsonResponse({ error: error.message || "REE request failed" }, 502, request);
+    return jsonResponse({ error: error.message || "la solicitud a REE ha fallado" }, 502, request);
   }
 }
 
 async function handleMarketMonth(request, env, url, ctx) {
   if (request.method !== "GET") {
-    return jsonResponse({ error: "method not allowed" }, 405, request);
+    return jsonResponse({ error: "método no permitido" }, 405, request);
   }
 
   const bindingError = marketBindingError(env);
@@ -398,12 +398,12 @@ async function handleMarketMonth(request, env, url, ctx) {
 
   const date = url.searchParams.get("date") || madridDateString(0);
   if (!isValidDateValue(date)) {
-    return jsonResponse({ error: "date must be YYYY-MM-DD" }, 400, request);
+    return jsonResponse({ error: "la fecha debe tener formato YYYY-MM-DD" }, 400, request);
   }
 
   if (date > madridDateString(1)) {
     return jsonResponse(
-      { error: "REE day-ahead data is only available through tomorrow" },
+      { error: "los datos REE de precios diarios solo están disponibles hasta mañana" },
       400,
       request
     );
@@ -427,7 +427,7 @@ async function handleMarketMonth(request, env, url, ctx) {
 
   if (!days.length) {
     const reason = settled.find((result) => result.status === "rejected")?.reason;
-    return jsonResponse({ error: reason?.message || "No market data available" }, 502, request);
+    return jsonResponse({ error: reason?.message || "no hay datos de mercado disponibles" }, 502, request);
   }
 
   return jsonResponse(
@@ -443,7 +443,7 @@ async function handleMarketMonth(request, env, url, ctx) {
 
 async function handleGeneration(request, env, url, ctx) {
   if (request.method !== "GET") {
-    return jsonResponse({ error: "method not allowed" }, 405, request);
+    return jsonResponse({ error: "método no permitido" }, 405, request);
   }
 
   const bindingError = marketBindingError(env);
@@ -453,12 +453,12 @@ async function handleGeneration(request, env, url, ctx) {
 
   const date = url.searchParams.get("date") || madridDateString(0);
   if (!isValidDateValue(date)) {
-    return jsonResponse({ error: "date must be YYYY-MM-DD" }, 400, request);
+    return jsonResponse({ error: "la fecha debe tener formato YYYY-MM-DD" }, 400, request);
   }
 
   if (date > madridDateString(0)) {
     return jsonResponse(
-      { error: "REE generation mix data is only available through today" },
+      { error: "los datos REE del mix de generación solo están disponibles hasta hoy" },
       400,
       request
     );
@@ -478,7 +478,7 @@ async function handleGeneration(request, env, url, ctx) {
       request
     );
   } catch (error) {
-    return jsonResponse({ error: error.message || "REE request failed" }, 502, request);
+    return jsonResponse({ error: error.message || "la solicitud a REE ha fallado" }, 502, request);
   }
 }
 
@@ -937,11 +937,11 @@ function marketBindingError(env) {
   if (!env.MARKET_CACHE) missing.push("MARKET_CACHE KV");
   if (!env.MARKET_DB) missing.push("MARKET_DB D1");
   if (!missing.length) return "";
-  return `${missing.join(" and ")} binding ${missing.length === 1 ? "is" : "are"} not configured`;
+  return `binding ${missing.join(" y ")} sin configurar`;
 }
 
 function connectorBindingError(env) {
-  return env.MARKET_DB ? "" : "MARKET_DB D1 binding is not configured";
+  return env.MARKET_DB ? "" : "binding MARKET_DB D1 sin configurar";
 }
 
 async function readJsonBody(request) {

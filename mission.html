@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Power Window" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <title>Power Window Mission</title>
+    <title>Misión de Power Window</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="favicon.svg" />
     <link rel="manifest" href="manifest.webmanifest" />
@@ -21,115 +21,117 @@
           <span class="brand-mark" aria-hidden="true">P</span>
           <div>
             <h1>Power Window</h1>
-            <p>Why flexible electricity timing matters.</p>
+            <p>Por qué importa mover los consumos flexibles.</p>
           </div>
         </div>
 
-        <nav class="app-nav" aria-label="App pages">
-          <a href="/">Planner</a>
-          <a href="/statistics">Statistics</a>
-          <a href="/methodology">How it works</a>
-          <a href="/mission" aria-current="page">Mission</a>
-          <a href="/privacy">Privacy</a>
+        <nav class="app-nav" aria-label="Páginas de la app">
+          <a href="/">Planificador</a>
+          <a href="/statistics">Estadísticas</a>
+          <a href="/methodology">Cómo funciona</a>
+          <a href="/mission" aria-current="page">Misión</a>
+          <a href="/privacy">Privacidad</a>
         </nav>
       </section>
 
       <section class="hero-panel mission-hero">
         <div>
-          <span class="eyebrow">Mission</span>
-          <h2>Make flexible power use feel obvious.</h2>
+          <span class="eyebrow">Misión</span>
+          <h2>Hacer que el consumo flexible sea evidente.</h2>
           <p>
-            Power Window exists for the moments where the exact hour does not matter:
-            charging a car, running a dishwasher, drying clothes, or heating water. If the
-            task can move, the cost and grid impact can move too.
+            Power Window existe para esos usos en los que la hora exacta no importa: cargar el
+            coche, poner el lavavajillas, secar ropa o calentar agua. Si el consumo se puede
+            mover, también se puede mover su coste y su impacto en la red.
           </p>
         </div>
       </section>
 
       <section class="mission-grid">
         <article class="method-card mission-card mission-card--wide">
-          <span class="eyebrow">Household finances</span>
-          <h3>Small timing choices compound</h3>
+          <span class="eyebrow">Economía doméstica</span>
+          <h3>Las pequeñas decisiones de horario se acumulan</h3>
           <p>
-            A single dishwasher run is not life-changing. An EV charge is larger. Repeated
-            across weeks and months, shifting flexible loads away from expensive hours can
-            reduce the variable part of a household electricity bill.
+            Un solo lavavajillas no cambia una economía familiar. Una carga de coche eléctrico
+            pesa más. Repetido durante semanas y meses, mover consumos flexibles fuera de las
+            horas caras puede reducir la parte variable de la factura eléctrica.
           </p>
           <p>
-            The app is intentionally conservative: it ranks hours using the selected day's
-            hourly market signal and keeps fixed monthly items separate, because contracted
-            power and meter rental do not change when a flexible load moves from one hour to
-            another.
+            La app es deliberadamente conservadora: ordena las horas usando la señal horaria de
+            mercado del día seleccionado y deja aparte los conceptos fijos mensuales, porque la
+            potencia contratada y el alquiler del contador no cambian al mover un consumo de una
+            hora a otra.
           </p>
           <div class="mission-number-panel" aria-live="polite">
-            <span class="eyebrow">Today and example week</span>
+            <span class="eyebrow">Hoy y semana de ejemplo</span>
             <div class="mission-number-grid">
               <div>
                 <strong id="dishwasherSavings">€0.33</strong>
-                <small id="dishwasherSavingsNote">Dishwasher: 2 PM-4 PM instead of 8 PM-10 PM</small>
+                <small id="dishwasherSavingsNote">Lavavajillas: 2 PM-4 PM en lugar de 8 PM-10 PM</small>
               </div>
               <div>
                 <strong id="evSavings">€4.17</strong>
-                <small id="evSavingsNote">EV: 2 PM-5 PM instead of 7 PM-10 PM</small>
+                <small id="evSavingsNote">Coche eléctrico: 2 PM-5 PM en lugar de 7 PM-10 PM</small>
               </div>
               <div>
                 <strong id="laundrySavings">€0.29</strong>
-                <small id="laundrySavingsNote">Laundry: 2 PM-4 PM instead of 8 PM-10 PM</small>
+                <small id="laundrySavingsNote">Lavadora: 2 PM-4 PM en lugar de 8 PM-10 PM</small>
               </div>
               <div>
                 <strong id="weeklySavings">€15.09-€19.78</strong>
-                <small id="weeklySavingsNote">Example week: 2 dishwasher, 1 laundry, 3-4 EV top-ups</small>
+                <small id="weeklySavingsNote">Semana ejemplo: 2 lavavajillas, 1 lavadora, 3-4 recargas de coche</small>
               </div>
             </div>
             <p id="missionDataNote">
-              Example from 7 July 2026 PVPC prices and the first 7 available July days using
-              bill-impact defaults. The weekly basket is illustrative, not a claim about every
-              home.
+              Ejemplo con precios PVPC del 7 de julio de 2026 y los 7 primeros días disponibles
+              de julio usando los valores por defecto de impacto en factura. La cesta semanal es
+              ilustrativa, no una promesa para todos los hogares.
             </p>
           </div>
         </article>
 
         <article class="method-card mission-card">
-          <span class="eyebrow">Grid usefulness</span>
-          <h3>Demand can help follow supply</h3>
+          <span class="eyebrow">Utilidad para la red</span>
+          <h3>La demanda puede ayudar a seguir a la oferta</h3>
           <p>
-            Spain has a growing solar-heavy electricity mix, so many low-price windows happen
-            during bright daytime hours. That does not mean midday is always best. It means a
-            planner should check real hourly data and make flexible demand easier to place when
-            the system is already sending a cheaper signal.
+            España tiene un mix eléctrico con cada vez más solar, así que muchas ventanas baratas
+            aparecen durante horas de mucha luz. Eso no significa que el mediodía sea siempre lo
+            mejor. Significa que un planificador debe mirar datos horarios reales y facilitar que
+            la demanda flexible se coloque cuando el sistema ya envía una señal más barata.
           </p>
           <p>
-            The wider principle is demand response: shifting or reducing electricity use to
-            help balance the grid. The International Energy Agency describes demand response
-            as increasingly important as grids include more variable wind and solar generation.
-          </p>
-        </article>
-
-        <article class="method-card mission-card">
-          <span class="eyebrow">Why EVs matter</span>
-          <h3>Cars are movable batteries of demand</h3>
-          <p>
-            EV charging is often the largest flexible load at home. A 20 kWh top-up can be
-            many times larger than a dishwasher cycle, and most cars do not need to start
-            charging the moment they are plugged in.
-          </p>
-          <p>
-            Power Window turns that flexibility into a simple choice: set the car, battery
-            level, target, and charger power, then see which remaining hours are cheapest.
+            El principio más amplio es la respuesta de la demanda: desplazar o reducir consumo
+            eléctrico para ayudar a equilibrar la red. La Agencia Internacional de la Energía
+            describe esta respuesta como cada vez más importante a medida que las redes integran
+            más generación variable eólica y solar.
           </p>
         </article>
 
         <article class="method-card mission-card">
-          <span class="eyebrow">What we will not claim</span>
-          <h3>This is a signal, not a guarantee</h3>
+          <span class="eyebrow">Por qué importan los coches eléctricos</span>
+          <h3>Los coches son demanda flexible de gran tamaño</h3>
           <p>
-            Power Window does not know your network constraint, retailer contract, charger
-            losses, battery limits, or local distribution grid. It is not a grid-control
-            system and it does not promise carbon savings for every hour.
+            La carga del coche eléctrico suele ser el mayor consumo flexible en casa. Una recarga
+            de 20 kWh puede ser muchas veces mayor que un ciclo de lavavajillas, y la mayoría de
+            los coches no necesitan empezar a cargar justo al enchufarlos.
           </p>
           <p>
-            The mission is smaller and more practical: make the flexible part of electricity
-            use visible enough that better timing becomes normal.
+            Power Window convierte esa flexibilidad en una elección sencilla: indica el coche,
+            el nivel de batería, el objetivo y la potencia del cargador, y mira qué horas
+            restantes son más baratas.
+          </p>
+        </article>
+
+        <article class="method-card mission-card">
+          <span class="eyebrow">Lo que no afirmamos</span>
+          <h3>Es una señal, no una garantía</h3>
+          <p>
+            Power Window no conoce las restricciones de tu red, tu contrato concreto, las
+            pérdidas del cargador, los límites de la batería ni la red de distribución local. No
+            es un sistema de control de red y no promete ahorro de carbono en cada hora.
+          </p>
+          <p>
+            La misión es más pequeña y práctica: hacer suficientemente visible la parte flexible
+            del consumo eléctrico para que elegir mejor la hora se vuelva normal.
           </p>
         </article>
       </section>
@@ -137,30 +139,30 @@
       <section class="chart-section mission-sources">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Sources</span>
-            <h2>What this page is based on</h2>
+            <span class="eyebrow">Fuentes</span>
+            <h2>En qué se basa esta página</h2>
           </div>
         </div>
         <div class="source-grid">
           <a href="https://www.ree.es/en/datos/apidata">
-            <strong>Red Electrica REData API</strong>
-            <small>Hourly market data used by Power Window.</small>
+            <strong>API REData de Red Eléctrica</strong>
+            <small>Datos horarios de mercado usados por Power Window.</small>
           </a>
           <a href="https://www.iea.org/energy-system/energy-efficiency-and-demand/demand-response">
-            <strong>IEA Demand Response</strong>
-            <small>Demand response shifts electricity use to help balance the grid.</small>
+            <strong>Respuesta de la demanda, IEA</strong>
+            <small>La respuesta de la demanda desplaza consumo para ayudar a equilibrar la red.</small>
           </a>
           <a href="https://www.iea.org/reports/electricity-grids-and-secure-energy-transitions">
-            <strong>IEA Electricity Grids</strong>
-            <small>Electric cars, heat pumps, renewables, and grids are growing together.</small>
+            <strong>Redes eléctricas, IEA</strong>
+            <small>Coches eléctricos, bombas de calor, renovables y redes crecen juntos.</small>
           </a>
         </div>
       </section>
 
       <footer class="source-note">
         <p>
-          Power Window is independent and is not affiliated with or endorsed by Red Electrica
-          or the International Energy Agency. <a href="/privacy">Privacy</a>.
+          Power Window es independiente y no está afiliada ni respaldada por Red Eléctrica
+          ni por la Agencia Internacional de la Energía. <a href="/privacy">Privacidad</a>.
         </p>
       </footer>
     </main>

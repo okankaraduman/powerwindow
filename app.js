@@ -16,9 +16,9 @@ const MAX_DURATION = 12;
 const MINUTE = 60 * 1000;
 const DAY = 24 * 60 * MINUTE;
 const DEMO_NOTICE =
-  "Demo prices are shown because the REE API did not return usable hourly data for this date.";
+  "Se muestran precios de prueba porque la API de REE no devolvió datos horarios útiles para esta fecha.";
 const VEHICLE_PRESETS = {
-  Custom: [{ model: "My EV", batteryKwh: 60 }],
+  Personalizado: [{ model: "Mi coche eléctrico", batteryKwh: 60 }],
   Audi: [
     { model: "Q4 e-tron 45", batteryKwh: 77 },
     { model: "Q6 e-tron", batteryKwh: 94.9 },
@@ -250,7 +250,7 @@ function init() {
     event.preventDefault();
     state.deferredInstallPrompt = event;
     els.installButton.disabled = false;
-    els.installHint.textContent = "Ready to install on Android Chrome.";
+    els.installHint.textContent = "Listo para instalar en Chrome para Android.";
   });
 
   loadConnectorDevices();
@@ -277,7 +277,7 @@ async function loadDate(dateValue, options = {}) {
     const points = parseMarketData(data);
 
     if (!points.length) {
-      throw new Error("No hourly price series found.");
+      throw new Error("No se encontró una serie horaria de precios.");
     }
 
     state.points = points;
@@ -288,7 +288,7 @@ async function loadDate(dateValue, options = {}) {
     state.points = makeDemoData(safeDate);
     state.source = "demo";
     state.cacheStatus = "none";
-    state.apiMeta = { "last-update": null, title: "Demo hourly price signal" };
+    state.apiMeta = { "last-update": null, title: "Señal horaria de precio de prueba" };
     console.warn(error);
   } finally {
     setLoading(false);
@@ -343,12 +343,12 @@ async function fetchMarketData(dateValue, options = {}) {
   const response = await fetch(url, { headers: { Accept: "application/json" } });
 
   if (!response.ok) {
-    throw new Error(`REE request failed with ${response.status}`);
+    throw new Error(`La solicitud a REE falló con estado ${response.status}`);
   }
 
   const data = await response.json();
   if (data.errors?.length) {
-    throw new Error(data.errors[0].detail || "REE returned an error.");
+    throw new Error(data.errors[0].detail || "REE devolvió un error.");
   }
   return { payload: data, cacheStatus: "network" };
 }
@@ -402,10 +402,10 @@ function cacheTtlForDate(dateValue) {
 }
 
 function cacheStatusLabel() {
-  if (state.source !== "api") return "Demo mode";
-  if (state.cacheStatus === "browser") return "Browser cache";
-  if (state.cacheStatus === "backend") return "Backend cache";
-  return "Live REE data";
+  if (state.source !== "api") return "Modo prueba";
+  if (state.cacheStatus === "browser") return "Caché del navegador";
+  if (state.cacheStatus === "backend") return "Caché del backend";
+  return "Datos REE en directo";
 }
 
 function firstAvailableStartHour(dateValue) {
@@ -448,7 +448,7 @@ function parseMarketData(data) {
       hour,
       datetime: bucket.datetime,
       price: bucket.total / bucket.count,
-      label: series.attributes.title || series.type || "Market price",
+      label: series.attributes.title || series.type || "Precio de mercado",
       seriesType: series === pvpc ? "pvpc" : "spot",
     };
   }).filter(Boolean);
@@ -516,18 +516,18 @@ function render() {
 }
 
 function renderNoRemainingWindow(duration, kw, firstStart, bestHours, lowCut, highCut) {
-  els.recommendationTitle.textContent = "No remaining window";
+  els.recommendationTitle.textContent = "No queda ninguna ventana";
   els.scoreValue.textContent = "--";
   els.scoreMeter.style.width = "0%";
   els.gradeValue.textContent = "--";
   els.gradeValue.className = "grade-badge";
-  els.gradeHint.textContent = "Selected run no longer fits today";
-  els.bestWindow.textContent = "Try tomorrow";
-  els.bestReason.textContent = `A ${duration}h run for ${loadName()} at ${kw.toFixed(1)} kW no longer fits in today's remaining hourly data. Select tomorrow or reduce the duration.`;
+  els.gradeHint.textContent = "El uso seleccionado ya no cabe hoy";
+  els.bestWindow.textContent = "Prueba mañana";
+  els.bestReason.textContent = `Un uso de ${duration} h para ${loadName()} a ${kw.toFixed(1)} kW ya no cabe en los datos horarios restantes de hoy. Selecciona mañana o reduce la duración.`;
   els.costEstimate.textContent = "--";
   els.costHint.textContent = costHintText(kw, duration);
   els.reminderButton.disabled = true;
-  els.reminderStatus.textContent = "No remaining start today";
+  els.reminderStatus.textContent = "No queda inicio hoy";
   renderDataStatus();
   renderConnectorPanel();
   renderChart(state.points, bestHours, lowCut, highCut, firstStart);
@@ -540,7 +540,7 @@ function renderDataStatus() {
     els.dataStatus.textContent = cacheStatusLabel();
     els.dataStatus.className = "";
   } else {
-    els.dataStatus.textContent = "Demo mode";
+    els.dataStatus.textContent = "Modo prueba";
     els.dataStatus.className = "demo";
   }
   els.dataNote.textContent = dataNoteForSelection();
@@ -548,7 +548,7 @@ function renderDataStatus() {
 
   const update = state.apiMeta?.["last-update"];
   els.lastUpdated.textContent = update
-    ? `Last REE update: ${formatDateTime(update)}`
+    ? `Última actualización de REE: ${formatDateTime(update)}`
     : DEMO_NOTICE;
 }
 
@@ -581,9 +581,9 @@ function renderWindowList(windows, duration) {
   if (!windows.length) {
     els.windowList.innerHTML = `
       <article class="window-item empty">
-        <span class="eyebrow">Remaining starts</span>
-        <strong>No slot left today</strong>
-        <small>Pick tomorrow or shorten the duration to get a usable start time.</small>
+        <span class="eyebrow">Inicios restantes</span>
+        <strong>No queda hueco hoy</strong>
+        <small>Elige mañana o acorta la duración para obtener una hora de inicio útil.</small>
       </article>
     `;
     return;
@@ -598,7 +598,7 @@ function renderWindowList(windows, duration) {
           <span class="eyebrow">#${index + 1}</span>
           <strong>${formatWindow(item.start, duration)}</strong>
           <div class="window-meter" aria-hidden="true"><span style="width:${width}%"></span></div>
-          <small>${formatPrice(item.avgPrice)} average, ${formatMoney(item.cost)} estimated for this load.</small>
+          <small>${formatPrice(item.avgPrice)} de media, ${formatMoney(item.cost)} estimados para este consumo.</small>
         </article>
       `;
     })
@@ -639,9 +639,9 @@ function makeReason(best, worst, duration, kw) {
   const percent = worst.cost > 0 ? (saved / worst.cost) * 100 : 0;
   const sourceText =
     state.source === "api"
-      ? "Based on the REE market price series for the selected date."
+      ? "Basado en la serie de precios de mercado de REE para la fecha seleccionada."
       : DEMO_NOTICE;
-  return `${sourceText} For ${loadName()} at ${kw.toFixed(1)} kW, this ${duration}h window is about ${percent.toFixed(0)}% cheaper than the most expensive comparable window.`;
+  return `${sourceText} Para ${loadName()} a ${kw.toFixed(1)} kW, esta ventana de ${duration} h es aproximadamente un ${percent.toFixed(0)}% más barata que la ventana comparable más cara.`;
 }
 
 function renderNowComparison(best, duration) {
@@ -649,58 +649,58 @@ function renderNowComparison(best, duration) {
   const today = startOfDay(new Date());
 
   if (!isSameDay(selected, today)) {
-    els.nowVsBest.textContent = "Today only";
-    els.savingsHint.textContent = "Run-now comparison appears when the selected date is today.";
+    els.nowVsBest.textContent = "Solo hoy";
+    els.savingsHint.textContent = "La comparación con usarlo ahora aparece cuando la fecha seleccionada es hoy.";
     return;
   }
 
   const currentHour = new Date().getHours();
   const nowWindow = state.allRanked.find((item) => item.start === currentHour);
   if (!nowWindow) {
-    els.nowVsBest.textContent = "Too late today";
-    els.savingsHint.textContent = `A ${duration}h run no longer fits in today's remaining hourly data.`;
+    els.nowVsBest.textContent = "Demasiado tarde";
+    els.savingsHint.textContent = `Un uso de ${duration} h ya no cabe en los datos horarios restantes de hoy.`;
     return;
   }
 
   if (!best) {
-    els.nowVsBest.textContent = "Too late today";
-    els.savingsHint.textContent = `A ${duration}h run no longer fits in today's remaining hourly data.`;
+    els.nowVsBest.textContent = "Demasiado tarde";
+    els.savingsHint.textContent = `Un uso de ${duration} h ya no cabe en los datos horarios restantes de hoy.`;
     return;
   }
 
   const savings = nowWindow.cost - best.cost;
   if (Math.abs(savings) < 0.005 || best.start === currentHour) {
-    els.nowVsBest.textContent = "Run now";
-    els.savingsHint.textContent = `${formatWindow(currentHour, duration)} is already one of the best options.`;
+    els.nowVsBest.textContent = "Usar ahora";
+    els.savingsHint.textContent = `${formatWindow(currentHour, duration)} ya es una de las mejores opciones.`;
     return;
   }
 
   if (savings > 0) {
-    els.nowVsBest.textContent = `Save ${formatMoney(savings)}`;
-    els.savingsHint.textContent = `Run now: ${formatMoney(nowWindow.cost)}. Best window: ${formatMoney(best.cost)}.`;
+    els.nowVsBest.textContent = `Ahorra ${formatMoney(savings)}`;
+    els.savingsHint.textContent = `Usarlo ahora: ${formatMoney(nowWindow.cost)}. Mejor ventana: ${formatMoney(best.cost)}.`;
     return;
   }
 
-  els.nowVsBest.textContent = "Now is cheaper";
-  els.savingsHint.textContent = `Run now: ${formatMoney(nowWindow.cost)}. Best listed window: ${formatMoney(best.cost)}.`;
+  els.nowVsBest.textContent = "Ahora es más barato";
+  els.savingsHint.textContent = `Usarlo ahora: ${formatMoney(nowWindow.cost)}. Mejor ventana listada: ${formatMoney(best.cost)}.`;
 }
 
 function renderTomorrowComparison(duration) {
   if (state.tomorrow.status === "idle") {
-    els.tomorrowBest.textContent = "Today view";
-    els.tomorrowHint.textContent = "Select today to compare against tomorrow's day-ahead data.";
+    els.tomorrowBest.textContent = "Vista de hoy";
+    els.tomorrowHint.textContent = "Selecciona hoy para compararlo con los datos del día siguiente.";
     return;
   }
 
   if (state.tomorrow.status === "loading") {
-    els.tomorrowBest.textContent = "Checking";
-    els.tomorrowHint.textContent = "Tomorrow data is loading in the background.";
+    els.tomorrowBest.textContent = "Comprobando";
+    els.tomorrowHint.textContent = "Los datos de mañana se están cargando en segundo plano.";
     return;
   }
 
   if (state.tomorrow.status === "unavailable" || !state.tomorrow.points.length) {
-    els.tomorrowBest.textContent = "Not available";
-    els.tomorrowHint.textContent = "REE may publish tomorrow's PVPC/spot data later.";
+    els.tomorrowBest.textContent = "No disponible";
+    els.tomorrowHint.textContent = "REE puede publicar los datos PVPC/spot de mañana más tarde.";
     return;
   }
 
@@ -708,7 +708,7 @@ function renderTomorrowComparison(duration) {
   const best = rankWindows(state.tomorrow.points, duration, kw)[0];
   state.tomorrow.best = best;
   els.tomorrowBest.textContent = formatWindow(best.start, duration);
-  els.tomorrowHint.textContent = `${formatMoney(best.cost)} estimated if you wait until tomorrow.`;
+  els.tomorrowHint.textContent = `${formatMoney(best.cost)} estimados si esperas a mañana.`;
 }
 
 async function loadTomorrowComparison(dateValue) {
@@ -724,7 +724,7 @@ async function loadTomorrowComparison(dateValue) {
   try {
     const response = await getMarketData(tomorrowValue);
     const points = parseMarketData(response.payload);
-    if (!points.length) throw new Error("No tomorrow data");
+    if (!points.length) throw new Error("Sin datos de mañana");
 
     state.tomorrow = { status: "ready", points, best: null };
   } catch {
@@ -736,7 +736,7 @@ async function loadTomorrowComparison(dateValue) {
 
 function dataNoteForSelection() {
   if (state.source === "demo") {
-    return "Using demo data for unavailable REE dates";
+    return "Usando datos de prueba para fechas sin datos de REE";
   }
 
   const selected = parseDateInput(state.selectedDate);
@@ -746,40 +746,40 @@ function dataNoteForSelection() {
 
   if (isSameDay(selected, tomorrow)) {
     return seriesType === "spot"
-      ? "Tomorrow: day-ahead spot data; PVPC may appear later"
-      : "Tomorrow: day-ahead data available";
+      ? "Mañana: datos spot del día siguiente; el PVPC puede aparecer más tarde"
+      : "Mañana: datos del día siguiente disponibles";
   }
 
   if (isSameDay(selected, today)) {
-    return seriesType === "spot" ? "Today: spot market data" : "Today: PVPC market data";
+    return seriesType === "spot" ? "Hoy: datos de mercado spot" : "Hoy: datos de mercado PVPC";
   }
 
-  return seriesType === "spot" ? "Historical spot market data" : "Historical PVPC market data";
+  return seriesType === "spot" ? "Datos históricos de mercado spot" : "Datos históricos de mercado PVPC";
 }
 
 function gradeForScore(score) {
-  if (score >= 90) return { letter: "A", hint: "Excellent timing" };
-  if (score >= 78) return { letter: "B", hint: "Very good timing" };
-  if (score >= 64) return { letter: "C", hint: "Decent timing" };
-  if (score >= 50) return { letter: "D", hint: "Below-average timing" };
-  if (score >= 35) return { letter: "E", hint: "Expensive timing" };
-  return { letter: "F", hint: "Avoid if flexible" };
+  if (score >= 90) return { letter: "A", hint: "Horario excelente" };
+  if (score >= 78) return { letter: "B", hint: "Horario muy bueno" };
+  if (score >= 64) return { letter: "C", hint: "Horario razonable" };
+  if (score >= 50) return { letter: "D", hint: "Por debajo de la media" };
+  if (score >= 35) return { letter: "E", hint: "Horario caro" };
+  return { letter: "F", hint: "Evitar si puedes moverlo" };
 }
 
 function loadLabelForKwh(kwh) {
-  if (kwh <= 1) return { letter: "A", hint: "Very low consumption" };
-  if (kwh <= 2) return { letter: "B", hint: "Low consumption" };
-  if (kwh <= 3.5) return { letter: "C", hint: "Moderate consumption" };
-  if (kwh <= 5) return { letter: "D", hint: "Medium-high consumption" };
-  if (kwh <= 7.5) return { letter: "E", hint: "High consumption" };
-  if (kwh <= 11) return { letter: "F", hint: "Very high consumption" };
-  return { letter: "G", hint: "Highest consumption" };
+  if (kwh <= 1) return { letter: "A", hint: "Consumo muy bajo" };
+  if (kwh <= 2) return { letter: "B", hint: "Consumo bajo" };
+  if (kwh <= 3.5) return { letter: "C", hint: "Consumo moderado" };
+  if (kwh <= 5) return { letter: "D", hint: "Consumo medio-alto" };
+  if (kwh <= 7.5) return { letter: "E", hint: "Consumo alto" };
+  if (kwh <= 11) return { letter: "F", hint: "Consumo muy alto" };
+  return { letter: "G", hint: "Consumo máximo" };
 }
 
 function renderLoadLabel(load) {
   const kwh = (Number(els.applianceInput.value) || 1) * (Number(els.durationInput.value) || 1);
   els.loadLabel.dataset.active = load.letter;
-  els.loadHint.textContent = `${load.hint}: ${kwh.toFixed(1)} kWh estimated`;
+  els.loadHint.textContent = `${load.hint}: ${kwh.toFixed(1)} kWh estimados`;
   Array.from(els.loadLabel.children).forEach((item) => {
     item.classList.toggle("active", item.textContent === load.letter);
   });
@@ -799,18 +799,18 @@ function makeDemoData(dateValue) {
       hour,
       datetime: `${dateValue}T${pad(hour)}:00:00.000+02:00`,
       price,
-      label: "Demo price",
+      label: "Precio de prueba",
     };
   });
 }
 
 function setLoading(isLoading) {
   els.refreshButton.disabled = isLoading;
-  els.refreshButton.textContent = isLoading ? "Updating" : "Update";
+  els.refreshButton.textContent = isLoading ? "Actualizando" : "Actualizar";
   if (isLoading) {
-    els.recommendationTitle.textContent = "Loading REE data...";
-    els.dataStatus.textContent = "Connecting";
-    els.dataNote.textContent = "Dates are available through tomorrow";
+    els.recommendationTitle.textContent = "Cargando datos de REE...";
+    els.dataStatus.textContent = "Conectando";
+    els.dataNote.textContent = "Las fechas están disponibles hasta mañana";
     els.dataStatus.className = "";
   }
 }
@@ -841,11 +841,11 @@ function formatWindow(start, duration) {
 }
 
 function formatStartTime(start) {
-  return `Start at ${formatHour(start)}`;
+  return `Empieza a las ${formatHour(start)}`;
 }
 
 function loadName() {
-  return els.applianceInput.selectedOptions[0]?.textContent.split(" - ")[0] || "this load";
+  return els.applianceInput.selectedOptions[0]?.textContent.split(" - ")[0] || "este consumo";
 }
 
 function estimateBillCost(marketCost, kwh) {
@@ -869,10 +869,10 @@ function billSettings() {
 function costHintText(kw, duration) {
   const settings = billSettings();
   if (settings.mode === "market") {
-    return `${kw.toFixed(1)} kW for ${duration}h, market component only`;
+    return `${kw.toFixed(1)} kW durante ${duration} h, solo componente de mercado`;
   }
 
-  return `${kw.toFixed(1)} kW for ${duration}h incl. ${settings.vat}% VAT, ${settings.electricityTax}% electricity tax, and ${formatEurKwh(settings.adder)} adders`;
+  return `${kw.toFixed(1)} kW durante ${duration} h con ${settings.vat}% IVA, ${settings.electricityTax}% impuesto eléctrico y ${formatEurKwh(settings.adder)} añadidos`;
 }
 
 function handleBillSettingsChange() {
@@ -952,9 +952,9 @@ function updateVehicleHint() {
   const estimate = vehicleChargeEstimate();
   const cappedText =
     estimate.rawDuration > MAX_DURATION
-      ? ` Capped at ${MAX_DURATION}h for one-day planning.`
+      ? ` Limitado a ${MAX_DURATION} h para planificar un solo día.`
       : "";
-  els.vehicleHint.textContent = `${vehicle.model}: ${estimate.from}% to ${estimate.to}% adds about ${estimate.kwh.toFixed(1)} kWh from a ${estimate.batteryKwh.toFixed(1)} kWh battery. At ${estimate.kw.toFixed(1)} kW, plan about ${estimate.duration}h.${cappedText}`;
+  els.vehicleHint.textContent = `${vehicle.model}: del ${estimate.from}% al ${estimate.to}% añade unos ${estimate.kwh.toFixed(1)} kWh desde una batería de ${estimate.batteryKwh.toFixed(1)} kWh. A ${estimate.kw.toFixed(1)} kW, planifica unas ${estimate.duration} h.${cappedText}`;
 }
 
 function vehicleChargeEstimate() {
@@ -994,7 +994,7 @@ function selectedVehicle() {
 }
 
 function vehicleModelsForBrand(brand) {
-  return VEHICLE_PRESETS[brand] || VEHICLE_PRESETS.Custom;
+  return VEHICLE_PRESETS[brand] || VEHICLE_PRESETS.Personalizado;
 }
 
 function syncVehicleBatteryFromModel() {
@@ -1005,8 +1005,9 @@ function syncVehicleBatteryFromModel() {
 function loadVehicleSettings() {
   try {
     const settings = JSON.parse(localStorage.getItem(VEHICLE_STORAGE_KEY) || "{}");
-    if (settings.brand && VEHICLE_PRESETS[settings.brand]) {
-      els.vehicleBrandInput.value = settings.brand;
+    const storedBrand = settings.brand === "Custom" ? "Personalizado" : settings.brand;
+    if (storedBrand && VEHICLE_PRESETS[storedBrand]) {
+      els.vehicleBrandInput.value = storedBrand;
     }
     renderVehicleModels();
     if (settings.model) {
@@ -1063,7 +1064,7 @@ async function loadConnectorDevices() {
     const url = backendUrl("/devices");
     url.searchParams.set("userId", connectorUserId());
     const response = await fetch(url, { headers: { Accept: "application/json" } });
-    if (!response.ok) throw new Error(`Device request failed with ${response.status}`);
+    if (!response.ok) throw new Error(`La solicitud de dispositivos falló con estado ${response.status}`);
     const data = await response.json();
     state.devices = Array.isArray(data.devices) ? data.devices : [];
   } catch {
@@ -1080,10 +1081,10 @@ function renderConnectorDevices() {
     ? state.devices
         .map(
           (device) =>
-            `<option value="${escapeHTML(device.id)}">${escapeHTML(device.displayName)} - ${escapeHTML(device.status)}</option>`
+            `<option value="${escapeHTML(device.id)}">${escapeHTML(device.displayName)} - ${escapeHTML(connectorStatusLabel(device.status))}</option>`
         )
         .join("")
-    : '<option value="">No charger connected</option>';
+    : '<option value="">Ningún cargador conectado</option>';
 
   els.chargerDeviceInput.innerHTML = options;
   if (state.devices.some((device) => device.id === current)) {
@@ -1101,32 +1102,32 @@ function renderConnectorPanel() {
   els.stopMockButton.disabled = !canCommand;
 
   if (!device) {
-    els.connectorStatus.textContent = "Demo only. Connect the demo wallbox to test scheduling.";
+    els.connectorStatus.textContent = "Solo prueba. Conecta el wallbox de prueba para probar la programación.";
     return;
   }
 
   const windowText = state.best
-    ? `${formatWindow(state.best.start, Number(els.durationInput.value) || 1)} ready`
-    : "No charge window ready";
-  els.connectorStatus.textContent = `${device.displayName}: ${device.status}. ${windowText}.`;
+    ? `${formatWindow(state.best.start, Number(els.durationInput.value) || 1)} lista`
+    : "No hay ventana de carga lista";
+  els.connectorStatus.textContent = `${device.displayName}: ${connectorStatusLabel(device.status)}. ${windowText}.`;
 }
 
 async function connectMockCharger() {
-  setConnectorBusy(true, "Connecting demo wallbox...");
+  setConnectorBusy(true, "Conectando wallbox de prueba...");
   try {
     const response = await postConnectorJson("/connectors/mock/pair", {
       userId: connectorUserId(),
-      displayName: "Demo Wallbox",
+      displayName: "Wallbox de prueba",
       maxKw: Number(els.chargerPowerInput.value) || 7.4,
     });
     const device = response.device;
     await loadConnectorDevices();
     if (device?.id) els.chargerDeviceInput.value = device.id;
     els.connectorStatus.textContent = response.reused
-      ? "Demo Wallbox already connected."
-      : "Demo Wallbox connected. No real charger is controlled.";
+      ? "Wallbox de prueba ya conectado."
+      : "Wallbox de prueba conectado. No se controla ningún cargador real.";
   } catch (error) {
-    els.connectorStatus.textContent = error.message || "Could not connect demo wallbox.";
+    els.connectorStatus.textContent = error.message || "No se pudo conectar el wallbox de prueba.";
   } finally {
     setConnectorBusy(false);
     renderConnectorPanel();
@@ -1140,7 +1141,7 @@ async function sendSmartChargePlan() {
   const duration = Number(els.durationInput.value) || 1;
   const estimate = vehicleChargeEstimate();
   const windowLabel = formatWindow(state.best.start, duration);
-  setConnectorBusy(true, "Sending smart charge plan...");
+  setConnectorBusy(true, "Enviando plan de carga inteligente...");
 
   try {
     const response = await postConnectorJson("/charge-plans", {
@@ -1163,9 +1164,9 @@ async function sendSmartChargePlan() {
     upsertConnectorDevice(response.device);
     renderConnectorDevices();
     els.chargerDeviceInput.value = response.device.id;
-    els.connectorStatus.textContent = `Plan sent to ${response.device.displayName}: ${windowLabel}.`;
+    els.connectorStatus.textContent = `Plan enviado a ${response.device.displayName}: ${windowLabel}.`;
   } catch (error) {
-    els.connectorStatus.textContent = error.message || "Could not send plan.";
+    els.connectorStatus.textContent = error.message || "No se pudo enviar el plan.";
   } finally {
     setConnectorBusy(false);
     renderConnectorPanel();
@@ -1176,7 +1177,7 @@ async function sendDeviceCommand(command) {
   const device = selectedConnectorDevice();
   if (!device) return;
 
-  setConnectorBusy(true, `${command === "start" ? "Starting" : "Stopping"} charger...`);
+  setConnectorBusy(true, `${command === "start" ? "Iniciando" : "Parando"} cargador...`);
   try {
     const response = await postConnectorJson(`/devices/${encodeURIComponent(device.id)}/commands`, {
       userId: connectorUserId(),
@@ -1185,9 +1186,10 @@ async function sendDeviceCommand(command) {
     upsertConnectorDevice(response.device);
     renderConnectorDevices();
     els.chargerDeviceInput.value = response.device.id;
-    els.connectorStatus.textContent = `${response.device.displayName}: ${response.device.status}.`;
+    els.connectorStatus.textContent = `${response.device.displayName}: ${connectorStatusLabel(response.device.status)}.`;
   } catch (error) {
-    els.connectorStatus.textContent = error.message || `Could not ${command} charger.`;
+    els.connectorStatus.textContent =
+      error.message || `No se pudo ${command === "start" ? "iniciar" : "parar"} el cargador.`;
   } finally {
     setConnectorBusy(false);
     renderConnectorPanel();
@@ -1203,6 +1205,16 @@ function upsertConnectorDevice(device) {
   state.devices = [device, ...state.devices.filter((item) => item.id !== device.id)];
 }
 
+function connectorStatusLabel(status) {
+  const labels = {
+    available: "disponible",
+    scheduled: "programado",
+    charging: "cargando",
+    paused: "pausado"
+  };
+  return labels[status] || status || "desconocido";
+}
+
 async function postConnectorJson(path, body) {
   const response = await fetch(backendUrl(path), {
     method: "POST",
@@ -1214,7 +1226,7 @@ async function postConnectorJson(path, body) {
   });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(data.error || `Connector request failed with ${response.status}`);
+    throw new Error(data.error || `La solicitud al conector falló con estado ${response.status}`);
   }
   return data;
 }
@@ -1256,7 +1268,7 @@ function loadProfiles() {
 }
 
 function renderProfileOptions() {
-  const custom = '<option value="">Custom load</option>';
+  const custom = '<option value="">Consumo personalizado</option>';
   const saved = state.profiles
     .map(
       (profile, index) =>
@@ -1267,8 +1279,8 @@ function renderProfileOptions() {
 }
 
 function saveCurrentProfile() {
-  const fallbackName = loadName() === "this load" ? "My load" : loadName();
-  const name = window.prompt("Profile name", fallbackName);
+  const fallbackName = loadName() === "este consumo" ? "Mi consumo" : loadName();
+  const name = window.prompt("Nombre del perfil", fallbackName);
   if (!name?.trim()) return;
 
   const profile = {
@@ -1319,7 +1331,7 @@ async function scheduleReminder() {
   const delay = reminderAt.getTime() - Date.now();
 
   if (delay <= 0) {
-    els.reminderStatus.textContent = "Window is soon";
+    els.reminderStatus.textContent = "La ventana empieza pronto";
     return;
   }
 
@@ -1331,19 +1343,19 @@ async function scheduleReminder() {
   state.reminderTimer = window.setTimeout(() => {
     if ("Notification" in window && Notification.permission === "granted") {
       new Notification("Power Window", {
-        body: `${name} starts in 10 minutes: ${formatWindow(bestStart, duration)}`,
+        body: `${name} empieza en 10 minutos: ${formatWindow(bestStart, duration)}`,
       });
     } else {
-      window.alert(`Power Window: ${name} starts in 10 minutes.`);
+      window.alert(`Power Window: ${name} empieza en 10 minutos.`);
     }
   }, delay);
 
-  els.reminderStatus.textContent = `Set for ${formatDateTime(reminderAt.toISOString())}`;
+  els.reminderStatus.textContent = `Programado para ${formatDateTime(reminderAt.toISOString())}`;
 }
 
 async function installApp() {
   if (!state.deferredInstallPrompt) {
-    els.installHint.textContent = "Open in Android Chrome, then use Add to Home screen.";
+    els.installHint.textContent = "Ábrelo en Chrome para Android y usa Añadir a pantalla de inicio.";
     return;
   }
 
@@ -1351,7 +1363,7 @@ async function installApp() {
   await state.deferredInstallPrompt.userChoice;
   state.deferredInstallPrompt = null;
   els.installButton.disabled = true;
-  els.installHint.textContent = "Install prompt handled by the browser.";
+  els.installHint.textContent = "La instalación la gestiona el navegador.";
 }
 
 function escapeHTML(value) {
@@ -1376,12 +1388,12 @@ function formatHourShort(hour) {
 }
 
 function formatPrice(value, compact = false) {
-  const suffix = compact ? "" : " EUR/MWh";
+  const suffix = compact ? "" : " €/MWh";
   return `${Math.round(value)}${suffix}`;
 }
 
 function formatMoney(value) {
-  return new Intl.NumberFormat("en-ES", {
+  return new Intl.NumberFormat("es-ES", {
     style: "currency",
     currency: "EUR",
     minimumFractionDigits: 2,
@@ -1390,11 +1402,11 @@ function formatMoney(value) {
 }
 
 function formatEurKwh(value) {
-  return `${value.toFixed(3)} EUR/kWh`;
+  return `${value.toFixed(3)} €/kWh`;
 }
 
 function formatDateTime(value) {
-  return new Intl.DateTimeFormat("en-GB", {
+  return new Intl.DateTimeFormat("es-ES", {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(value));

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Power Window" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <title>How Power Window Works</title>
+    <title>Cómo Funciona Power Window</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="favicon.svg" />
     <link rel="manifest" href="manifest.webmanifest" />
@@ -21,114 +21,117 @@
           <span class="brand-mark" aria-hidden="true">P</span>
           <div>
             <h1>Power Window</h1>
-            <p>How recommendations, scores, and grades are calculated.</p>
+            <p>Cómo se calculan recomendaciones, puntuaciones y notas.</p>
           </div>
         </div>
 
-        <nav class="app-nav" aria-label="App pages">
-          <a href="/">Planner</a>
-          <a href="/statistics">Statistics</a>
-          <a href="/methodology" aria-current="page">How it works</a>
-          <a href="/mission">Mission</a>
-          <a href="/privacy">Privacy</a>
+        <nav class="app-nav" aria-label="Páginas de la app">
+          <a href="/">Planificador</a>
+          <a href="/statistics">Estadísticas</a>
+          <a href="/methodology" aria-current="page">Cómo funciona</a>
+          <a href="/mission">Misión</a>
+          <a href="/privacy">Privacidad</a>
         </nav>
       </section>
 
       <section class="hero-panel methodology-hero">
         <div>
-          <span class="eyebrow">Methodology</span>
-          <h2>We separate timing from consumption.</h2>
+          <span class="eyebrow">Metodología</span>
+          <h2>Separamos el horario del consumo.</h2>
           <p>
-            The app gives one grade for when you run the appliance and one label for the
-            estimated electricity consumed by the selected load.
+            La app da una nota por el momento en que usas el aparato y una etiqueta para la
+            electricidad estimada que consume la carga seleccionada.
           </p>
         </div>
       </section>
 
       <section class="method-grid">
         <article class="method-card">
-          <span class="eyebrow">1. Price data</span>
-          <h3>Get the day signal</h3>
+          <span class="eyebrow">1. Datos de precio</span>
+          <h3>Obtener la señal del día</h3>
           <p>
-            Power Window requests REE's peninsular real-time market price widget for the
-            selected date. It prefers PVPC hourly prices when available and otherwise uses
-            the spot market price series averaged to hourly values.
+            Power Window consulta el widget de precios del mercado peninsular en tiempo real
+            de REE para la fecha seleccionada. Prioriza los precios horarios PVPC cuando están
+            disponibles y, si no, usa la serie de precio spot promediada por horas.
           </p>
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">2. Cost estimate</span>
-          <h3>Estimate the chosen load</h3>
+          <span class="eyebrow">2. Estimación de coste</span>
+          <h3>Estimar el consumo elegido</h3>
           <p>
-            For every candidate window, the app multiplies each hour's price by the selected
-            appliance load. Market signal mode keeps this clean. Bill impact mode adds editable
-            per-kWh regulated costs, retailer margin, electricity tax, and VAT.
+            Para cada ventana candidata, la app multiplica el precio de cada hora por la
+            potencia seleccionada. El modo de señal de mercado mantiene el cálculo limpio. El
+            modo de impacto en factura añade costes regulados editables por kWh, margen de
+            comercializadora, impuesto eléctrico e IVA.
           </p>
-          <code>cost = sum((EUR per MWh / 1000) * appliance kW)</code>
-          <code>bill impact = (market + kWh adders) * electricity tax * VAT</code>
+          <code>coste = suma((EUR por MWh / 1000) * kW del aparato)</code>
+          <code>impacto factura = (mercado + añadidos por kWh) * impuesto eléctrico * IVA</code>
           <p>
-            Fixed monthly items such as contracted power and meter rental are not used to rank
-            hours because they do not change when you move a dishwasher or EV session.
-          </p>
-        </article>
-
-        <article class="method-card">
-          <span class="eyebrow">3. Score</span>
-          <h3>Normalize against the day</h3>
-          <p>
-            The cheapest average window gets a score near 100 and the most expensive window
-            gets a score near 0. Midday hours receive a small bonus because they often align
-            with stronger solar production, but price remains the main driver.
+            Los conceptos fijos mensuales, como la potencia contratada o el alquiler del
+            contador, no se usan para ordenar horas porque no cambian al mover un lavavajillas
+            o una sesión de carga.
           </p>
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">4. Timing grade</span>
-          <h3>Show a simple A-F symbol</h3>
+          <span class="eyebrow">3. Puntuación</span>
+          <h3>Normalizar frente al día</h3>
           <p>
-            The A-F grade is a quick interpretation of the score for the selected day.
-            It says whether the selected time window is efficient relative to the rest of
-            that day.
+            La ventana media más barata recibe una puntuación cercana a 100 y la más cara una
+            puntuación cercana a 0. Las horas centrales del día reciben una pequeña bonificación
+            porque suelen coincidir con más producción solar, pero el precio sigue siendo el
+            factor principal.
+          </p>
+        </article>
+
+        <article class="method-card">
+          <span class="eyebrow">4. Nota de horario</span>
+          <h3>Mostrar una señal A-F sencilla</h3>
+          <p>
+            La nota A-F es una interpretación rápida de la puntuación del día seleccionado.
+            Indica si la ventana elegida es eficiente en comparación con el resto de ese día.
           </p>
           <ul class="grade-list">
-            <li><strong>A</strong> 90-100: excellent timing</li>
-            <li><strong>B</strong> 78-89: very good timing</li>
-            <li><strong>C</strong> 64-77: decent timing</li>
-            <li><strong>D</strong> 50-63: below-average timing</li>
-            <li><strong>E</strong> 35-49: expensive timing</li>
-            <li><strong>F</strong> 0-34: avoid if flexible</li>
+            <li><strong>A</strong> 90-100: horario excelente</li>
+            <li><strong>B</strong> 78-89: horario muy bueno</li>
+            <li><strong>C</strong> 64-77: horario razonable</li>
+            <li><strong>D</strong> 50-63: por debajo de la media</li>
+            <li><strong>E</strong> 35-49: horario caro</li>
+            <li><strong>F</strong> 0-34: evitar si puedes moverlo</li>
           </ul>
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">5. Decisions</span>
-          <h3>Compare now, today, and tomorrow</h3>
+          <span class="eyebrow">5. Decisiones</span>
+          <h3>Comparar ahora, hoy y mañana</h3>
           <p>
-            When today's data is selected, Power Window compares running immediately with the
-            best remaining window. It also checks tomorrow's day-ahead data when REE has made it
-            available, so the planner can show whether waiting another day is worth considering.
+            Cuando se seleccionan los datos de hoy, Power Window compara usar electricidad ahora
+            con la mejor ventana restante. También comprueba los datos del día siguiente cuando
+            REE los publica, para mostrar si merece la pena esperar.
           </p>
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">6. Load label</span>
-          <h3>Estimate appliance-style consumption</h3>
+          <span class="eyebrow">6. Etiqueta de consumo</span>
+          <h3>Estimar el consumo como en los electrodomésticos</h3>
           <p>
-            The colored A-G load label is inspired by appliance energy labels, but it is not
-            an official EU certificate. It is based on estimated run energy:
+            La etiqueta A-G de colores se inspira en las etiquetas energéticas de los
+            electrodomésticos, pero no es un certificado oficial de la UE. Se basa en la energía
+            estimada de uso:
           </p>
-          <code>estimated kWh = selected kW * selected hours</code>
+          <code>kWh estimados = kW seleccionados * horas seleccionadas</code>
           <p>
-            A short dishwasher run may show A or B, while a longer EV charge can show E, F,
-            or G because the total electricity consumed is much larger.
+            Un ciclo corto de lavavajillas puede mostrar A o B, mientras que una carga larga de
+            coche eléctrico puede mostrar E, F o G porque el consumo total es mucho mayor.
           </p>
         </article>
       </section>
 
       <footer class="source-note">
         <p>
-          Source: Red Electrica de Espana REData API. Power Window is independent and is not
-          affiliated with or endorsed by Red Electrica. <a href="/privacy">Privacy</a>.
+          Fuente: API REData de Red Eléctrica de España. Power Window es independiente y no está
+          afiliada ni respaldada por Red Eléctrica. <a href="/privacy">Privacidad</a>.
         </p>
       </footer>
     </main>

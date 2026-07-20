@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Power Window" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <title>Power Window Statistics</title>
+    <title>Estadísticas de Power Window</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="favicon.svg" />
     <link rel="manifest" href="manifest.webmanifest" />
@@ -22,79 +22,79 @@
           <span class="brand-mark" aria-hidden="true">P</span>
           <div>
             <h1>Power Window</h1>
-            <p>Daily price and generation signals for Spain.</p>
+            <p>Señales diarias de precio y generación para España.</p>
           </div>
         </div>
 
-        <nav class="app-nav" aria-label="App pages">
-          <a href="/">Planner</a>
-          <a href="/statistics" aria-current="page">Statistics</a>
-          <a href="/methodology">How it works</a>
-          <a href="/mission">Mission</a>
-          <a href="/privacy">Privacy</a>
+        <nav class="app-nav" aria-label="Páginas de la app">
+          <a href="/">Planificador</a>
+          <a href="/statistics" aria-current="page">Estadísticas</a>
+          <a href="/methodology">Cómo funciona</a>
+          <a href="/mission">Misión</a>
+          <a href="/privacy">Privacidad</a>
         </nav>
       </section>
 
-      <section class="planner-panel stats-filter-panel" aria-label="Statistics controls">
+      <section class="planner-panel stats-filter-panel" aria-label="Controles de estadísticas">
         <div class="planner-copy">
-          <span class="eyebrow">Statistics</span>
-          <h2>Track the daily energy signal.</h2>
+          <span class="eyebrow">Estadísticas</span>
+          <h2>Sigue la señal energética diaria.</h2>
         </div>
         <div class="stats-controls">
           <label class="field">
-            <span>Date</span>
+            <span>Fecha</span>
             <input id="statsDateInput" type="date" />
           </label>
-          <button id="statsRefreshButton" class="primary-button refresh-button" type="button">Update</button>
-          <small id="statsControlHint">Generation data is available through today. PVPC prices are cached through the backend.</small>
+          <button id="statsRefreshButton" class="primary-button refresh-button" type="button">Actualizar</button>
+          <small id="statsControlHint">Los datos de generación están disponibles hasta hoy. Los precios PVPC se cachean en el backend.</small>
         </div>
       </section>
 
       <section class="hero-panel stats-hero" aria-live="polite">
         <div class="answer-copy">
-          <span class="eyebrow">Daily signal</span>
-          <h2 id="statsHeroTitle">Loading statistics...</h2>
-          <p id="statsHeroReason">Fetching cached REE price and generation data.</p>
+          <span class="eyebrow">Señal diaria</span>
+          <h2 id="statsHeroTitle">Cargando estadísticas...</h2>
+          <p id="statsHeroReason">Obteniendo datos cacheados de precio y generación de REE.</p>
         </div>
         <div class="status-meta">
-          <span id="statsDataStatus">Connecting</span>
-          <span id="statsDataNote">Source pending</span>
-          <span id="statsLastUpdated">Last update pending</span>
+          <span id="statsDataStatus">Conectando</span>
+          <span id="statsDataNote">Fuente pendiente</span>
+          <span id="statsLastUpdated">Actualización pendiente</span>
         </div>
       </section>
 
       <section class="dashboard-grid stats-kpi-grid">
         <article class="metric-card">
-          <span class="eyebrow">Renewable generation</span>
+          <span class="eyebrow">Generación renovable</span>
           <strong id="renewableRate">--</strong>
-          <small id="renewableHint">Waiting for generation mix data.</small>
+          <small id="renewableHint">Esperando datos del mix de generación.</small>
         </article>
         <article class="metric-card">
-          <span class="eyebrow">Solar + wind</span>
+          <span class="eyebrow">Solar + eólica</span>
           <strong id="windSolarRate">--</strong>
-          <small id="windSolarHint">How much of generation came from wind and solar.</small>
+          <small id="windSolarHint">Qué parte de la generación vino de eólica y solar.</small>
         </article>
         <article class="metric-card">
-          <span class="eyebrow">Lowest PVPC price</span>
+          <span class="eyebrow">Precio PVPC más bajo</span>
           <strong id="lowestPvpcHour">--</strong>
-          <small id="lowestPvpcHint">Waiting for hourly prices.</small>
+          <small id="lowestPvpcHint">Esperando precios horarios.</small>
         </article>
         <article class="metric-card">
-          <span class="eyebrow">10 kWh timing spread</span>
+          <span class="eyebrow">Diferencia para 10 kWh</span>
           <strong id="timingSpread">--</strong>
-          <small id="timingSpreadHint">Difference between the cheapest and highest PVPC hour.</small>
+          <small id="timingSpreadHint">Diferencia entre la hora PVPC más barata y la más cara.</small>
         </article>
       </section>
 
       <section class="chart-section">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Generation mix</span>
-            <h2>Which technologies supplied electricity on the selected day</h2>
+            <span class="eyebrow">Mix de generación</span>
+            <h2>Qué tecnologías aportaron electricidad el día seleccionado</h2>
           </div>
-          <p id="generationMixNote" class="section-note">Values are grouped from REE generation structure data.</p>
+          <p id="generationMixNote" class="section-note">Valores agrupados a partir de la estructura de generación de REE.</p>
         </div>
-        <div class="mix-stack" aria-label="Renewable versus non-renewable generation">
+        <div class="mix-stack" aria-label="Generación renovable frente a no renovable">
           <span id="renewableStack" class="mix-stack-renewable"></span>
           <span id="nonRenewableStack" class="mix-stack-nonrenewable"></span>
         </div>
@@ -104,19 +104,19 @@
       <section class="chart-section">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">PVPC price shape</span>
-            <h2>Hourly price component across the selected day</h2>
+            <span class="eyebrow">Forma del precio PVPC</span>
+            <h2>Componente horario de precio durante el día seleccionado</h2>
           </div>
-          <p id="priceShapeNote" class="section-note">Lower bars are better timing signals for flexible loads.</p>
+          <p id="priceShapeNote" class="section-note">Las barras más bajas son mejores señales para consumos flexibles.</p>
         </div>
         <div id="statsPriceChart" class="stats-price-chart" aria-live="polite"></div>
       </section>
 
       <footer class="source-note">
         <p>
-          Statistics use Red Electrica REData responses cached by Power Window. Generation data
-          can be partial for the current day and should be treated as an operational signal, not
-          a final annual accounting figure.
+          Las estadísticas usan respuestas REData de Red Eléctrica cacheadas por Power Window.
+          Los datos de generación pueden ser parciales durante el día actual y deben leerse como
+          una señal operativa, no como una cifra contable anual definitiva.
         </p>
       </footer>
     </main>

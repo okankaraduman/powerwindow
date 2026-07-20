@@ -8,6 +8,23 @@ const STATS_REE_API_BASE = "https://apidatos.ree.es/en/datos";
 const STATS_MARKET_WIDGET = "mercados/precios-mercados-tiempo-real";
 const STATS_GENERATION_WIDGET = "generacion/estructura-generacion";
 const STATS_TIME_ZONE = "Europe/Madrid";
+const GENERATION_TITLE_ES = {
+  Hydro: "Hidráulica",
+  Nuclear: "Nuclear",
+  Coal: "Carbón",
+  "Diesel engines": "Motores diésel",
+  "Gas turbine": "Turbina de gas",
+  "Steam turbine": "Turbina de vapor",
+  "Combined cycle": "Ciclo combinado",
+  Wind: "Eólica",
+  "Solar photovoltaic": "Solar fotovoltaica",
+  "Thermal solar": "Solar térmica",
+  "Other renewables": "Otras renovables",
+  Cogeneration: "Cogeneración",
+  "Non-renewable waste": "Residuos no renovables",
+  "Renewable waste": "Residuos renovables",
+  "Total generation": "Generación total"
+};
 
 const statsEls = {
   dateInput: document.querySelector("#statsDateInput"),
@@ -85,15 +102,15 @@ async function loadStatistics(dateValue) {
 
 function setLoadingState(date) {
   statsEls.refreshButton.disabled = true;
-  statsEls.dataStatus.textContent = "Loading";
-  statsEls.dataNote.textContent = `Fetching ${date}`;
-  statsEls.lastUpdated.textContent = "Last update pending";
-  statsEls.heroTitle.textContent = "Loading statistics...";
-  statsEls.heroReason.textContent = "Fetching cached REE price and generation data.";
+  statsEls.dataStatus.textContent = "Cargando";
+  statsEls.dataNote.textContent = `Obteniendo ${date}`;
+  statsEls.lastUpdated.textContent = "Actualización pendiente";
+  statsEls.heroTitle.textContent = "Cargando estadísticas...";
+  statsEls.heroReason.textContent = "Obteniendo datos cacheados de precio y generación de REE.";
 }
 
 function renderStatistics({ date, market, generation, cacheStatus, cachedAt }) {
-  const dayContext = date === madridDateString(0) ? "today so far" : "that day";
+  const dayContext = date === madridDateString(0) ? "hoy hasta ahora" : "ese día";
   const topTechnology = generation.rows[0];
   const renewableShare = generation.renewable / generation.total;
   const windSolarShare = generation.windSolar / generation.total;
@@ -105,49 +122,49 @@ function renderStatistics({ date, market, generation, cacheStatus, cachedAt }) {
   statsEls.refreshButton.disabled = false;
   statsEls.dataStatus.textContent = sourceLabel(cacheStatus);
   statsEls.dataNote.textContent =
-    `${date}: PVPC and generation structure, ${sourceLabel(cacheStatus).toLowerCase()}`;
-  statsEls.lastUpdated.textContent = cachedAt ? `Cached: ${formatDateTime(cachedAt)}` : "Cached time unavailable";
+    `${date}: PVPC y estructura de generación, ${sourceLabel(cacheStatus).toLowerCase()}`;
+  statsEls.lastUpdated.textContent = cachedAt ? `Cacheado: ${formatDateTime(cachedAt)}` : "Hora de caché no disponible";
   statsEls.controlHint.textContent =
     date === madridDateString(0)
-      ? "Today can change as REE updates prices and generation data."
-      : "Past dates are treated as stable once cached.";
+      ? "Hoy puede cambiar a medida que REE actualiza precios y generación."
+      : "Las fechas pasadas se tratan como estables una vez cacheadas.";
 
-  statsEls.heroTitle.textContent = `${formatPercent(renewableShare)} renewable`;
+  statsEls.heroTitle.textContent = `${formatPercent(renewableShare)} renovable`;
   statsEls.heroReason.textContent =
-    `For ${dayContext}, the cheapest PVPC hour is ${formatHour(market.lowest.hour)} at ${formatEuroPerKwh(market.lowest.price / 1000)}. ` +
-    `${topTechnology.title} is the largest generation source at ${formatPercent(topTechnology.share)}.`;
+    `Para ${dayContext}, la hora PVPC más barata es ${formatHour(market.lowest.hour)} a ${formatEuroPerKwh(market.lowest.price / 1000)}. ` +
+    `${topTechnology.title} es la principal fuente de generación con ${formatPercent(topTechnology.share)}.`;
 
   statsEls.renewableRate.textContent = formatPercent(renewableShare);
   statsEls.renewableHint.textContent =
-    `${formatEnergy(generation.renewable)} renewable out of ${formatEnergy(generation.total)} total generation.`;
+    `${formatEnergy(generation.renewable)} renovables de ${formatEnergy(generation.total)} de generación total.`;
   statsEls.windSolarRate.textContent = formatPercent(windSolarShare);
   statsEls.windSolarHint.textContent =
-    `${formatEnergy(generation.windSolar)} came from wind plus solar generation.`;
+    `${formatEnergy(generation.windSolar)} procedieron de eólica y solar.`;
   statsEls.lowestPvpcHour.textContent = formatHour(market.lowest.hour);
   statsEls.lowestPvpcHint.textContent =
-    `${formatEuroPerKwh(market.lowest.price / 1000)} price component, ${formatPriceMwh(market.lowest.price)}.`;
+    `${formatEuroPerKwh(market.lowest.price / 1000)} de componente de precio, ${formatPriceMwh(market.lowest.price)}.`;
   statsEls.timingSpread.textContent = formatMoney(timingSpread);
   statsEls.timingSpreadHint.textContent =
-    `A 10 kWh flexible load differs by about ${formatPercent(spreadPercent / 100)} between cheapest and highest hour.`;
+    `Un consumo flexible de 10 kWh cambia alrededor de un ${formatPercent(spreadPercent / 100)} entre la hora más barata y la más cara.`;
 
   statsEls.generationMixNote.textContent =
-    `Top source: ${topTechnology.title}. REE last update: ${formatDateTime(generation.lastUpdated)}.`;
+    `Fuente principal: ${topTechnology.title}. Última actualización de REE: ${formatDateTime(generation.lastUpdated)}.`;
   renderGenerationStack(generation);
   renderGenerationRows(generation);
 
   statsEls.priceShapeNote.textContent =
-    `Average PVPC component: ${formatEuroPerKwh(market.average / 1000)}. Highest hour: ${formatHour(market.highest.hour)}.`;
+    `Componente PVPC medio: ${formatEuroPerKwh(market.average / 1000)}. Hora más cara: ${formatHour(market.highest.hour)}.`;
   renderPriceChart(market.points, market.lowest.hour, market.highest.hour);
 }
 
 function renderStatisticsError(error) {
   statsEls.refreshButton.disabled = false;
-  statsEls.dataStatus.textContent = "Unavailable";
-  statsEls.dataNote.textContent = "Statistics could not be loaded";
-  statsEls.lastUpdated.textContent = error.message || "Unknown error";
-  statsEls.heroTitle.textContent = "No statistics available";
+  statsEls.dataStatus.textContent = "No disponible";
+  statsEls.dataNote.textContent = "No se pudieron cargar las estadísticas";
+  statsEls.lastUpdated.textContent = error.message || "Error desconocido";
+  statsEls.heroTitle.textContent = "No hay estadísticas disponibles";
   statsEls.heroReason.textContent =
-    "Try another date or refresh once REE data is available through the backend cache.";
+    "Prueba otra fecha o actualiza cuando los datos de REE estén disponibles a través de la caché del backend.";
   statsEls.renewableRate.textContent = "--";
   statsEls.windSolarRate.textContent = "--";
   statsEls.lowestPvpcHour.textContent = "--";
@@ -159,9 +176,9 @@ function renderStatisticsError(error) {
 function renderGenerationStack(generation) {
   const renewableShare = clampShare(generation.renewable / generation.total);
   statsEls.renewableStack.style.width = `${renewableShare * 100}%`;
-  statsEls.renewableStack.textContent = `Renewable ${formatPercent(renewableShare)}`;
+  statsEls.renewableStack.textContent = `Renovable ${formatPercent(renewableShare)}`;
   statsEls.nonRenewableStack.style.width = `${(1 - renewableShare) * 100}%`;
-  statsEls.nonRenewableStack.textContent = `Other ${formatPercent(1 - renewableShare)}`;
+  statsEls.nonRenewableStack.textContent = `Resto ${formatPercent(1 - renewableShare)}`;
 }
 
 function renderGenerationRows(generation) {
@@ -262,9 +279,9 @@ async function fetchGenerationData(date) {
 async function fetchReeWidget(widget, date, timeTrunc) {
   const url = `${STATS_REE_API_BASE}/${widget}?start_date=${date}T00:00&end_date=${date}T23:59&time_trunc=${timeTrunc}`;
   const response = await fetch(url, { headers: { Accept: "application/json" } });
-  if (!response.ok) throw new Error(`REE request failed with ${response.status}`);
+  if (!response.ok) throw new Error(`La solicitud a REE falló con estado ${response.status}`);
   const data = await response.json();
-  if (data.errors?.length) throw new Error(data.errors[0].detail || "REE returned an error");
+  if (data.errors?.length) throw new Error(data.errors[0].detail || "REE devolvió un error");
   return data;
 }
 
@@ -302,7 +319,7 @@ function parseGenerationMix(data) {
         ? attributes.values.reduce((sum, point) => sum + Number(point.value || 0), 0)
         : 0;
       return {
-        title: attributes.title || item.type || "Unknown",
+        title: generationTitle(attributes.title || item.type || "Desconocido"),
         value,
         color: attributes.color,
         type: attributes.type || "",
@@ -311,7 +328,10 @@ function parseGenerationMix(data) {
     })
     .filter((row) => row.value > 0);
 
-  const totalRow = rawRows.find((row) => row.type === "total" || row.title.toLowerCase() === "total generation");
+  const totalRow = rawRows.find((row) => {
+    const title = row.title.toLowerCase();
+    return row.type === "total" || title === "total generation" || title === "generación total";
+  });
   const rows = rawRows.filter((row) => row !== totalRow);
   const total = totalRow?.value || rows.reduce((sum, row) => sum + row.value, 0);
 
@@ -356,7 +376,11 @@ function isRenewable(row) {
 
 function isWindOrSolar(row) {
   const title = row.title.toLowerCase();
-  return title.includes("wind") || title.includes("solar");
+  return title.includes("eólica") || title.includes("solar");
+}
+
+function generationTitle(title) {
+  return GENERATION_TITLE_ES[title] || title;
 }
 
 function aggregateCacheStatus(statuses) {
@@ -368,12 +392,12 @@ function aggregateCacheStatus(statuses) {
 
 function sourceLabel(cacheStatus) {
   const labels = {
-    fresh: "Fresh REE data",
-    stale: "Stale cache",
-    database: "Backend database",
-    cache: "Backend cache"
+    fresh: "Datos REE recientes",
+    stale: "Caché antigua",
+    database: "Base de datos backend",
+    cache: "Caché del backend"
   };
-  return labels[cacheStatus] || "Backend cache";
+  return labels[cacheStatus] || "Caché del backend";
 }
 
 function latestIso(values) {
@@ -426,14 +450,14 @@ function safeColor(value) {
 }
 
 function formatPercent(value) {
-  return new Intl.NumberFormat("en-GB", {
+  return new Intl.NumberFormat("es-ES", {
     style: "percent",
     maximumFractionDigits: 1
   }).format(value || 0);
 }
 
 function formatMoney(value) {
-  return new Intl.NumberFormat("en-GB", {
+  return new Intl.NumberFormat("es-ES", {
     style: "currency",
     currency: "EUR",
     maximumFractionDigits: 2
@@ -445,7 +469,7 @@ function formatEuroPerKwh(value) {
 }
 
 function formatPriceMwh(value) {
-  return `${new Intl.NumberFormat("en-GB", { maximumFractionDigits: 2 }).format(value || 0)} EUR/MWh`;
+  return `${new Intl.NumberFormat("es-ES", { maximumFractionDigits: 2 }).format(value || 0)} €/MWh`;
 }
 
 function formatEnergy(value) {
@@ -468,8 +492,8 @@ function formatShortHour(hour) {
 }
 
 function formatDateTime(value) {
-  if (!value || Number.isNaN(Date.parse(value))) return "unknown";
-  return new Intl.DateTimeFormat("en-GB", {
+  if (!value || Number.isNaN(Date.parse(value))) return "desconocida";
+  return new Intl.DateTimeFormat("es-ES", {
     timeZone: STATS_TIME_ZONE,
     day: "2-digit",
     month: "short",

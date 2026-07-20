@@ -55,7 +55,7 @@ async function loadMissionNumbers() {
     const dateValue = formatDateInput(selectedDate);
     const payload = await fetchMissionMarketData(dateValue);
     const points = parseMissionMarketData(payload);
-    if (!points.length) throw new Error("No hourly market data");
+    if (!points.length) throw new Error("Sin datos horarios de mercado");
 
     const dishwasher = savingsExample(points, 2, 0.8);
     const ev = savingsExample(points, 3, 7.4);
@@ -83,11 +83,11 @@ async function loadMissionNumbers() {
       weekly: week.weekly,
     });
     missionEls.missionDataNote.textContent =
-      `Today uses ${dateValue} hourly prices. The weekly basket averages ${week.days} available day${week.days === 1 ? "" : "s"} from this month, then applies 2 dishwasher runs, 1 laundry load, and 3-4 EV wallbox top-ups.`;
+      `Hoy usa los precios horarios de ${dateValue}. La cesta semanal promedia ${week.days} día${week.days === 1 ? "" : "s"} disponible${week.days === 1 ? "" : "s"} de este mes y aplica 2 usos de lavavajillas, 1 lavadora y 3-4 recargas de coche eléctrico.`;
   } catch {
     renderFallbackMissionNumbers();
     missionEls.missionDataNote.textContent =
-      "Showing the latest bundled weekly example from 7 July 2026 because live hourly data is not available in this browser session.";
+      "Mostrando el último ejemplo semanal incluido, del 7 de julio de 2026, porque los datos horarios en directo no están disponibles en esta sesión del navegador.";
   }
 }
 
@@ -98,15 +98,15 @@ function renderFallbackMissionNumbers() {
 function renderMissionNumbers(example) {
   missionEls.dishwasherSavings.textContent = formatMoney(example.dishwasher.savings);
   missionEls.dishwasherSavingsNote.textContent =
-    `Dishwasher: ${example.dishwasher.best} instead of ${example.dishwasher.worst}`;
+    `Lavavajillas: ${example.dishwasher.best} en lugar de ${example.dishwasher.worst}`;
   missionEls.evSavings.textContent = formatMoney(example.ev.savings);
-  missionEls.evSavingsNote.textContent = `EV: ${example.ev.best} instead of ${example.ev.worst}`;
+  missionEls.evSavingsNote.textContent = `Coche eléctrico: ${example.ev.best} en lugar de ${example.ev.worst}`;
   missionEls.laundrySavings.textContent = formatMoney(example.laundry.savings);
   missionEls.laundrySavingsNote.textContent =
-    `Laundry: ${example.laundry.best} instead of ${example.laundry.worst}`;
+    `Lavadora: ${example.laundry.best} en lugar de ${example.laundry.worst}`;
   missionEls.weeklySavings.textContent = formatMoneyRange(example.weekly.low, example.weekly.high);
   missionEls.weeklySavingsNote.textContent =
-    `${example.days || 1}-day avg: 2 dishwasher, 1 laundry, 3-4 EV top-ups`;
+    `Media de ${example.days || 1} día${(example.days || 1) === 1 ? "" : "s"}: 2 lavavajillas, 1 lavadora, 3-4 recargas de coche`;
 }
 
 async function weeklyBasketExample(selectedDate) {
@@ -162,7 +162,7 @@ async function fetchMissionMonthDataByDay(dateValue) {
     monthToDateValues(dateValue).map(async (dayValue) => {
       const payload = await fetchMissionMarketData(dayValue);
       const points = parseMissionMarketData(payload);
-      if (!points.length) throw new Error(`No hourly data for ${dayValue}`);
+      if (!points.length) throw new Error(`Sin datos horarios para ${dayValue}`);
       return {
         dishwasher: savingsExample(points, 2, 0.8).savings,
         ev: savingsExample(points, 3, 7.4).savings,
@@ -199,10 +199,10 @@ async function fetchMissionMarketData(dateValue) {
   const end = `${dateValue}T23:59`;
   const url = `${MISSION_REE_API_BASE}/${MISSION_MARKET_WIDGET}?start_date=${start}&end_date=${end}&time_trunc=hour`;
   const response = await fetch(url, { headers: { Accept: "application/json" } });
-  if (!response.ok) throw new Error(`REE request failed with ${response.status}`);
+  if (!response.ok) throw new Error(`La solicitud a REE falló con estado ${response.status}`);
 
   const data = await response.json();
-  if (data.errors?.length) throw new Error(data.errors[0].detail || "REE returned an error");
+  if (data.errors?.length) throw new Error(data.errors[0].detail || "REE devolvió un error");
   return data;
 }
 
@@ -291,7 +291,7 @@ function formatHour(hour) {
 }
 
 function formatMoney(value) {
-  return new Intl.NumberFormat("en-ES", {
+  return new Intl.NumberFormat("es-ES", {
     style: "currency",
     currency: "EUR",
     minimumFractionDigits: 2,

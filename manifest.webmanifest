@@ -1,7 +1,7 @@
 {
   "name": "Power Window",
   "short_name": "Power Window",
-  "description": "Compare now, today, and tomorrow to run flexible electricity loads at better times in Spain.",
+  "description": "Compara ahora, hoy y mañana para mover consumos eléctricos flexibles a mejores horas en España.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

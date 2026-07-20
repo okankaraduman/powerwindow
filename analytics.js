@@ -66,12 +66,12 @@ function renderAnalyticsPrompt() {
   prompt.setAttribute("aria-label", "Analytics preference");
   prompt.innerHTML = `
     <div>
-      <strong>Help improve Power Window?</strong>
-      <p>Allow anonymous Google Analytics usage measurement. No ads personalization. <a href="/privacy">Privacy</a></p>
+      <strong>¿Ayudas a mejorar Power Window?</strong>
+      <p>Permite medición anónima con Google Analytics. Sin personalización publicitaria. <a href="/privacy">Privacidad</a></p>
     </div>
     <div class="analytics-consent__actions">
-      <button class="secondary-button" type="button" data-analytics-choice="declined">No thanks</button>
-      <button class="primary-button" type="button" data-analytics-choice="accepted">Allow</button>
+      <button class="secondary-button" type="button" data-analytics-choice="declined">No, gracias</button>
+      <button class="primary-button" type="button" data-analytics-choice="accepted">Permitir</button>
     </div>
   `;
 

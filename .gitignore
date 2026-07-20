@@ -5,6 +5,7 @@ backend/data/*.json
 backend/data/*.tmp
 backend/powerwindow-api
 /package-lock.json
+*.DS_Store
 android/keystore.properties
 android/.gradle/
 android/app/build/

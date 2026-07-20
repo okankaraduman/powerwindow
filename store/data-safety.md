@@ -10,14 +10,18 @@ Collected: Yes
 Examples:
 - Planner settings such as selected load, duration, and cost assumptions are stored locally.
 - Demo charger plans and command logs are stored in the backend when the demo connector is used.
+- If the user allows analytics, Google Analytics measures page views and basic app interaction
+  patterns.
 
 Purpose:
 - App functionality
-- Analytics/support for demo connector behavior
+- Analytics and product improvement
+- Support for demo connector behavior
 
 Shared:
 - No sale of data.
 - Cloudflare acts as hosting/infrastructure service provider.
+- Google acts as analytics service provider only after the user allows analytics.
 
 ### Personal Info
 Collected: No account name, email, phone number, or address in the current release.
@@ -29,10 +33,13 @@ Collected: No precise or approximate location permission.
 Collected: No payment card, bank account, credit, or purchase history.
 
 ### Device or Other IDs
-Collected: The app creates a random app user ID in local storage for demo connector state. It does not use Android advertising ID.
+Collected: The app creates a random app user ID in local storage for demo connector state. If
+analytics is allowed, Google Analytics may use app/browser identifiers for measurement. The app
+does not use Android advertising ID.
 
 Purpose:
 - App functionality
+- Analytics
 
 ## Security Practices
 
@@ -44,4 +51,4 @@ Purpose:
 
 - Confirm that privacy@powerwindow.energy is active before publishing.
 - If real charger connectors are added later, update Data Safety for credentials, OAuth tokens, device status, and command history.
-- If analytics SDKs are added later, update Data Safety for diagnostics and app interactions.
+- Confirm the final Google Analytics and Play Console classifications before production release.

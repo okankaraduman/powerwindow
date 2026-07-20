@@ -11,6 +11,8 @@ Power Window helps households in Spain plan flexible electricity use around bett
 
 Choose a load such as a dishwasher, washing machine, dryer, air conditioner, heat pump, or EV charging session. The app reads hourly market data, ranks the remaining start windows, estimates bill impact with editable tax and per-kWh assumptions, and shows a simple timing grade.
 
+The statistics page shows the selected day's PVPC price shape, lowest-price hour, renewable generation rate, wind plus solar share, and generation mix.
+
 For EV charging, select a vehicle brand/model, current battery percentage, target percentage, and charger power. Power Window estimates the required energy and suggests the best available charging window.
 
 The current smart-charging connector is a demo connector only. It lets you test how scheduling, start, and stop commands would work without controlling real hardware. Real charger integrations are planned for future releases.

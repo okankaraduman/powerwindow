@@ -87,13 +87,17 @@ The backend requests:
 
 ```text
 https://apidatos.ree.es/en/datos/mercados/precios-mercados-tiempo-real
+https://apidatos.ree.es/en/datos/generacion/estructura-generacion
 ```
 
-The Cloudflare Worker reads market data in this order: KV cache, D1 database, then REE.
+The Cloudflare Worker reads market and generation data in this order: KV cache, D1 database, then REE.
 Successful REE responses are stored in D1 and copied into KV. Historical dates are served
 from our persistence indefinitely, while today and tomorrow can return cached data
 immediately and refresh in the background. The mission page uses the month endpoint so
 visitors do not fan out separate requests for every day in the current month.
+
+The statistics page uses the same backend cache to show daily PVPC price shape, lowest price
+hour, renewable generation rate, wind plus solar share, and the generation mix.
 
 ## Notes
 

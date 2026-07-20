@@ -16,6 +16,7 @@ API:
 GET http://localhost:8787/api/market?date=2026-07-06
 GET http://localhost:8787/api/market?date=2026-07-06&refresh=1
 GET http://localhost:8787/api/market/month?date=2026-07-06
+GET http://localhost:8787/api/generation?date=2026-07-06
 GET http://localhost:8787/api/connectors
 POST http://localhost:8787/api/connectors/mock/pair
 GET http://localhost:8787/api/devices?userId=pw_example_user
@@ -80,6 +81,8 @@ has the date, the Worker serves D1 and repopulates KV.
 - Past dates are treated as stable and served from persistence indefinitely.
 - Today and tomorrow are refreshed periodically, but stale persisted data is returned
   immediately while the Worker refreshes in the background.
+- `/api/generation?date=YYYY-MM-DD` caches REE daily generation structure payloads for the
+  statistics page. Generation data is available through today.
 - `refresh=1` forces a synchronous refresh for a single date.
 - `/api/market/month?date=YYYY-MM-DD` returns cached day payloads from the first day of
   that month through the selected date, so clients do not fan out many date requests.

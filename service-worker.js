@@ -1,4 +1,4 @@
-const CACHE_NAME = "power-window-v31";
+const CACHE_NAME = "power-window-v32";
 const APP_ASSETS = [
   "/",
   "/index.html",
@@ -6,13 +6,24 @@ const APP_ASSETS = [
   "/methodology",
   "/mission",
   "/privacy",
+  "/en/",
+  "/en/index.html",
+  "/en/statistics",
+  "/en/methodology",
+  "/en/mission",
+  "/en/privacy",
   "/styles.css",
   "/app.js",
+  "/app.en.js",
   "/analytics.js",
+  "/analytics.en.js",
   "/statistics.js",
+  "/statistics.en.js",
   "/mission.js",
+  "/mission.en.js",
   "/favicon.svg",
-  "/manifest.webmanifest"
+  "/manifest.webmanifest",
+  "/manifest.en.webmanifest"
 ];
 
 self.addEventListener("install", (event) => {

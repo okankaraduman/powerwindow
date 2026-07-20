@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#101412" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Power Window" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Power Window Privacy</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.en.webmanifest" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script defer src="/analytics.en.js"></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="toolbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">P</span>
+          <div>
+            <h1>Power Window</h1>
+            <p>Privacy and data practices.</p>
+          </div>
+        </div>
+
+        <nav class="app-nav" aria-label="App pages">
+          <a href="/">Planner</a>
+          <a href="/en/statistics">Statistics</a>
+          <a href="/en/methodology">How it works</a>
+          <a href="/en/mission">Mission</a>
+          <a href="/en/privacy" aria-current="page">Privacy</a>
+          <a href="/privacy">Español</a>
+
+        </nav>
+      </section>
+
+      <section class="hero-panel methodology-hero">
+        <div>
+          <span class="eyebrow">Privacy</span>
+          <h2>Power Window keeps the release version simple.</h2>
+          <p>
+            The app estimates flexible electricity timing using market data and optional local
+            settings. It does not currently require an account, location permission, contacts,
+            photos, microphone, advertising ID, or payment information.
+          </p>
+        </div>
+      </section>
+
+      <section class="method-grid">
+        <article class="method-card">
+          <span class="eyebrow">Data we process</span>
+          <h3>Planner inputs</h3>
+          <p>
+            The web app stores your selected load, bill settings, vehicle model, battery size,
+            charging percentage, and saved profiles in browser or WebView storage on your
+            device. These settings help the planner remember your preferences.
+          </p>
+        </article>
+
+        <article class="method-card">
+          <span class="eyebrow">Backend data</span>
+          <h3>Market and demo connector data</h3>
+          <p>
+            Our backend stores Red Electrica market responses by date so the app does not call
+            the source API on every visit. If you use the demo charger connector, the backend
+            stores a random app user ID, demo device, charge plan, and command log. The demo
+            connector does not control real hardware.
+          </p>
+        </article>
+
+        <article class="method-card">
+          <span class="eyebrow">Service providers</span>
+          <h3>Hosting and infrastructure</h3>
+          <p>
+            Power Window is hosted on Cloudflare. Cloudflare may process technical information
+            such as IP address, request metadata, and security logs to deliver, protect, and
+            operate the service. We do not sell personal data.
+          </p>
+        </article>
+
+        <article class="method-card">
+          <span class="eyebrow">Optional analytics</span>
+          <h3>Google Analytics</h3>
+          <p>
+            If you choose to allow analytics, the site loads Google Analytics to measure page
+            views and basic usage patterns. This helps us understand which features are useful.
+            Analytics is optional, no ads personalization is configured, and Google Analytics is
+            not loaded before you allow it.
+          </p>
+        </article>
+
+        <article class="method-card">
+          <span class="eyebrow">Permissions</span>
+          <h3>Android and browser permissions</h3>
+          <p>
+            The Android wrapper uses internet access to load the Power Window website. Browser
+            notifications are optional and are only used if you choose to set a local reminder.
+            The app does not request precise location, contacts, camera, microphone, SMS, or
+            phone permissions.
+          </p>
+        </article>
+
+        <article class="method-card">
+          <span class="eyebrow">Retention</span>
+          <h3>How long data is kept</h3>
+          <p>
+            Local planner settings stay on your device until you clear browser/app storage.
+            Historical market data may be kept indefinitely because it is public market data.
+            Demo connector records may be retained for testing and support unless deletion is
+            requested.
+          </p>
+        </article>
+
+        <article class="method-card">
+          <span class="eyebrow">Contact</span>
+          <h3>Questions or deletion</h3>
+          <p>
+            For privacy questions or deletion requests, contact privacy@powerwindow.energy.
+            This policy was last updated on 20 July 2026.
+          </p>
+        </article>
+      </section>
+
+      <footer class="source-note">
+        <p>
+          Power Window is independent and is not affiliated with or endorsed by Red Electrica.
+        </p>
+      </footer>
+    </main>
+  </body>
+</html>

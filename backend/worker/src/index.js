@@ -1,5 +1,6 @@
 const MARKET_WIDGET = "mercados/precios-mercados-tiempo-real";
 const GENERATION_WIDGET = "generacion/estructura-generacion";
+const DEMAND_WIDGET = "demanda/demanda-tiempo-real";
 const REE_BASE_URL = "https://apidatos.ree.es/en/datos";
 const TIME_ZONE = "Europe/Madrid";
 const ALLOWED_ORIGINS = new Set([
@@ -32,6 +33,10 @@ export default {
 
     if (url.pathname === "/api/generation") {
       return handleGeneration(request, env, url, ctx);
+    }
+
+    if (url.pathname === "/api/demand") {
+      return handleDemand(request, env, url, ctx);
     }
 
     if (url.pathname === "/api/statistics/seasons") {
@@ -487,6 +492,47 @@ async function handleGeneration(request, env, url, ctx) {
   }
 }
 
+async function handleDemand(request, env, url, ctx) {
+  if (request.method !== "GET") {
+    return jsonResponse({ error: "método no permitido" }, 405, request);
+  }
+
+  const bindingError = marketBindingError(env);
+  if (bindingError) {
+    return jsonResponse({ error: bindingError }, 500, request);
+  }
+
+  const date = url.searchParams.get("date") || madridDateString(0);
+  if (!isValidDateValue(date)) {
+    return jsonResponse({ error: "la fecha debe tener formato YYYY-MM-DD" }, 400, request);
+  }
+
+  if (date > madridDateString(0)) {
+    return jsonResponse(
+      { error: "los datos REE de demanda solo están disponibles hasta hoy" },
+      400,
+      request
+    );
+  }
+
+  const forceRefresh = url.searchParams.get("refresh") === "1";
+  try {
+    const result = await demandEntryForDate(env, date, { forceRefresh, ctx });
+    return jsonResponse(
+      {
+        source: "ree",
+        cacheStatus: result.cacheStatus,
+        cachedAt: result.entry.cachedAt,
+        payload: result.entry.payload
+      },
+      200,
+      request
+    );
+  } catch (error) {
+    return jsonResponse({ error: error.message || "la solicitud a REE ha fallado" }, 502, request);
+  }
+}
+
 async function handleSeasonStatistics(request, env, url, ctx) {
   if (request.method !== "GET") {
     return jsonResponse({ error: "método no permitido" }, 405, request);
@@ -752,6 +798,83 @@ async function refreshGenerationDataWithLock(env, cacheKey, date) {
   }
 }
 
+async function demandEntryForDate(env, date, options = {}) {
+  const cacheKey = `demand:${date}`;
+  const forceRefresh = options.forceRefresh === true;
+  const ttlSeconds = demandCacheTtlForDate(date);
+  const cached = forceRefresh ? null : await readCache(env, cacheKey);
+
+  if (cached) {
+    if (isFreshCacheEntry(cached, ttlSeconds)) {
+      return { cacheStatus: "hit", entry: cached };
+    }
+
+    scheduleDemandCacheRefresh(env, cacheKey, date, options.ctx);
+    return { cacheStatus: "stale", entry: cached };
+  }
+
+  const stored = forceRefresh ? null : await readDailyPayload(env, "demand", date);
+  if (stored) {
+    await writeCache(env, cacheKey, stored);
+    if (!isFreshCacheEntry(stored, ttlSeconds)) {
+      scheduleDemandCacheRefresh(env, cacheKey, date, options.ctx);
+    }
+    return { cacheStatus: "database", entry: stored };
+  }
+
+  try {
+    const entry = await refreshDemandData(env, cacheKey, date);
+    return { cacheStatus: "miss", entry };
+  } catch (error) {
+    const stale = await readCache(env, cacheKey);
+    if (stale) {
+      return { cacheStatus: "stale", entry: stale };
+    }
+
+    const storedFallback = await readDailyPayload(env, "demand", date);
+    if (storedFallback) {
+      await writeCache(env, cacheKey, storedFallback);
+      return { cacheStatus: "database", entry: storedFallback };
+    }
+
+    throw error;
+  }
+}
+
+async function refreshDemandData(env, cacheKey, date) {
+  const payload = await fetchREEDemand(date);
+  const entry = { cachedAt: new Date().toISOString(), payload };
+  await writeDailyPayload(env, "demand", date, entry);
+  await writeCache(env, cacheKey, entry);
+  return entry;
+}
+
+function scheduleDemandCacheRefresh(env, cacheKey, date, ctx) {
+  if (!ctx || date < madridDateString(0)) return;
+
+  ctx.waitUntil(refreshDemandDataWithLock(env, cacheKey, date));
+}
+
+async function refreshDemandDataWithLock(env, cacheKey, date) {
+  const lockKey = `refresh:${cacheKey}`;
+  const existingLock = await env.MARKET_CACHE.get(lockKey, { type: "json" });
+  if (existingLock?.startedAt && Date.now() - existingLock.startedAt < 2 * MINUTE * 1000) {
+    return;
+  }
+
+  await env.MARKET_CACHE.put(
+    lockKey,
+    JSON.stringify({ startedAt: Date.now() }),
+    { expirationTtl: 2 * MINUTE }
+  );
+
+  try {
+    await refreshDemandData(env, cacheKey, date);
+  } finally {
+    await env.MARKET_CACHE.delete(lockKey);
+  }
+}
+
 function isFreshCacheEntry(entry, ttlSeconds) {
   if (ttlSeconds === Infinity) return true;
   return Date.now() - Date.parse(entry.cachedAt) <= ttlSeconds * 1000;
@@ -763,6 +886,10 @@ async function fetchREE(date) {
 
 async function fetchREEGeneration(date) {
   return fetchREEWidget(GENERATION_WIDGET, date, "day");
+}
+
+async function fetchREEDemand(date) {
+  return fetchREEWidget(DEMAND_WIDGET, date, "hour");
 }
 
 async function fetchREEWidget(widget, date, timeTrunc) {
@@ -1080,6 +1207,13 @@ function cacheTtlForDate(date) {
 function generationCacheTtlForDate(date) {
   const today = madridDateString(0);
   if (date === today) return 30 * MINUTE;
+  if (date < today) return Infinity;
+  return 5 * MINUTE;
+}
+
+function demandCacheTtlForDate(date) {
+  const today = madridDateString(0);
+  if (date === today) return 10 * MINUTE;
   if (date < today) return Infinity;
   return 5 * MINUTE;
 }

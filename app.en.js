@@ -7,6 +7,8 @@ const DEFAULT_BACKEND_API_BASE =
 const BACKEND_API_BASE =
   window.POWER_WINDOW_API_BASE || localStorage.getItem("POWER_WINDOW_API_BASE") || DEFAULT_BACKEND_API_BASE;
 const MARKET_WIDGET = "mercados/precios-mercados-tiempo-real";
+const DEMAND_WIDGET = "demanda/demanda-tiempo-real";
+const GENERATION_WIDGET = "generacion/estructura-generacion";
 const MARKET_CACHE_PREFIX = "power-window:market:";
 const PROFILE_STORAGE_KEY = "power-window:profiles";
 const SETTINGS_STORAGE_KEY = "power-window:bill-settings";
@@ -154,6 +156,13 @@ const state = {
   best: null,
   devices: [],
   tomorrow: { status: "idle", points: [], best: null },
+  grid: {
+    status: "idle",
+    cacheStatus: "none",
+    demandPoints: [],
+    generationMix: null,
+    cachedAt: "",
+  },
   deferredInstallPrompt: null,
   reminderTimer: null,
 };
@@ -197,6 +206,14 @@ const els = {
   bestReason: document.querySelector("#bestReason"),
   costEstimate: document.querySelector("#costEstimate"),
   costHint: document.querySelector("#costHint"),
+  gridPressurePanel: document.querySelector(".grid-pressure-panel"),
+  gridPressureTitle: document.querySelector("#gridPressureTitle"),
+  gridPressureReason: document.querySelector("#gridPressureReason"),
+  gridDemand: document.querySelector("#gridDemand"),
+  gridRenewableShare: document.querySelector("#gridRenewableShare"),
+  gridGasShare: document.querySelector("#gridGasShare"),
+  gridNuclearShare: document.querySelector("#gridNuclearShare"),
+  gridPressureMeta: document.querySelector("#gridPressureMeta"),
   nowVsBest: document.querySelector("#nowVsBest"),
   savingsHint: document.querySelector("#savingsHint"),
   tomorrowBest: document.querySelector("#tomorrowBest"),
@@ -269,6 +286,13 @@ async function loadDate(dateValue, options = {}) {
     points: [],
     best: null,
   };
+  state.grid = {
+    status: "loading",
+    cacheStatus: "none",
+    demandPoints: [],
+    generationMix: null,
+    cachedAt: "",
+  };
   setLoading(true);
 
   try {
@@ -293,6 +317,7 @@ async function loadDate(dateValue, options = {}) {
   } finally {
     setLoading(false);
     render();
+    loadGridPressure(safeDate, options);
     loadTomorrowComparison(safeDate);
   }
 }
@@ -351,6 +376,95 @@ async function fetchMarketData(dateValue, options = {}) {
     throw new Error(data.errors[0].detail || "REE returned an error.");
   }
   return { payload: data, cacheStatus: "network" };
+}
+
+async function loadGridPressure(dateValue, options = {}) {
+  const selected = parseDateInput(dateValue);
+  const today = startOfDay(new Date());
+  if (selected > today) {
+    state.grid = {
+      status: "unavailable",
+      cacheStatus: "none",
+      demandPoints: [],
+      generationMix: null,
+      cachedAt: "",
+      reason: "REE demand and operational mix data are only available through today.",
+    };
+    renderGridPressure(state.best);
+    return;
+  }
+
+  try {
+    const [demandResponse, generationResponse] = await Promise.all([
+      fetchDailyGridPayload("demand", dateValue, options),
+      fetchDailyGridPayload("generation", dateValue, options),
+    ]);
+    if (state.selectedDate !== dateValue) return;
+
+    const demandPoints = parseDemandData(demandResponse.payload);
+    const generationMix = parseGenerationMix(generationResponse.payload);
+
+    if (!demandPoints.length && !generationMix) {
+      throw new Error("No usable demand or generation data.");
+    }
+
+    state.grid = {
+      status: "ready",
+      cacheStatus: aggregateGridCacheStatus([demandResponse.cacheStatus, generationResponse.cacheStatus]),
+      demandPoints,
+      generationMix,
+      cachedAt: latestDate([demandResponse.cachedAt, generationResponse.cachedAt]),
+    };
+  } catch (error) {
+    if (state.selectedDate !== dateValue) return;
+
+    state.grid = {
+      status: "unavailable",
+      cacheStatus: "none",
+      demandPoints: [],
+      generationMix: null,
+      cachedAt: "",
+      reason: error.message || "Demand and generation mix could not be loaded.",
+    };
+  }
+
+  renderGridPressure(state.best);
+}
+
+async function fetchDailyGridPayload(kind, dateValue, options = {}) {
+  const backendURL = new URL(`${BACKEND_API_BASE.replace(/\/$/, "")}/${kind}`, window.location.origin);
+  backendURL.searchParams.set("date", dateValue);
+  if (options.forceRefresh) backendURL.searchParams.set("refresh", "1");
+
+  try {
+    const backendResponse = await fetch(backendURL, { headers: { Accept: "application/json" } });
+    if (backendResponse.ok) {
+      const data = await backendResponse.json();
+      if (data.payload) {
+        return {
+          payload: data.payload,
+          cacheStatus:
+            data.cacheStatus === "hit" ||
+            data.cacheStatus === "stale" ||
+            data.cacheStatus === "database"
+              ? "backend"
+              : "network",
+          cachedAt: data.cachedAt || "",
+        };
+      }
+    }
+  } catch {
+    // Fall through to direct REE data for local development.
+  }
+
+  const widget = kind === "demand" ? DEMAND_WIDGET : GENERATION_WIDGET;
+  const timeTrunc = kind === "demand" ? "hour" : "day";
+  const url = `${API_BASE}/${widget}?start_date=${dateValue}T00:00&end_date=${dateValue}T23:59&time_trunc=${timeTrunc}`;
+  const response = await fetch(url, { headers: { Accept: "application/json" } });
+  if (!response.ok) throw new Error(`REE request failed with status ${response.status}`);
+  const payload = await response.json();
+  if (payload.errors?.length) throw new Error(payload.errors[0].detail || "REE returned an error.");
+  return { payload, cacheStatus: "network", cachedAt: new Date().toISOString() };
 }
 
 function readCachedMarketData(dateValue) {
@@ -454,6 +568,74 @@ function parseMarketData(data) {
   }).filter(Boolean);
 }
 
+function parseDemandData(data) {
+  const included = Array.isArray(data?.included) ? data.included : [];
+  const real = findSeries(included, ["real demand", "real", "demand"]);
+  const forecasted = findSeries(included, ["forecasted", "prevista"]);
+  const series = hasValues(real) ? real : forecasted;
+  if (!series?.attributes?.values?.length) return [];
+
+  const hourly = new Map();
+  series.attributes.values.forEach((item) => {
+    const hour = Number(String(item.datetime || "").match(/T(\d{2}):/)?.[1]);
+    const value = Number(item.value);
+    if (!Number.isFinite(hour) || !Number.isFinite(value)) return;
+    const current = hourly.get(hour) || { total: 0, count: 0, datetime: item.datetime };
+    current.total += value;
+    current.count += 1;
+    hourly.set(hour, current);
+  });
+
+  return Array.from(hourly.entries())
+    .map(([hour, bucket]) => ({
+      hour,
+      demandMw: bucket.total / bucket.count,
+      datetime: bucket.datetime,
+      label: series.attributes.title || "Demand",
+    }))
+    .sort((a, b) => a.hour - b.hour);
+}
+
+function parseGenerationMix(data) {
+  const included = Array.isArray(data?.included) ? data.included : [];
+  if (!included.length) return null;
+
+  let renewableShare = 0;
+  let combinedCycleShare = 0;
+  let gasShare = 0;
+  let nuclearShare = 0;
+  let windSolarShare = 0;
+
+  included.forEach((item) => {
+    const title = `${item.type || ""} ${item.attributes?.title || ""}`.toLowerCase();
+    const type = String(item.attributes?.type || "").toLowerCase();
+    const value = firstValue(item);
+    const percentage = Number(value?.percentage);
+    const share = Number.isFinite(percentage) ? Math.abs(percentage) : 0;
+
+    if (type === "renovable") renewableShare += share;
+    if (title.includes("combined cycle")) combinedCycleShare += share;
+    if (title.includes("combined cycle") || title.includes("gas turbine")) gasShare += share;
+    if (title.includes("nuclear")) nuclearShare += share;
+    if (title.includes("wind") || title.includes("solar photovoltaic") || title.includes("thermal solar")) {
+      windSolarShare += share;
+    }
+  });
+
+  return {
+    renewableShare: clamp(renewableShare, 0, 1),
+    combinedCycleShare: clamp(combinedCycleShare, 0, 1),
+    gasShare: clamp(gasShare, 0, 1),
+    nuclearShare: clamp(nuclearShare, 0, 1),
+    windSolarShare: clamp(windSolarShare, 0, 1),
+    lastUpdate: data?.data?.attributes?.["last-update"] || "",
+  };
+}
+
+function firstValue(item) {
+  return Array.isArray(item.attributes?.values) ? item.attributes.values[0] : null;
+}
+
 function findSeries(included, names) {
   return included.find((item) => {
     const title = `${item.type || ""} ${item.attributes?.title || ""}`.toLowerCase();
@@ -508,6 +690,7 @@ function render() {
   els.reminderButton.disabled = false;
   renderDataStatus();
   renderConnectorPanel();
+  renderGridPressure(best);
 
   renderChart(state.points, bestHours, lowCut, highCut, firstStart);
   renderWindowList(ranked.slice(0, 6), duration);
@@ -530,6 +713,7 @@ function renderNoRemainingWindow(duration, kw, firstStart, bestHours, lowCut, hi
   els.reminderStatus.textContent = "No remaining start today";
   renderDataStatus();
   renderConnectorPanel();
+  renderGridPressure(null);
   renderChart(state.points, bestHours, lowCut, highCut, firstStart);
   renderWindowList([], duration);
   renderNowComparison(null, duration);
@@ -550,6 +734,132 @@ function renderDataStatus() {
   els.lastUpdated.textContent = update
     ? `Last REE update: ${formatDateTime(update)}`
     : DEMO_NOTICE;
+}
+
+function renderGridPressure(best) {
+  if (!els.gridPressurePanel) return;
+
+  if (state.grid.status === "loading") {
+    els.gridPressurePanel.className = "grid-pressure-panel";
+    els.gridPressureTitle.textContent = "Checking grid pressure";
+    els.gridPressureReason.textContent =
+      "Loading REE demand and generation mix to estimate whether this window overlaps with higher gas pressure.";
+    updateGridMetricText("--", "--", "--", "--");
+    els.gridPressureMeta.textContent = "Source pending";
+    return;
+  }
+
+  if (state.grid.status !== "ready") {
+    els.gridPressurePanel.className = "grid-pressure-panel";
+    els.gridPressureTitle.textContent = "Grid signal unavailable";
+    els.gridPressureReason.textContent =
+      state.grid.reason || "There is not enough demand and generation data to explain this date.";
+    updateGridMetricText("--", "--", "--", "--");
+    els.gridPressureMeta.textContent = "The price recommendation still uses the available PVPC/spot series.";
+    return;
+  }
+
+  const signal = gridPressureSignal(best);
+  els.gridPressurePanel.className = `grid-pressure-panel pressure-${signal.level}`;
+  els.gridPressureTitle.textContent = signal.title;
+  els.gridPressureReason.textContent = signal.reason;
+  updateGridMetricText(
+    signal.demandMw ? formatMw(signal.demandMw) : "--",
+    state.grid.generationMix ? formatPercent(state.grid.generationMix.renewableShare) : "--",
+    state.grid.generationMix ? formatPercent(state.grid.generationMix.combinedCycleShare) : "--",
+    state.grid.generationMix ? formatPercent(state.grid.generationMix.nuclearShare) : "--"
+  );
+  els.gridPressureMeta.textContent = gridPressureMetaText();
+}
+
+function updateGridMetricText(demand, renewable, gas, nuclear) {
+  els.gridDemand.textContent = demand;
+  els.gridRenewableShare.textContent = renewable;
+  els.gridGasShare.textContent = gas;
+  els.gridNuclearShare.textContent = nuclear;
+}
+
+function gridPressureSignal(best) {
+  const demandPoints = state.grid.demandPoints || [];
+  const mix = state.grid.generationMix;
+  const windowHours = best?.hours?.length ? best.hours : [new Date().getHours()];
+  const windowDemand = demandForHours(demandPoints, windowHours);
+  const demandValues = demandPoints.map((point) => point.demandMw).filter(Number.isFinite);
+  const demandMin = demandValues.length ? Math.min(...demandValues) : 0;
+  const demandMax = demandValues.length ? Math.max(...demandValues) : 1;
+  const demandPressure =
+    windowDemand && demandMax > demandMin ? (windowDemand - demandMin) / (demandMax - demandMin) : 0.45;
+  const prices = state.points.map((point) => point.price);
+  const priceMin = Math.min(...prices);
+  const priceMax = Math.max(...prices);
+  const pricePressure =
+    best && priceMax > priceMin ? (best.avgPrice - priceMin) / (priceMax - priceMin) : 0.45;
+  const gasShare = mix ? Math.max(mix.combinedCycleShare, mix.gasShare) : 0;
+  const gasPressure = mix ? clamp(gasShare / 0.22, 0, 1) : 0.45;
+  const renewableRelief = mix ? mix.renewableShare : 0.5;
+  const eveningPressure = windowHours.some((hour) => hour >= 18 && hour <= 22) ? 0.18 : 0;
+  const pressureScore = clamp(
+    demandPressure * 0.36 +
+      gasPressure * 0.24 +
+      pricePressure * 0.18 +
+      (1 - renewableRelief) * 0.14 +
+      eveningPressure,
+    0,
+    1
+  );
+
+  const renewableText = mix ? formatPercent(mix.renewableShare) : "renewables unavailable";
+  const gasText = mix ? formatPercent(mix.combinedCycleShare) : "gas unavailable";
+  const nuclearText = mix ? formatPercent(mix.nuclearShare) : "nuclear unavailable";
+  const demandText = windowDemand ? formatMw(windowDemand) : "demand unavailable";
+
+  if (pressureScore >= 0.66) {
+    return {
+      level: "high",
+      demandMw: windowDemand,
+      title: "High pressure: gas may matter more",
+      reason:
+        `Demand in this window is around ${demandText}. Combined cycle is ${gasText} of the daily mix and renewables are ${renewableText}. ` +
+        `Nuclear is ${nuclearText}, but we treat it mostly as stable baseload, not a spike signal. This suggests a higher chance of expensive hours if demand rises or solar fades.`,
+    };
+  }
+
+  if (pressureScore >= 0.4) {
+    return {
+      level: "medium",
+      demandMw: windowDemand,
+      title: "Medium pressure: read price and demand together",
+      reason:
+        `Estimated window demand is ${demandText}. Combined cycle is ${gasText} and renewables are ${renewableText} in the day. ` +
+        `The signal is neither clear surplus nor extreme stress, so the hourly price remains the main criterion.`,
+    };
+  }
+
+  return {
+    level: "low",
+    demandMw: windowDemand,
+    title: "Low pressure: better fit for flexible load",
+    reason:
+      `This window lines up with lower relative demand (${demandText}) and a daily mix with ${renewableText} renewable generation. ` +
+      `Combined cycle is ${gasText}. This is the kind of signal where moving EV charging, laundry, or cooling usually makes more sense.`,
+  };
+}
+
+function demandForHours(points, hours) {
+  const byHour = new Map(points.map((point) => [point.hour, point.demandMw]));
+  const values = hours.map((hour) => byHour.get(hour)).filter(Number.isFinite);
+  return values.length ? average(values) : null;
+}
+
+function gridPressureMetaText() {
+  const source =
+    state.grid.cacheStatus === "backend"
+      ? "backend cache"
+      : state.grid.cacheStatus === "network"
+        ? "direct REE"
+        : "cached data";
+  const updated = state.grid.cachedAt ? ` · ${formatDateTime(state.grid.cachedAt)}` : "";
+  return `Real-time demand + daily generation mix, ${source}${updated}. Directional signal, not exact marginality.`;
 }
 
 function renderChart(points, bestHours, lowCut, highCut, firstStart = 0) {
@@ -1393,6 +1703,18 @@ function formatMoney(value) {
   }).format(value);
 }
 
+function formatMw(value) {
+  return `${new Intl.NumberFormat("en-GB", {
+    maximumFractionDigits: 0,
+  }).format(value || 0)} MW`;
+}
+
+function formatPercent(value) {
+  return `${new Intl.NumberFormat("en-GB", {
+    maximumFractionDigits: 0,
+  }).format((value || 0) * 100)}%`;
+}
+
 function formatEurKwh(value) {
   return `${new Intl.NumberFormat("en-GB", {
     minimumFractionDigits: 3,
@@ -1450,6 +1772,18 @@ function clampDateValue(value) {
   }
 
   return value;
+}
+
+function aggregateGridCacheStatus(statuses) {
+  if (statuses.some((status) => status === "network")) return "network";
+  if (statuses.some((status) => status === "backend")) return "backend";
+  return statuses.find(Boolean) || "none";
+}
+
+function latestDate(values) {
+  return values
+    .filter((value) => value && !Number.isNaN(Date.parse(value)))
+    .sort((a, b) => Date.parse(b) - Date.parse(a))[0] || "";
 }
 
 init();

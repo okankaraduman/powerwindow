@@ -6,6 +6,7 @@ const ALLOWED_ORIGINS = new Set([
   "https://powerwindow.energy",
   "https://www.powerwindow.energy"
 ]);
+const REE_RANGE_CHUNK_DAYS = 30;
 
 const MINUTE = 60;
 
@@ -549,8 +550,8 @@ async function refreshSeasonStatistics(env, cacheKey, ranges) {
   const seasons = await Promise.all(
     ranges.map(async (range) => {
       const [marketPayload, generationPayload] = await Promise.all([
-        fetchREERangeWidget(MARKET_WIDGET, range.startDate, range.endDate, "hour"),
-        fetchREERangeWidget(GENERATION_WIDGET, range.startDate, range.endDate, "day")
+        fetchREEChunkedRangeWidget(MARKET_WIDGET, range.startDate, range.endDate, "hour"),
+        fetchREEChunkedRangeWidget(GENERATION_WIDGET, range.startDate, range.endDate, "day")
       ]);
 
       return {
@@ -768,6 +769,15 @@ async function fetchREEWidget(widget, date, timeTrunc) {
   return fetchREERangeWidget(widget, date, date, timeTrunc);
 }
 
+async function fetchREEChunkedRangeWidget(widget, startDate, endDate, timeTrunc) {
+  const chunks = chunkDateRange(startDate, endDate, REE_RANGE_CHUNK_DAYS);
+  const payloads = [];
+  for (const chunk of chunks) {
+    payloads.push(await fetchREERangeWidget(widget, chunk.startDate, chunk.endDate, timeTrunc));
+  }
+  return mergeREEPayloads(payloads);
+}
+
 async function fetchREERangeWidget(widget, startDate, endDate, timeTrunc) {
   const endpoint = new URL(`${REE_BASE_URL}/${widget}`);
   endpoint.searchParams.set("start_date", `${startDate}T00:00`);
@@ -791,6 +801,69 @@ async function fetchREERangeWidget(widget, startDate, endDate, timeTrunc) {
   }
 
   return payload;
+}
+
+function mergeREEPayloads(payloads) {
+  const validPayloads = payloads.filter(Boolean);
+  if (validPayloads.length <= 1) return validPayloads[0] || {};
+
+  const first = validPayloads[0];
+  const series = new Map();
+  validPayloads.forEach((payload) => {
+    const included = Array.isArray(payload.included) ? payload.included : [];
+    included.forEach((item) => {
+      const key = `${item.type || ""}:${item.id || ""}:${item.attributes?.title || ""}`;
+      const existing = series.get(key);
+      const values = Array.isArray(item.attributes?.values) ? item.attributes.values : [];
+      if (existing) {
+        existing.attributes.values.push(...values);
+        return;
+      }
+
+      series.set(key, {
+        ...item,
+        attributes: {
+          ...(item.attributes || {}),
+          values: [...values]
+        }
+      });
+    });
+  });
+
+  const lastUpdate = latestIso(
+    validPayloads
+      .map((payload) => payload.data?.attributes?.["last-update"])
+      .filter(Boolean)
+  );
+
+  return {
+    ...first,
+    data: {
+      ...(first.data || {}),
+      attributes: {
+        ...(first.data?.attributes || {}),
+        ...(lastUpdate ? { "last-update": lastUpdate } : {})
+      }
+    },
+    included: Array.from(series.values()).map((item) => ({
+      ...item,
+      attributes: {
+        ...(item.attributes || {}),
+        values: dedupeValuesByDatetime(item.attributes?.values || [])
+      }
+    }))
+  };
+}
+
+function dedupeValuesByDatetime(values) {
+  const byDatetime = new Map();
+  values.forEach((value) => {
+    if (!value?.datetime) return;
+    byDatetime.set(value.datetime, value);
+  });
+  return Array.from(byDatetime.values()).sort((a, b) =>
+    String(a.datetime).localeCompare(String(b.datetime))
+  );
 }
 
 async function readCache(env, key) {
@@ -1053,6 +1126,33 @@ function seasonRangesForDate(dateValue) {
   ];
 }
 
+function chunkDateRange(startDate, endDate, maxDays) {
+  const chunks = [];
+  let cursor = dateToEpochDay(startDate);
+  const end = dateToEpochDay(endDate);
+
+  while (cursor <= end) {
+    const chunkEnd = Math.min(end, cursor + maxDays - 1);
+    chunks.push({
+      startDate: epochDayToDate(cursor),
+      endDate: epochDayToDate(chunkEnd)
+    });
+    cursor = chunkEnd + 1;
+  }
+
+  return chunks;
+}
+
+function dateToEpochDay(value) {
+  const { year, month, day } = parseDateParts(value);
+  return Math.floor(Date.UTC(year, month - 1, day) / (24 * 60 * 60 * 1000));
+}
+
+function epochDayToDate(epochDay) {
+  const date = new Date(epochDay * 24 * 60 * 60 * 1000);
+  return dateFromParts(date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate());
+}
+
 function parseDateParts(value) {
   const [year, month, day] = value.split("-").map(Number);
   return { year, month, day };
@@ -1064,6 +1164,12 @@ function dateFromParts(year, month, day) {
 
 function lastDayOfMonth(year, month) {
   return new Date(Date.UTC(year, month, 0)).getUTCDate();
+}
+
+function latestIso(values) {
+  return values
+    .filter((value) => value && !Number.isNaN(Date.parse(value)))
+    .sort((a, b) => Date.parse(b) - Date.parse(a))[0] || "";
 }
 
 function monthToDateValues(dateValue) {

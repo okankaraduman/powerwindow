@@ -8,6 +8,7 @@ const STATS_REE_API_BASE = "https://apidatos.ree.es/en/datos";
 const STATS_MARKET_WIDGET = "mercados/precios-mercados-tiempo-real";
 const STATS_GENERATION_WIDGET = "generacion/estructura-generacion";
 const STATS_TIME_ZONE = "Europe/Madrid";
+const STATS_REE_RANGE_CHUNK_DAYS = 30;
 
 const statsEls = {
   refreshButton: document.querySelector("#statsRefreshButton"),
@@ -95,8 +96,8 @@ async function fetchSeasonStatistics(options = {}) {
   const seasons = await Promise.all(
     ranges.map(async (range) => {
       const [marketPayload, generationPayload] = await Promise.all([
-        fetchReeRangeWidget(STATS_MARKET_WIDGET, range.startDate, range.endDate, "hour"),
-        fetchReeRangeWidget(STATS_GENERATION_WIDGET, range.startDate, range.endDate, "day")
+        fetchReeChunkedRangeWidget(STATS_MARKET_WIDGET, range.startDate, range.endDate, "hour"),
+        fetchReeChunkedRangeWidget(STATS_GENERATION_WIDGET, range.startDate, range.endDate, "day")
       ]);
       const cachedAt = new Date().toISOString();
       return {
@@ -115,6 +116,15 @@ async function fetchSeasonStatistics(options = {}) {
   };
 }
 
+async function fetchReeChunkedRangeWidget(widget, startDate, endDate, timeTrunc) {
+  const chunks = chunkDateRange(startDate, endDate, STATS_REE_RANGE_CHUNK_DAYS);
+  const payloads = [];
+  for (const chunk of chunks) {
+    payloads.push(await fetchReeRangeWidget(widget, chunk.startDate, chunk.endDate, timeTrunc));
+  }
+  return mergeReePayloads(payloads);
+}
+
 async function fetchReeRangeWidget(widget, startDate, endDate, timeTrunc) {
   const url = `${STATS_REE_API_BASE}/${widget}?start_date=${startDate}T00:00&end_date=${endDate}T23:59&time_trunc=${timeTrunc}`;
   const response = await fetch(url, { headers: { Accept: "application/json" } });
@@ -122,6 +132,69 @@ async function fetchReeRangeWidget(widget, startDate, endDate, timeTrunc) {
   const data = await response.json();
   if (data.errors?.length) throw new Error(data.errors[0].detail || "REE returned an error");
   return data;
+}
+
+function mergeReePayloads(payloads) {
+  const validPayloads = payloads.filter(Boolean);
+  if (validPayloads.length <= 1) return validPayloads[0] || {};
+
+  const first = validPayloads[0];
+  const series = new Map();
+  validPayloads.forEach((payload) => {
+    const included = Array.isArray(payload.included) ? payload.included : [];
+    included.forEach((item) => {
+      const key = `${item.type || ""}:${item.id || ""}:${item.attributes?.title || ""}`;
+      const values = Array.isArray(item.attributes?.values) ? item.attributes.values : [];
+      const existing = series.get(key);
+      if (existing) {
+        existing.attributes.values.push(...values);
+        return;
+      }
+
+      series.set(key, {
+        ...item,
+        attributes: {
+          ...(item.attributes || {}),
+          values: [...values]
+        }
+      });
+    });
+  });
+
+  const lastUpdate = latestIso(
+    validPayloads
+      .map((payload) => payload.data?.attributes?.["last-update"])
+      .filter(Boolean)
+  );
+
+  return {
+    ...first,
+    data: {
+      ...(first.data || {}),
+      attributes: {
+        ...(first.data?.attributes || {}),
+        ...(lastUpdate ? { "last-update": lastUpdate } : {})
+      }
+    },
+    included: Array.from(series.values()).map((item) => ({
+      ...item,
+      attributes: {
+        ...(item.attributes || {}),
+        values: dedupeValuesByDatetime(item.attributes?.values || [])
+      }
+    }))
+  };
+}
+
+function dedupeValuesByDatetime(values) {
+  const byDatetime = new Map();
+  values.forEach((value) => {
+    if (!value?.datetime) return;
+    byDatetime.set(value.datetime, value);
+  });
+  return Array.from(byDatetime.values()).sort((a, b) =>
+    String(a.datetime).localeCompare(String(b.datetime))
+  );
 }
 
 function summarizeSeason(season) {
@@ -432,6 +505,23 @@ function seasonRangesForDate(dateValue) {
   ];
 }
 
+function chunkDateRange(startDate, endDate, maxDays) {
+  const chunks = [];
+  let cursor = dateToEpochDay(startDate);
+  const end = dateToEpochDay(endDate);
+
+  while (cursor <= end) {
+    const chunkEnd = Math.min(end, cursor + maxDays - 1);
+    chunks.push({
+      startDate: epochDayToDate(cursor),
+      endDate: epochDayToDate(chunkEnd)
+    });
+    cursor = chunkEnd + 1;
+  }
+
+  return chunks;
+}
+
 function seasonSort(a, b) {
   const order = { summer: 0, winter: 1 };
   return (order[a.id] ?? 9) - (order[b.id] ?? 9);
@@ -494,6 +584,16 @@ function parseDateParts(value) {
 
 function dateFromParts(year, month, day) {
   return [year, String(month).padStart(2, "0"), String(day).padStart(2, "0")].join("-");
+}
+
+function dateToEpochDay(value) {
+  const { year, month, day } = parseDateParts(value);
+  return Math.floor(Date.UTC(year, month - 1, day) / (24 * 60 * 60 * 1000));
+}
+
+function epochDayToDate(epochDay) {
+  const date = new Date(epochDay * 24 * 60 * 60 * 1000);
+  return dateFromParts(date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate());
 }
 
 function lastDayOfMonth(year, month) {

@@ -45,6 +45,16 @@ const compareText = COMPARE_IS_ES
       power: "Potencia + cuota",
       taxes: "Impuestos estimados",
       fixed: "Fijo regulado",
+      taxBasis: "Impuestos",
+      beforeTax: "Sin impuestos",
+      taxIncluded: "Con impuestos",
+      addOffer: "Añadir",
+      addedOffer: "Oferta añadida",
+      source: "Fuente",
+      checked: "Revisado",
+      powerCombined: "Potencia P1+P2",
+      powerAssumption: "Potencia estimada",
+      sourcePrices: "Precios de fuente",
       estimate: "Estimación",
       versusWorst: "menos que la opción más cara",
       bestBadge: "Mejor",
@@ -99,6 +109,16 @@ const compareText = COMPARE_IS_ES
       power: "Power + fee",
       taxes: "Estimated taxes",
       fixed: "Regulated fixed",
+      taxBasis: "Taxes",
+      beforeTax: "Before tax",
+      taxIncluded: "Tax included",
+      addOffer: "Add",
+      addedOffer: "Offer added",
+      source: "Source",
+      checked: "Checked",
+      powerCombined: "Power P1+P2",
+      powerAssumption: "Power estimate",
+      sourcePrices: "Source prices",
       estimate: "Estimate",
       versusWorst: "less than the most expensive option",
       bestBadge: "Best",
@@ -127,6 +147,124 @@ const compareText = COMPARE_IS_ES
       resetDone: "Assumptions reset",
     };
 
+const PUBLIC_OFFERS = [
+  {
+    id: "octopus-relax-2026-07-21",
+    company: "Octopus Energy",
+    name: "Octopus Relax",
+    type: "flat",
+    flatRate: 0.122,
+    peakRate: 0.122,
+    midRate: 0.122,
+    valleyRate: 0.122,
+    powerDay: 0.124,
+    monthlyFee: 0,
+    taxMode: "included",
+    checkedAt: "2026-07-21",
+    sourceUrl: "https://octopusenergy.es/precios",
+    note: {
+      es: "Precio fijo 24h. La página mostraba precios con impuestos.",
+      en: "Flat 24h price. The page showed tax-included prices.",
+    },
+  },
+  {
+    id: "octopus-3-2026-07-21",
+    company: "Octopus Energy",
+    name: "Octopus 3",
+    type: "period",
+    flatRate: 0.116,
+    peakRate: 0.195,
+    midRate: 0.116,
+    valleyRate: 0.085,
+    powerDay: 0.124,
+    monthlyFee: 0,
+    taxMode: "included",
+    checkedAt: "2026-07-21",
+    sourceUrl: "https://octopusenergy.es/precios",
+    note: {
+      es: "Tres periodos. Potencia combinada P1+P2.",
+      en: "Three periods. Combined P1+P2 power term.",
+    },
+  },
+  {
+    id: "octopus-flexi-2026-07-21",
+    company: "Octopus Energy",
+    name: "Octopus Flexi",
+    type: "flat",
+    flatRate: 0.129,
+    peakRate: 0.129,
+    midRate: 0.129,
+    valleyRate: 0.129,
+    powerDay: 0.078,
+    monthlyFee: 3.75,
+    taxMode: "included",
+    checkedAt: "2026-07-21",
+    sourceUrl: "https://octopusenergy.es/precios",
+    note: {
+      es: "Precio medio del último mes + costes de gestión.",
+      en: "Last-month average price + management fee.",
+    },
+  },
+  {
+    id: "totalenergies-siempre-2026-07-21",
+    company: "TotalEnergies",
+    name: "A tu Aire Siempre Luz",
+    type: "flat",
+    flatRate: 0.0999,
+    peakRate: 0.0999,
+    midRate: 0.0999,
+    valleyRate: 0.0999,
+    powerDay: 0.172548,
+    monthlyFee: 0,
+    taxMode: "preTax",
+    checkedAt: "2026-07-21",
+    sourceUrl: "https://www.totalenergies.es/es/hogares/tarifas-luz-gas",
+    note: {
+      es: "Precio fijo anual 24h. Precios sin impuestos.",
+      en: "Flat annual 24h price. Prices before tax.",
+    },
+  },
+  {
+    id: "totalenergies-programa-2026-07-21",
+    company: "TotalEnergies",
+    name: "A tu Aire Programa tu Ahorro Luz",
+    type: "period",
+    flatRate: 0.092051,
+    peakRate: 0.160301,
+    midRate: 0.092051,
+    valleyRate: 0.064852,
+    powerDay: 0.172548,
+    monthlyFee: 0,
+    taxMode: "preTax",
+    checkedAt: "2026-07-21",
+    sourceUrl: "https://www.totalenergies.es/es/hogares/tarifas-luz-gas",
+    note: {
+      es: "Valle, llano y punta. Precios sin impuestos.",
+      en: "Valley, shoulder, and peak. Prices before tax.",
+    },
+  },
+  {
+    id: "endesa-conecta-3p-2026-07-21",
+    company: "Endesa",
+    name: "Conecta 3 periodos",
+    type: "period",
+    flatRate: 0.11781,
+    peakRate: 0.18621,
+    midRate: 0.11781,
+    valleyRate: 0.09441,
+    powerDay: COMPARE_DEFAULT_POWER_DAY,
+    powerEstimated: true,
+    monthlyFee: 0,
+    taxMode: "preTax",
+    checkedAt: "2026-07-21",
+    sourceUrl: "https://www.endesa.com/es/luz-y-gas/luz",
+    note: {
+      es: "La fuente mostraba precios de energía sin impuestos; revisa la potencia antes de contratar.",
+      en: "The source showed energy prices before tax; verify the power term before signing.",
+    },
+  },
+];
+
 const compareState = {
   settings: loadCompareSettings(),
   tariffs: loadCompareTariffs(),
@@ -154,6 +292,7 @@ const compareEls = {
   dataStatus: document.querySelector("#compareDataStatus"),
   dataNote: document.querySelector("#compareDataNote"),
   lastUpdated: document.querySelector("#compareLastUpdated"),
+  offerLibrary: document.querySelector("#offerLibrary"),
   savings: document.querySelector("#compareSavings"),
   savingsHint: document.querySelector("#compareSavingsHint"),
   pvpcEstimate: document.querySelector("#pvpcEstimate"),
@@ -171,6 +310,7 @@ initCompare();
 
 function initCompare() {
   populateSettingsInputs();
+  renderOfferLibrary();
   renderTariffEditor();
   bindCompareEvents();
   renderCompare();
@@ -193,6 +333,7 @@ function bindCompareEvents() {
   compareEls.tariffEditor.addEventListener("input", handleTariffInput);
   compareEls.tariffEditor.addEventListener("change", handleTariffInput);
   compareEls.tariffEditor.addEventListener("click", handleTariffClick);
+  compareEls.offerLibrary.addEventListener("click", handleOfferLibraryClick);
   compareEls.addTariffButton.addEventListener("click", addTariff);
   compareEls.resetButton.addEventListener("click", resetComparator);
   compareEls.refreshButton.addEventListener("click", () => loadPvpcRates({ forceRefresh: true }));
@@ -225,7 +366,7 @@ function handleTariffInput(event) {
   const tariff = compareState.tariffs.find((item) => item.id === tariffId);
   if (!tariff) return;
 
-  if (field === "name" || field === "type" || field === "referralUrl") {
+  if (field === "name" || field === "type" || field === "taxMode" || field === "referralUrl") {
     tariff[field] = target.value;
   } else {
     tariff[field] = readInputNumber(target, 0);
@@ -257,6 +398,7 @@ function addTariff() {
     valleyRate: 0.1,
     powerDay: COMPARE_DEFAULT_POWER_DAY,
     monthlyFee: 0,
+    taxMode: "preTax",
     referralUrl: "",
   });
   saveCompareTariffs();
@@ -272,6 +414,19 @@ function resetComparator() {
   populateSettingsInputs();
   renderTariffEditor();
   renderCompare(compareText.resetDone);
+}
+
+function handleOfferLibraryClick(event) {
+  const button = event.target.closest("[data-add-public-offer]");
+  if (!button) return;
+
+  const offer = PUBLIC_OFFERS.find((item) => item.id === button.dataset.addPublicOffer);
+  if (!offer) return;
+
+  compareState.tariffs.push(tariffFromPublicOffer(offer));
+  saveCompareTariffs();
+  renderTariffEditor();
+  renderCompare(`${compareText.addedOffer}: ${offer.company} ${offer.name}`);
 }
 
 async function loadPvpcRates(options = {}) {
@@ -363,6 +518,13 @@ function renderTariffEditor() {
               <option value="ev" ${tariff.type === "ev" ? "selected" : ""}>${compareText.evType}</option>
             </select>
           </label>
+          <label class="field">
+            <span>${compareText.taxBasis}</span>
+            <select data-tariff-id="${escapeHTML(tariff.id)}" data-field="taxMode">
+              <option value="preTax" ${tariff.taxMode !== "included" ? "selected" : ""}>${compareText.beforeTax}</option>
+              <option value="included" ${tariff.taxMode === "included" ? "selected" : ""}>${compareText.taxIncluded}</option>
+            </select>
+          </label>
           <div class="tariff-rate-grid">
             ${rateInput(tariff, "flatRate", compareText.flatRate)}
             ${rateInput(tariff, "peakRate", compareText.peakRate)}
@@ -386,6 +548,57 @@ function renderTariffEditor() {
       `
     )
     .join("");
+}
+
+function renderOfferLibrary() {
+  compareEls.offerLibrary.innerHTML = PUBLIC_OFFERS.map(publicOfferCard).join("");
+}
+
+function publicOfferCard(offer) {
+  const energy =
+    offer.type === "period"
+      ? `${formatRate(offer.peakRate)} / ${formatRate(offer.midRate)} / ${formatRate(offer.valleyRate)}`
+      : formatRate(offer.flatRate);
+  const note = localized(offer.note);
+
+  return `
+    <article class="offer-library-card">
+      <div>
+        <span class="eyebrow">${escapeHTML(offer.company)}</span>
+        <h3>${escapeHTML(offer.name)}</h3>
+        <p>${escapeHTML(note)}</p>
+      </div>
+      <div class="offer-library-facts">
+        <span>${compareText.energy}<strong>${escapeHTML(energy)}</strong></span>
+        <span>${offer.powerEstimated ? compareText.powerAssumption : compareText.powerCombined}<strong>${formatRate(offer.powerDay, "kW/day")}</strong></span>
+        <span>${compareText.sourcePrices}<strong>${taxModeLabel(offer.taxMode)}</strong></span>
+        <span>${compareText.checked}<strong>${formatShortDate(offer.checkedAt)}</strong></span>
+      </div>
+      <div class="comparison-footer">
+        <a class="compare-source-link" href="${escapeAttr(offer.sourceUrl)}" target="_blank" rel="noopener nofollow">${compareText.source}</a>
+        <button class="secondary-button" type="button" data-add-public-offer="${escapeAttr(offer.id)}">${compareText.addOffer}</button>
+      </div>
+    </article>
+  `;
+}
+
+function tariffFromPublicOffer(offer) {
+  return normalizeTariff({
+    id: `${offer.id}-${Date.now()}`,
+    name: `${offer.company} - ${offer.name}`,
+    type: offer.type,
+    flatRate: offer.flatRate,
+    peakRate: offer.peakRate,
+    midRate: offer.midRate,
+    valleyRate: offer.valleyRate,
+    powerDay: offer.powerDay,
+    powerEstimated: Boolean(offer.powerEstimated),
+    monthlyFee: offer.monthlyFee,
+    taxMode: offer.taxMode,
+    sourceUrl: offer.sourceUrl,
+    sourceCheckedAt: offer.checkedAt,
+    referralUrl: "",
+  });
 }
 
 function rateInput(tariff, field, label) {
@@ -490,6 +703,7 @@ function calculatePvpcResult(settings, usage) {
     monthlyFee: 0,
     referralUrl: "",
     settings,
+    taxMode: "preTax",
   });
 }
 
@@ -501,9 +715,10 @@ function calculateTariffResult(tariff, settings, usage) {
       usage.midKwh * tariff.midRate +
       (usage.valleyKwh + usage.flexKwh) * tariff.valleyRate;
 
-  const description = isFlat
+  const priceDescription = isFlat
     ? `${compareText.flatType}: ${formatRate(tariff.flatRate)}`
     : `${tariff.type === "ev" ? compareText.evType : compareText.periodType}: ${formatRate(tariff.peakRate)} / ${formatRate(tariff.midRate)} / ${formatRate(tariff.valleyRate)}`;
+  const description = `${priceDescription}. ${compareText.sourcePrices}: ${taxModeLabel(tariff.taxMode)}.`;
 
   return withTaxes({
     id: tariff.id,
@@ -514,13 +729,26 @@ function calculateTariffResult(tariff, settings, usage) {
     monthlyFee: tariff.monthlyFee,
     referralUrl: tariff.referralUrl,
     settings,
+    taxMode: tariff.taxMode,
   });
 }
 
 function withTaxes(result) {
   const subtotal = result.energyCost + result.powerCost + result.monthlyFee;
-  const taxCost = electricityTaxCost(subtotal, result.settings.monthlyKwh, result.settings.tax);
   const fixedCost = result.settings.socialBonusDaily * COMPARE_DAYS_PER_MONTH;
+  if (result.taxMode === "included") {
+    const vatCost = fixedCost * (result.settings.vat / 100);
+    return {
+      ...result,
+      subtotal,
+      taxCost: 0,
+      fixedCost,
+      vatCost,
+      total: subtotal + fixedCost + vatCost,
+    };
+  }
+
+  const taxCost = electricityTaxCost(subtotal, result.settings.monthlyKwh, result.settings.tax);
   const vatCost = (subtotal + taxCost + fixedCost) * (result.settings.vat / 100);
   return {
     ...result,
@@ -700,7 +928,11 @@ function normalizeTariff(tariff) {
     midRate: clamp(Number(tariff.midRate) || 0, 0, 1),
     valleyRate: clamp(Number(tariff.valleyRate) || 0, 0, 1),
     powerDay: clamp(Number(tariff.powerDay) || COMPARE_DEFAULT_POWER_DAY, 0, 1),
+    powerEstimated: Boolean(tariff.powerEstimated),
     monthlyFee: clamp(Number(tariff.monthlyFee) || 0, 0, 100),
+    taxMode: tariff.taxMode === "included" ? "included" : "preTax",
+    sourceUrl: String(tariff.sourceUrl || ""),
+    sourceCheckedAt: String(tariff.sourceCheckedAt || ""),
     referralUrl: String(tariff.referralUrl || ""),
   };
 }
@@ -731,6 +963,7 @@ function defaultTariffs() {
       valleyRate: 0.12,
       powerDay: COMPARE_DEFAULT_POWER_DAY,
       monthlyFee: 0,
+      taxMode: "preTax",
       referralUrl: "",
     },
     {
@@ -743,6 +976,7 @@ function defaultTariffs() {
       valleyRate: 0.105,
       powerDay: COMPARE_DEFAULT_POWER_DAY,
       monthlyFee: 0,
+      taxMode: "preTax",
       referralUrl: "",
     },
     {
@@ -755,6 +989,7 @@ function defaultTariffs() {
       valleyRate: 0.075,
       powerDay: COMPARE_DEFAULT_POWER_DAY,
       monthlyFee: 0,
+      taxMode: "preTax",
       referralUrl: "",
     },
   ];
@@ -806,11 +1041,11 @@ function formatMoney(value) {
   }).format(value || 0);
 }
 
-function formatRate(value) {
+function formatRate(value, unit = "kWh") {
   return `${new Intl.NumberFormat(COMPARE_IS_ES ? "es-ES" : "en-GB", {
     minimumFractionDigits: 3,
     maximumFractionDigits: 3,
-  }).format(value || 0)} €/kWh`;
+  }).format(value || 0)} €/${unit}`;
 }
 
 function formatDateTime(value) {
@@ -822,6 +1057,25 @@ function formatDateTime(value) {
     minute: "2-digit",
     timeZone: "Europe/Madrid",
   }).format(new Date(value));
+}
+
+function formatShortDate(value) {
+  if (!value) return compareText.sourcePending;
+  return new Intl.DateTimeFormat(COMPARE_IS_ES ? "es-ES" : "en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "Europe/Madrid",
+  }).format(new Date(`${value}T12:00:00`));
+}
+
+function localized(value) {
+  if (typeof value === "string") return value;
+  return COMPARE_IS_ES ? value?.es || value?.en || "" : value?.en || value?.es || "";
+}
+
+function taxModeLabel(value) {
+  return value === "included" ? compareText.taxIncluded : compareText.beforeTax;
 }
 
 function formatInputValue(value) {

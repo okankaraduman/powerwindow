@@ -171,7 +171,7 @@
                 class="help-tip"
                 tabindex="0"
                 aria-label="VAT default explanation"
-                data-tip="Default 21% because Spain's temporary electricity VAT reductions ended and electricity returned to the standard VAT rate from 1 Jan 2025. Edit this if your bill uses another rate."
+                data-tip="Default 21% for mainland Spain and the Balearic Islands. From 22 Mar to 30 Jun 2026 there was a temporary 10% reduction; edit this if your bill uses reduced VAT, IGIC, or IPSI."
               >?</span>
             </span>
             <input id="vatInput" type="number" min="0" max="30" step="0.1" value="21" />
@@ -183,7 +183,7 @@
                 class="help-tip"
                 tabindex="0"
                 aria-label="Electricity tax default explanation"
-                data-tip="Default 5.1127% is the standard Spanish special electricity tax rate used before temporary crisis reductions. Edit it if your bill applies a different rate."
+                data-tip="Default 5.1127% is the standard Spanish special electricity tax rate. The temporary 0.5% reduction ended on 30 Jun 2026; edit it if your bill applies another rate or the legal minimum."
               >?</span>
             </span>
             <input id="electricityTaxInput" type="number" min="0" max="10" step="0.1" value="5.1127" />
@@ -199,6 +199,18 @@
               >?</span>
             </span>
             <input id="adderInput" type="number" min="0" max="0.5" step="0.001" value="0.075" />
+          </label>
+          <label class="field compact-field">
+            <span class="label-with-help">
+              Social bonus/day
+              <span
+                class="help-tip"
+                tabindex="0"
+                aria-label="Social bonus fixed cost explanation"
+                data-tip="Default 0.024688 €/day is the fixed per-customer cost associated with social-bonus financing. It does not change the best hour; we show it separately because it is charged per day, not per kWh."
+              >?</span>
+            </span>
+            <input id="socialBonusInput" type="number" min="0" max="1" step="0.000001" value="0.024688" />
           </label>
         </div>
       </section>

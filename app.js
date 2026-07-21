@@ -15,6 +15,7 @@ const SETTINGS_STORAGE_KEY = "power-window:bill-settings";
 const VEHICLE_STORAGE_KEY = "power-window:vehicle";
 const CONNECTOR_USER_STORAGE_KEY = "power-window:connector-user";
 const MAX_DURATION = 12;
+const ELECTRICITY_TAX_MIN_EUR_PER_KWH = 0.001;
 const MINUTE = 60 * 1000;
 const DAY = 24 * 60 * MINUTE;
 const DEMO_NOTICE =
@@ -191,6 +192,7 @@ const els = {
   vatInput: document.querySelector("#vatInput"),
   electricityTaxInput: document.querySelector("#electricityTaxInput"),
   adderInput: document.querySelector("#adderInput"),
+  socialBonusInput: document.querySelector("#socialBonusInput"),
   refreshButton: document.querySelector("#refreshButton"),
   recommendationTitle: document.querySelector("#recommendationTitle"),
   dataStatus: document.querySelector("#dataStatus"),
@@ -260,6 +262,7 @@ function init() {
   els.vatInput.addEventListener("input", handleBillSettingsChange);
   els.electricityTaxInput.addEventListener("input", handleBillSettingsChange);
   els.adderInput.addEventListener("input", handleBillSettingsChange);
+  els.socialBonusInput.addEventListener("input", handleBillSettingsChange);
   els.reminderButton.addEventListener("click", scheduleReminder);
   els.installButton.addEventListener("click", installApp);
 
@@ -927,6 +930,7 @@ function rankWindows(points, duration, kw) {
     const avgPrice = average(slice.map((point) => point.price));
     const marketCost = slice.reduce((sum, point) => sum + (point.price / 1000) * kw, 0);
     const kwh = kw * slice.length;
+    const costBreakdown = estimateBillBreakdown(marketCost, kwh);
     const lowPriceScore = 100 - ((avgPrice - dailyMin) / dailyRange) * 100;
     const middayBonus = slice.some((point) => point.hour >= 10 && point.hour <= 17) ? 4 : 0;
 
@@ -935,7 +939,9 @@ function rankWindows(points, duration, kw) {
       hours: slice.map((point) => point.hour),
       avgPrice,
       marketCost,
-      cost: estimateBillCost(marketCost, kwh),
+      variableCost: costBreakdown.variable,
+      fixedDailyCost: costBreakdown.fixedDaily,
+      cost: costBreakdown.total,
       score: clamp(lowPriceScore + middayBonus, 0, 100),
     };
   }).sort((a, b) => {
@@ -945,8 +951,10 @@ function rankWindows(points, duration, kw) {
 }
 
 function makeReason(best, worst, duration, kw) {
-  const saved = Math.max(0, worst.cost - best.cost);
-  const percent = worst.cost > 0 ? (saved / worst.cost) * 100 : 0;
+  const bestComparable = Number.isFinite(best.variableCost) ? best.variableCost : best.cost;
+  const worstComparable = Number.isFinite(worst.variableCost) ? worst.variableCost : worst.cost;
+  const saved = Math.max(0, worstComparable - bestComparable);
+  const percent = worstComparable > 0 ? (saved / worstComparable) * 100 : 0;
   const sourceText =
     state.source === "api"
       ? "Basado en la serie de precios de mercado de REE para la fecha seleccionada."
@@ -1158,13 +1166,21 @@ function loadName() {
   return els.applianceInput.selectedOptions[0]?.textContent.split(" - ")[0] || "este consumo";
 }
 
-function estimateBillCost(marketCost, kwh) {
+function estimateBillBreakdown(marketCost, kwh) {
   const settings = billSettings();
-  if (settings.mode === "market") return marketCost;
+  if (settings.mode === "market") {
+    return { variable: marketCost, fixedDaily: 0, total: marketCost };
+  }
 
   const beforeTaxes = marketCost + kwh * settings.adder;
-  const withElectricityTax = beforeTaxes * (1 + settings.electricityTax / 100);
-  return withElectricityTax * (1 + settings.vat / 100);
+  const taxCost = electricityTaxCost(beforeTaxes, kwh, settings.electricityTax);
+  const variable = (beforeTaxes + taxCost) * (1 + settings.vat / 100);
+  const fixedDaily = socialBonusDailyAfterVat(settings);
+  return { variable, fixedDaily, total: variable + fixedDaily };
+}
+
+function estimateBillCost(marketCost, kwh) {
+  return estimateBillBreakdown(marketCost, kwh).total;
 }
 
 function billSettings() {
@@ -1173,6 +1189,7 @@ function billSettings() {
     vat: clamp(Number(els.vatInput.value) || 0, 0, 30),
     electricityTax: clamp(Number(els.electricityTaxInput.value) || 0, 0, 10),
     adder: clamp(Number(els.adderInput.value) || 0, 0, 0.5),
+    socialBonusDaily: clamp(Number(els.socialBonusInput.value) || 0, 0, 1),
   };
 }
 
@@ -1182,7 +1199,19 @@ function costHintText(kw, duration) {
     return `${kw.toFixed(1)} kW durante ${duration} h, solo componente de mercado`;
   }
 
-  return `${kw.toFixed(1)} kW durante ${duration} h con ${settings.vat}% IVA, ${settings.electricityTax}% impuesto eléctrico y ${formatEurKwh(settings.adder)} añadidos`;
+  const fixedText = settings.socialBonusDaily
+    ? `. Bono social fijo: ${formatMoney(socialBonusDailyAfterVat(settings))}/día tras IVA; no cambia la mejor hora`
+    : "";
+  return `${kw.toFixed(1)} kW durante ${duration} h con ${settings.vat}% IVA, ${settings.electricityTax}% impuesto eléctrico y ${formatEurKwh(settings.adder)} añadidos${fixedText}`;
+}
+
+function socialBonusDailyAfterVat(settings) {
+  return settings.socialBonusDaily * (1 + settings.vat / 100);
+}
+
+function electricityTaxCost(base, kwh, rate) {
+  if (rate <= 0) return 0;
+  return Math.max(base * (rate / 100), kwh * ELECTRICITY_TAX_MIN_EUR_PER_KWH);
 }
 
 function handleBillSettingsChange() {
@@ -1199,6 +1228,9 @@ function loadBillSettings() {
       els.electricityTaxInput.value = String(settings.electricityTax);
     }
     if (Number.isFinite(settings.adder)) els.adderInput.value = String(settings.adder);
+    if (Number.isFinite(settings.socialBonusDaily)) {
+      els.socialBonusInput.value = String(settings.socialBonusDaily);
+    }
   } catch {
     localStorage.removeItem(SETTINGS_STORAGE_KEY);
   }

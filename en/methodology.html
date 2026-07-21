@@ -96,13 +96,16 @@
           <p>
             For every candidate window, the app multiplies each hour's price by the selected
             appliance load. Market signal mode keeps this clean. Bill impact mode adds editable
-            per-kWh regulated costs, retailer margin, electricity tax, and VAT.
+            per-kWh regulated costs, retailer margin, electricity tax, VAT, and the editable fixed
+            daily social-bonus cost.
           </p>
           <code>cost = sum((EUR per MWh / 1000) * appliance kW)</code>
-          <code>bill impact = (market + kWh adders) * electricity tax * VAT</code>
+          <code>variable = (market + kWh adders + electricity tax) * VAT</code>
+          <code>shown impact = variable + daily social bonus * VAT</code>
           <p>
-            Fixed monthly items such as contracted power and meter rental are not used to rank
-            hours because they do not change when you move a dishwasher or EV session.
+            Fixed items such as contracted power, meter rental, or the daily social-bonus charge
+            are not used to rank hours because they do not change when you move a dishwasher or
+            EV session.
           </p>
         </article>
 

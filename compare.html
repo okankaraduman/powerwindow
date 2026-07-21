@@ -79,6 +79,10 @@
             <span>Impuesto eléctrico %</span>
             <input id="taxCompareInput" type="number" min="0" max="10" step="0.1" value="5.1127" />
           </label>
+          <label class="field compact-field">
+            <span>Bono social €/día</span>
+            <input id="socialBonusCompareInput" type="number" min="0" max="1" step="0.000001" value="0.024688" />
+          </label>
           <div class="button-cluster compare-actions" aria-label="Acciones del comparador">
             <button id="addTariffButton" class="secondary-button" type="button">Añadir oferta</button>
             <button id="resetCompareButton" class="secondary-button" type="button">Restablecer</button>
@@ -131,7 +135,8 @@
           </div>
           <p class="section-note">
             Los ejemplos no son tarifas comerciales reales. Si una oferta muestra precios con impuestos incluidos,
-            pon IVA e impuesto eléctrico a 0 o introduce precios antes de impuestos.
+            pon IVA e impuesto eléctrico a 0 o introduce precios antes de impuestos. Si ya incluye el bono social,
+            pon el bono social diario a 0.
           </p>
         </div>
         <div id="tariffEditor" class="tariff-editor-grid"></div>
@@ -143,7 +148,7 @@
             <span class="eyebrow">Ranking</span>
             <h2>Coste mensual estimado por tarifa</h2>
           </div>
-          <p id="compareResultsNote" class="section-note">Estimación simplificada con energía, potencia, cuota mensual e impuestos editables.</p>
+          <p id="compareResultsNote" class="section-note">Estimación simplificada con energía, potencia, cuota mensual, bono social fijo e impuestos editables.</p>
         </div>
         <div id="comparisonResults" class="comparison-results" aria-live="polite"></div>
       </section>

@@ -14,6 +14,8 @@ const COMPARE_SETTINGS_KEY = "power-window:compare-settings";
 const COMPARE_TARIFFS_KEY = "power-window:compare-tariffs";
 const COMPARE_DAYS_PER_MONTH = 30.42;
 const COMPARE_DEFAULT_POWER_DAY = 0.105;
+const COMPARE_DEFAULT_SOCIAL_BONUS_DAY = 0.024688;
+const COMPARE_ELECTRICITY_TAX_MIN_EUR_PER_KWH = 0.001;
 
 const compareText = COMPARE_IS_ES
   ? {
@@ -42,6 +44,7 @@ const compareText = COMPARE_IS_ES
       energy: "Energía",
       power: "Potencia + cuota",
       taxes: "Impuestos estimados",
+      fixed: "Fijo regulado",
       estimate: "Estimación",
       versusWorst: "menos que la opción más cara",
       bestBadge: "Mejor",
@@ -95,6 +98,7 @@ const compareText = COMPARE_IS_ES
       energy: "Energy",
       power: "Power + fee",
       taxes: "Estimated taxes",
+      fixed: "Regulated fixed",
       estimate: "Estimate",
       versusWorst: "less than the most expensive option",
       bestBadge: "Best",
@@ -141,6 +145,7 @@ const compareEls = {
   valleyShare: document.querySelector("#valleyShareInput"),
   vat: document.querySelector("#vatCompareInput"),
   tax: document.querySelector("#taxCompareInput"),
+  socialBonus: document.querySelector("#socialBonusCompareInput"),
   addTariffButton: document.querySelector("#addTariffButton"),
   resetButton: document.querySelector("#resetCompareButton"),
   refreshButton: document.querySelector("#refreshCompareButton"),
@@ -182,6 +187,7 @@ function bindCompareEvents() {
     compareEls.valleyShare,
     compareEls.vat,
     compareEls.tax,
+    compareEls.socialBonus,
   ].forEach((input) => input.addEventListener("input", handleSettingsInput));
 
   compareEls.tariffEditor.addEventListener("input", handleTariffInput);
@@ -201,6 +207,7 @@ function populateSettingsInputs() {
   compareEls.valleyShare.value = compareState.settings.valleyShare;
   compareEls.vat.value = compareState.settings.vat;
   compareEls.tax.value = compareState.settings.tax;
+  compareEls.socialBonus.value = compareState.settings.socialBonusDaily;
 }
 
 function handleSettingsInput() {
@@ -448,6 +455,7 @@ function resultCard(result, index, worst) {
       <div class="comparison-breakdown">
         <span>${compareText.energy}<strong>${formatMoney(result.energyCost)}</strong></span>
         <span>${compareText.power}<strong>${formatMoney(result.powerCost + result.monthlyFee)}</strong></span>
+        <span>${compareText.fixed}<strong>${formatMoney(result.fixedCost)}</strong></span>
         <span>${compareText.taxes}<strong>${formatMoney(result.taxCost + result.vatCost)}</strong></span>
       </div>
       <div class="comparison-footer">
@@ -511,14 +519,16 @@ function calculateTariffResult(tariff, settings, usage) {
 
 function withTaxes(result) {
   const subtotal = result.energyCost + result.powerCost + result.monthlyFee;
-  const taxCost = subtotal * (result.settings.tax / 100);
-  const vatCost = (subtotal + taxCost) * (result.settings.vat / 100);
+  const taxCost = electricityTaxCost(subtotal, result.settings.monthlyKwh, result.settings.tax);
+  const fixedCost = result.settings.socialBonusDaily * COMPARE_DAYS_PER_MONTH;
+  const vatCost = (subtotal + taxCost + fixedCost) * (result.settings.vat / 100);
   return {
     ...result,
     subtotal,
     taxCost,
+    fixedCost,
     vatCost,
-    total: subtotal + taxCost + vatCost,
+    total: subtotal + fixedCost + taxCost + vatCost,
   };
 }
 
@@ -552,6 +562,7 @@ function normalizeSettings(settings) {
     valleyShare: shares[2] / totalShare,
     vat: clamp(Number(settings.vat) || 0, 0, 30),
     tax: clamp(Number(settings.tax) || 0, 0, 10),
+    socialBonusDaily: clamp(Number(settings.socialBonusDaily) || 0, 0, 1),
   };
 }
 
@@ -565,7 +576,13 @@ function readCompareSettingsFromInputs() {
     valleyShare: readInputNumber(compareEls.valleyShare, 40),
     vat: readInputNumber(compareEls.vat, 21),
     tax: readInputNumber(compareEls.tax, 5.1127),
+    socialBonusDaily: readInputNumber(compareEls.socialBonus, COMPARE_DEFAULT_SOCIAL_BONUS_DAY),
   };
+}
+
+function electricityTaxCost(base, kwh, rate) {
+  if (rate <= 0) return 0;
+  return Math.max(base * (rate / 100), kwh * COMPARE_ELECTRICITY_TAX_MIN_EUR_PER_KWH);
 }
 
 function buildPvpcRates(points, dateValue) {
@@ -698,6 +715,7 @@ function defaultCompareSettings() {
     valleyShare: 40,
     vat: 21,
     tax: 5.1127,
+    socialBonusDaily: COMPARE_DEFAULT_SOCIAL_BONUS_DAY,
   };
 }
 

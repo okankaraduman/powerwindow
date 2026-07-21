@@ -170,7 +170,7 @@
                 class="help-tip"
                 tabindex="0"
                 aria-label="Explicación del IVA por defecto"
-                data-tip="Usamos 21% por defecto porque las rebajas temporales del IVA eléctrico terminaron y la electricidad volvió al tipo general desde el 1 de enero de 2025. Cámbialo si tu factura aplica otro tipo."
+                data-tip="Usamos 21% por defecto para península y Baleares. Entre el 22 de marzo y el 30 de junio de 2026 hubo una reducción temporal al 10%; cámbialo si tu factura aplica IVA reducido, IGIC o IPSI."
               >?</span>
             </span>
             <input id="vatInput" type="number" min="0" max="30" step="0.1" value="21" />
@@ -182,7 +182,7 @@
                 class="help-tip"
                 tabindex="0"
                 aria-label="Explicación del impuesto eléctrico por defecto"
-                data-tip="Usamos 5,1127% por defecto, el tipo estándar del impuesto especial sobre la electricidad antes de las reducciones temporales. Cámbialo si tu factura aplica otro tipo."
+                data-tip="Usamos 5,1127% porque es el tipo general del impuesto especial sobre la electricidad. La reducción temporal al 0,5% terminó el 30 de junio de 2026; cámbialo si tu factura aplica otro tipo o el mínimo legal."
               >?</span>
             </span>
             <input id="electricityTaxInput" type="number" min="0" max="10" step="0.1" value="5.1127" />
@@ -198,6 +198,18 @@
               >?</span>
             </span>
             <input id="adderInput" type="number" min="0" max="0.5" step="0.001" value="0.075" />
+          </label>
+          <label class="field compact-field">
+            <span class="label-with-help">
+              Bono social/día
+              <span
+                class="help-tip"
+                tabindex="0"
+                aria-label="Explicación del coste fijo del bono social"
+                data-tip="Usamos 0,024688 €/día como coste fijo por cliente asociado a la financiación del bono social. No cambia cuál es la mejor hora; lo mostramos aparte porque se cobra por día, no por kWh."
+              >?</span>
+            </span>
+            <input id="socialBonusInput" type="number" min="0" max="1" step="0.000001" value="0.024688" />
           </label>
         </div>
       </section>

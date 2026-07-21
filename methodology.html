@@ -96,14 +96,15 @@
             Para cada ventana candidata, la app multiplica el precio de cada hora por la
             potencia seleccionada. El modo de señal de mercado mantiene el cálculo limpio. El
             modo de impacto en factura añade costes regulados editables por kWh, margen de
-            comercializadora, impuesto eléctrico e IVA.
+            comercializadora, impuesto eléctrico, IVA y el coste fijo diario editable del bono social.
           </p>
           <code>coste = suma((EUR por MWh / 1000) * kW del aparato)</code>
-          <code>impacto factura = (mercado + añadidos por kWh) * impuesto eléctrico * IVA</code>
+          <code>variable = (mercado + añadidos por kWh + impuesto eléctrico) * IVA</code>
+          <code>impacto mostrado = variable + bono social diario * IVA</code>
           <p>
-            Los conceptos fijos mensuales, como la potencia contratada o el alquiler del
-            contador, no se usan para ordenar horas porque no cambian al mover un lavavajillas
-            o una sesión de carga.
+            Los conceptos fijos, como la potencia contratada, el alquiler del contador o el bono
+            social diario, no se usan para ordenar horas porque no cambian al mover un
+            lavavajillas o una sesión de carga.
           </p>
         </article>
 

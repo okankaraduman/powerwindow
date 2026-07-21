@@ -79,6 +79,10 @@
             <span>Electricity tax %</span>
             <input id="taxCompareInput" type="number" min="0" max="10" step="0.1" value="5.1127" />
           </label>
+          <label class="field compact-field">
+            <span>Social bonus €/day</span>
+            <input id="socialBonusCompareInput" type="number" min="0" max="1" step="0.000001" value="0.024688" />
+          </label>
           <div class="button-cluster compare-actions" aria-label="Comparator actions">
             <button id="addTariffButton" class="secondary-button" type="button">Add offer</button>
             <button id="resetCompareButton" class="secondary-button" type="button">Reset</button>
@@ -131,7 +135,8 @@
           </div>
           <p class="section-note">
             The examples are not live commercial tariffs. If an offer shows tax-included prices,
-            set VAT and electricity tax to 0 or enter pre-tax prices.
+            set VAT and electricity tax to 0 or enter pre-tax prices. If it already includes the
+            social-bonus cost, set the daily social bonus to 0.
           </p>
         </div>
         <div id="tariffEditor" class="tariff-editor-grid"></div>
@@ -143,7 +148,7 @@
             <span class="eyebrow">Ranking</span>
             <h2>Estimated monthly cost by tariff</h2>
           </div>
-          <p id="compareResultsNote" class="section-note">Simplified estimate with energy, power, monthly fee, and editable taxes.</p>
+          <p id="compareResultsNote" class="section-note">Simplified estimate with energy, power, monthly fee, fixed social bonus, and editable taxes.</p>
         </div>
         <div id="comparisonResults" class="comparison-results" aria-live="polite"></div>
       </section>

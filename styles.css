@@ -946,6 +946,11 @@ h1 {
   padding: clamp(18px, 3vw, 24px);
 }
 
+.method-card--wide {
+  grid-column: 1 / -1;
+  min-height: auto;
+}
+
 .mission-card {
   min-height: 300px;
 }
@@ -1016,6 +1021,41 @@ h1 {
   background: var(--deep);
   color: #f8fbfa;
   white-space: normal;
+}
+
+.price-driver-card {
+  background:
+    linear-gradient(135deg, rgba(21, 154, 112, 0.08), rgba(16, 20, 18, 0) 58%),
+    #ffffff;
+}
+
+.price-driver-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.price-driver-grid div {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: #f8fafb;
+}
+
+.price-driver-grid strong {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.price-driver-grid ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  line-height: 1.45;
 }
 
 .grade-list {
@@ -1348,6 +1388,10 @@ h1 {
   .method-grid,
   .generation-mix-list {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .price-driver-grid {
+    grid-template-columns: 1fr;
   }
 
   .summary-panel {

@@ -57,6 +57,37 @@
           </p>
         </article>
 
+        <article class="method-card method-card--wide price-driver-card">
+          <span class="eyebrow">Qué mueve el precio</span>
+          <h3>El precio horario cambia con la oferta flexible, la demanda y el coste marginal.</h3>
+          <p>
+            Power Window no asume que España sea barata todo el día. Lee la señal horaria porque
+            el mercado puede cambiar mucho entre mediodía y noche. La explicación práctica es esta:
+          </p>
+          <div class="price-driver-grid">
+            <div>
+              <strong>Presión a la baja</strong>
+              <ul>
+                <li>Más solar, eólica o hidráulica con coste variable bajo.</li>
+                <li>Demanda moderada, por ejemplo en horas centrales o fines de semana.</li>
+                <li>Más almacenamiento, exportaciones o consumo flexible absorbiendo excedentes.</li>
+              </ul>
+            </div>
+            <div>
+              <strong>Presión al alza</strong>
+              <ul>
+                <li>Subida de demanda al atardecer, cuando cae la producción solar.</li>
+                <li>Menos viento o hidráulica disponible en ese momento.</li>
+                <li>Ciclo combinado de gas marcando el precio marginal, con combustible y CO2.</li>
+              </ul>
+            </div>
+          </div>
+          <p>
+            Por eso la app busca ventanas concretas en vez de decir simplemente "usa electricidad
+            al mediodía". El mediodía suele ser bueno en días solares, pero el dato horario manda.
+          </p>
+        </article>
+
         <article class="method-card">
           <span class="eyebrow">2. Estimación de coste</span>
           <h3>Estimar el consumo elegido</h3>
@@ -131,8 +162,11 @@
 
       <footer class="source-note">
         <p>
-          Fuente: API REData de Red Eléctrica de España. Power Window es independiente y no está
-          afiliada ni respaldada por Red Eléctrica. <a href="/privacy">Privacidad</a>.
+          Fuente de datos: API REData de Red Eléctrica de España. Contexto de mercado:
+          <a href="https://www.omie.es/es/market-results/daily/daily-market/day-ahead-price?scope=daily">OMIE</a>
+          y <a href="https://www.bde.es/wbe/es/publicaciones/analisis-economico-investigacion/boletin-economico/2024t3-articulo-09-el-impacto-de-las-energias-renovables-sobre-el-precio-mayorista-de-la-electricidad.html">Banco de España</a>.
+          Power Window es independiente y no está afiliada ni respaldada por estas entidades.
+          <a href="/privacy">Privacidad</a>.
         </p>
       </footer>
     </main>

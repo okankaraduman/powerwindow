@@ -58,6 +58,37 @@
           </p>
         </article>
 
+        <article class="method-card method-card--wide price-driver-card">
+          <span class="eyebrow">What moves price</span>
+          <h3>Hourly prices move with flexible supply, demand, and marginal cost.</h3>
+          <p>
+            Power Window does not assume Spain is cheap all day. It reads the hourly signal because
+            the market can change sharply between midday and evening. The practical explanation is:
+          </p>
+          <div class="price-driver-grid">
+            <div>
+              <strong>Downward pressure</strong>
+              <ul>
+                <li>More solar, wind, or hydro output with low variable cost.</li>
+                <li>Moderate demand, often around central hours or weekends.</li>
+                <li>More storage, exports, or flexible consumption absorbing surplus power.</li>
+              </ul>
+            </div>
+            <div>
+              <strong>Upward pressure</strong>
+              <ul>
+                <li>Evening demand rising as solar generation falls.</li>
+                <li>Less wind or hydro available in that period.</li>
+                <li>Gas-fired generation setting the marginal price, including fuel and CO2 costs.</li>
+              </ul>
+            </div>
+          </div>
+          <p>
+            That is why the app looks for specific windows instead of simply saying "use power at
+            midday". Midday is often good on solar-heavy days, but the hourly data wins.
+          </p>
+        </article>
+
         <article class="method-card">
           <span class="eyebrow">2. Cost estimate</span>
           <h3>Estimate the chosen load</h3>
@@ -129,8 +160,11 @@
 
       <footer class="source-note">
         <p>
-          Source: Red Electrica de Espana REData API. Power Window is independent and is not
-          affiliated with or endorsed by Red Electrica. <a href="/en/privacy">Privacy</a>.
+          Data source: Red Electrica de Espana REData API. Market context:
+          <a href="https://www.omie.es/en/market-results/daily/daily-market/day-ahead-price">OMIE</a>
+          and <a href="https://www.bde.es/wbe/en/publicaciones/analisis-economico-investigacion/boletin-economico/2024t3-articulo-09-el-impacto-de-las-energias-renovables-sobre-el-precio-mayorista-de-la-electricidad.html">Banco de España</a>.
+          Power Window is independent and is not affiliated with or endorsed by these entities.
+          <a href="/en/privacy">Privacy</a>.
         </p>
       </footer>
     </main>

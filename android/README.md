@@ -53,6 +53,10 @@ Do not publish a placeholder fingerprint. Use the real SHA-256 certificate finge
 - Play Console: `Release > Setup > App signing`, after the app exists in Google Play.
 - Your local release keystore, if you distribute outside Play.
 
+For browser-based debug testing, the site currently includes this machine's Android debug
+certificate fingerprint in `.well-known/assetlinks.json`. That is only for debug APKs built here.
+Before Play Store production, add the Play App Signing SHA-256 fingerprint too.
+
 Use this template:
 
 ```text

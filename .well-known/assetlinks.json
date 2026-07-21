@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "energy.powerwindow.app",
+      "sha256_cert_fingerprints": [
+        "51:72:B5:A2:6C:B2:DB:D2:16:6C:91:1C:4B:08:EE:22:34:DA:39:28:63:14:1A:BB:97:C8:95:48:52:90:E3:F9"
+      ]
+    }
+  }
+]

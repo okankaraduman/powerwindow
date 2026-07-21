@@ -7,5 +7,9 @@ backend/powerwindow-api
 /package-lock.json
 *.DS_Store
 android/keystore.properties
+android/keystore.jks
+android/local.properties
+android/.idea/
 android/.gradle/
 android/app/build/
+android/app/release/

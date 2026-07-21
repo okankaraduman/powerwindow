@@ -1058,6 +1058,147 @@ h1 {
   line-height: 1.45;
 }
 
+.compare-panel {
+  align-items: start;
+}
+
+.compare-panel .planner-copy p {
+  margin-top: 10px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.compare-controls {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.compare-actions {
+  grid-column: span 2;
+  grid-template-columns: repeat(3, minmax(120px, 1fr));
+}
+
+.compare-hero h2 {
+  max-width: 980px;
+}
+
+.compare-kpi-grid {
+  margin-top: 18px;
+}
+
+.tariff-editor-grid,
+.comparison-results {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.tariff-editor-card,
+.comparison-result-card {
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  background: #ffffff;
+}
+
+.tariff-card-header,
+.comparison-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tariff-card-header strong {
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.icon-text-button {
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 12px;
+  background: #ffffff;
+  color: var(--muted);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.icon-text-button:hover {
+  border-color: var(--accent);
+  color: var(--ink);
+}
+
+.tariff-rate-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.comparison-result-card.best {
+  border-color: rgba(21, 154, 112, 0.55);
+  box-shadow: 0 0 0 4px rgba(21, 154, 112, 0.1);
+}
+
+.comparison-result-card h3 {
+  margin: 8px 0 0;
+  font-size: 1.5rem;
+  line-height: 1.08;
+}
+
+.comparison-result-card p {
+  margin: 10px 0 0;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.comparison-price {
+  display: grid;
+  gap: 4px;
+}
+
+.comparison-price strong {
+  font-size: 2.15rem;
+  line-height: 1;
+}
+
+.comparison-price small,
+.comparison-footer small,
+.compare-no-link {
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.comparison-breakdown {
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 12px 0;
+}
+
+.comparison-breakdown span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+}
+
+.comparison-breakdown strong {
+  color: var(--ink);
+}
+
+.compare-cta {
+  min-height: 38px;
+  padding: 0 14px;
+  font-size: 0.92rem;
+}
+
 .grade-list {
   display: grid;
   gap: 8px;
@@ -1375,6 +1516,7 @@ h1 {
   }
 
   .controls,
+  .compare-controls,
   .vehicle-grid,
   .connector-grid,
   .settings-grid,
@@ -1385,9 +1527,15 @@ h1 {
   .mission-grid,
   .mission-number-grid,
   .source-grid,
+  .tariff-editor-grid,
+  .comparison-results,
   .method-grid,
   .generation-mix-list {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .compare-actions {
+    grid-column: 1 / -1;
   }
 
   .price-driver-grid {
@@ -1434,6 +1582,7 @@ h1 {
   }
 
   .controls,
+  .compare-controls,
   .vehicle-grid,
   .connector-grid,
   .settings-grid,
@@ -1445,8 +1594,14 @@ h1 {
   .mission-grid,
   .mission-number-grid,
   .source-grid,
+  .tariff-editor-grid,
+  .comparison-results,
   .method-grid,
   .generation-mix-list {
+    grid-template-columns: 1fr;
+  }
+
+  .compare-actions {
     grid-template-columns: 1fr;
   }
 

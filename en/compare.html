@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#101412" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Power Window" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Power Window Tariff Compare</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.en.webmanifest" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script defer src="/analytics.en.js"></script>
+    <script defer src="/compare.js"></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="toolbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">P</span>
+          <div>
+            <h1>Power Window</h1>
+            <p>Compare PVPC with editable offers for homes with flexible electricity use.</p>
+          </div>
+        </div>
+
+        <nav class="app-nav" aria-label="App pages">
+          <a href="/en/">Planner</a>
+          <a href="/en/compare" aria-current="page">Compare</a>
+          <a href="/en/statistics">Statistics</a>
+          <a href="/en/methodology">How it works</a>
+          <a href="/en/mission">Mission</a>
+          <a href="/en/privacy">Privacy</a>
+          <a href="/compare">Español</a>
+        </nav>
+      </section>
+
+      <section class="planner-panel compare-panel" aria-label="Comparator assumptions">
+        <div class="planner-copy">
+          <span class="eyebrow">Compare</span>
+          <h2>Compare tariffs against your flexible load.</h2>
+          <p>
+            Edit monthly kWh, EV weight, and each offer's prices. The calculation uses REE hourly
+            PVPC data to estimate the regulated-tariff case.
+          </p>
+        </div>
+        <div class="compare-controls">
+          <label class="field compact-field">
+            <span>Total kWh/month</span>
+            <input id="monthlyKwhInput" type="number" min="1" max="3000" step="1" value="420" />
+          </label>
+          <label class="field compact-field">
+            <span>Flexible kWh/month</span>
+            <input id="flexKwhInput" type="number" min="0" max="2500" step="1" value="140" />
+          </label>
+          <label class="field compact-field">
+            <span>Power kW</span>
+            <input id="powerKwInput" type="number" min="1" max="20" step="0.1" value="4.6" />
+          </label>
+          <label class="field compact-field">
+            <span>Peak %</span>
+            <input id="peakShareInput" type="number" min="0" max="100" step="1" value="25" />
+          </label>
+          <label class="field compact-field">
+            <span>Flat %</span>
+            <input id="flatShareInput" type="number" min="0" max="100" step="1" value="35" />
+          </label>
+          <label class="field compact-field">
+            <span>Valley %</span>
+            <input id="valleyShareInput" type="number" min="0" max="100" step="1" value="40" />
+          </label>
+          <label class="field compact-field">
+            <span>VAT %</span>
+            <input id="vatCompareInput" type="number" min="0" max="30" step="0.1" value="21" />
+          </label>
+          <label class="field compact-field">
+            <span>Electricity tax %</span>
+            <input id="taxCompareInput" type="number" min="0" max="10" step="0.1" value="5.1127" />
+          </label>
+          <div class="button-cluster compare-actions" aria-label="Comparator actions">
+            <button id="addTariffButton" class="secondary-button" type="button">Add offer</button>
+            <button id="resetCompareButton" class="secondary-button" type="button">Reset</button>
+            <button id="refreshCompareButton" class="primary-button refresh-button" type="button">Update PVPC</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="hero-panel compare-hero" aria-live="polite">
+        <div class="answer-copy">
+          <span class="eyebrow">Best estimate</span>
+          <h2 id="compareHeroTitle">Calculating comparison...</h2>
+          <p id="compareHeroReason">Results will appear after PVPC data and editable offers are loaded.</p>
+        </div>
+        <div class="status-meta">
+          <span id="compareDataStatus">Connecting</span>
+          <span id="compareDataNote">Source pending</span>
+          <span id="compareLastUpdated">Update pending</span>
+        </div>
+      </section>
+
+      <section class="dashboard-grid compare-kpi-grid">
+        <article class="metric-card">
+          <span class="eyebrow">Estimated saving</span>
+          <strong id="compareSavings">--</strong>
+          <small id="compareSavingsHint">Comparing the best and worst monthly result.</small>
+        </article>
+        <article class="metric-card">
+          <span class="eyebrow">Flexible PVPC</span>
+          <strong id="pvpcEstimate">--</strong>
+          <small id="pvpcHint">Uses the day's cheapest hours for flexible kWh.</small>
+        </article>
+        <article class="metric-card">
+          <span class="eyebrow">Flexible usage</span>
+          <strong id="flexibleShare">--</strong>
+          <small id="flexibleHint">Consumption share that can move to valley or cheap hours.</small>
+        </article>
+        <article class="metric-card">
+          <span class="eyebrow">Commercial note</span>
+          <strong id="affiliateStatus">No links</strong>
+          <small id="affiliateHint">No active referral agreements in this version.</small>
+        </article>
+      </section>
+
+      <section class="chart-section">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Editable offers</span>
+            <h2>Enter prices from a real offer</h2>
+          </div>
+          <p class="section-note">
+            The examples are not live commercial tariffs. If an offer shows tax-included prices,
+            set VAT and electricity tax to 0 or enter pre-tax prices.
+          </p>
+        </div>
+        <div id="tariffEditor" class="tariff-editor-grid"></div>
+      </section>
+
+      <section class="chart-section">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Ranking</span>
+            <h2>Estimated monthly cost by tariff</h2>
+          </div>
+          <p id="compareResultsNote" class="section-note">Simplified estimate with energy, power, monthly fee, and editable taxes.</p>
+        </div>
+        <div id="comparisonResults" class="comparison-results" aria-live="polite"></div>
+      </section>
+
+      <section class="method-grid">
+        <article class="method-card method-card--wide">
+          <span class="eyebrow">Responsible monetization</span>
+          <h3>Referrals can exist, but they should not decide the ranking.</h3>
+          <p>
+            Power Window can use referral or affiliate links when a supplier offers them. The
+            comparison should label those links, keep assumptions visible, and allow sorting by
+            estimated cost even when an offer pays no commission.
+          </p>
+          <p>
+            Commercial next step: replace the examples with verified offers, update date, core
+            terms, contract lock-in, price source, and referral link when one exists.
+          </p>
+        </article>
+      </section>
+
+      <footer class="source-note">
+        <p>
+          Power Window uses PVPC data published by Red Electrica for the regulated case. Editable
+          offers are assumptions stored in the browser and are not financial advice or a completed
+          commercial offer. <a href="/en/privacy">Privacy</a>.
+        </p>
+      </footer>
+    </main>
+  </body>
+</html>

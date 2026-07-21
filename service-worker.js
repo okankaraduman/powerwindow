@@ -1,13 +1,17 @@
-const CACHE_NAME = "power-window-v37";
+const CACHE_NAME = "power-window-v38";
 const APP_ASSETS = [
   "/",
   "/index.html",
+  "/compare",
+  "/compare.html",
   "/statistics",
   "/methodology",
   "/mission",
   "/privacy",
   "/en/",
   "/en/index.html",
+  "/en/compare",
+  "/en/compare.html",
   "/en/statistics",
   "/en/methodology",
   "/en/mission",
@@ -17,6 +21,7 @@ const APP_ASSETS = [
   "/app.en.js",
   "/analytics.js",
   "/analytics.en.js",
+  "/compare.js",
   "/statistics.js",
   "/statistics.en.js",
   "/mission.js",

@@ -5,6 +5,7 @@
 - [x] Privacy page at `https://powerwindow.energy/privacy`
 - [x] Wallbox demo claramente etiquetada como solo demostración
 - [x] PWA manifest includes PNG icon
+- [ ] Publicar `.well-known/assetlinks.json` con el SHA-256 real de Play App Signing
 - [ ] Confirm Cloudflare Pages has deployed latest `main`
 
 ## Android
@@ -12,8 +13,10 @@
 - [x] Gradle wrapper añadido
 - [x] Recursos de icono adaptativo añadidos
 - [x] Configuración de firma release añadida
+- [x] Trusted Web Activity configurada
 - [ ] Install Android Studio or Java + Android SDK
 - [ ] Create release keystore
+- [ ] Obtener SHA-256 de Play App Signing o del certificado release
 - [ ] Copy `android/keystore.properties.example` to `android/keystore.properties`
 - [ ] Build signed release bundle with `./gradlew bundleRelease`
 

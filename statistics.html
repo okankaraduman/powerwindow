@@ -22,7 +22,7 @@
           <span class="brand-mark" aria-hidden="true">P</span>
           <div>
             <h1>Power Window</h1>
-            <p>Señales diarias de precio y generación para España.</p>
+            <p>Comparativas estacionales de precio y generación para España.</p>
           </div>
         </div>
 
@@ -39,23 +39,19 @@
       <section class="planner-panel stats-filter-panel" aria-label="Controles de estadísticas">
         <div class="planner-copy">
           <span class="eyebrow">Estadísticas</span>
-          <h2>Sigue la señal energética diaria.</h2>
+          <h2>Compara este verano con el invierno reciente.</h2>
         </div>
         <div class="stats-controls">
-          <label class="field">
-            <span>Fecha</span>
-            <input id="statsDateInput" type="date" />
-          </label>
           <button id="statsRefreshButton" class="primary-button refresh-button" type="button">Actualizar</button>
-          <small id="statsControlHint">Los datos de generación están disponibles hasta hoy. Los precios PVPC se cachean en el backend.</small>
+          <small id="statsControlHint">Usamos rangos estacionales cacheados en el backend para evitar muchas peticiones diarias.</small>
         </div>
       </section>
 
       <section class="hero-panel stats-hero" aria-live="polite">
         <div class="answer-copy">
-          <span class="eyebrow">Señal diaria</span>
-          <h2 id="statsHeroTitle">Cargando estadísticas...</h2>
-          <p id="statsHeroReason">Obteniendo datos cacheados de precio y generación de REE.</p>
+          <span class="eyebrow">Señal estacional</span>
+          <h2 id="statsHeroTitle">Cargando temporadas...</h2>
+          <p id="statsHeroReason">Obteniendo datos cacheados de precio y generación de REE para verano e invierno.</p>
         </div>
         <div class="status-meta">
           <span id="statsDataStatus">Conectando</span>
@@ -66,24 +62,24 @@
 
       <section class="dashboard-grid stats-kpi-grid">
         <article class="metric-card">
-          <span class="eyebrow">Generación renovable</span>
+          <span class="eyebrow">PVPC medio verano</span>
           <strong id="renewableRate">--</strong>
-          <small id="renewableHint">Esperando datos del mix de generación.</small>
+          <small id="renewableHint">Esperando precios del verano.</small>
         </article>
         <article class="metric-card">
-          <span class="eyebrow">Solar + eólica</span>
+          <span class="eyebrow">PVPC medio invierno</span>
           <strong id="windSolarRate">--</strong>
-          <small id="windSolarHint">Qué parte de la generación vino de eólica y solar.</small>
+          <small id="windSolarHint">Esperando precios del invierno.</small>
         </article>
         <article class="metric-card">
-          <span class="eyebrow">Precio PVPC más bajo</span>
+          <span class="eyebrow">Más renovable</span>
           <strong id="lowestPvpcHour">--</strong>
-          <small id="lowestPvpcHint">Esperando precios horarios.</small>
+          <small id="lowestPvpcHint">Comparando cuota renovable por temporada.</small>
         </article>
         <article class="metric-card">
-          <span class="eyebrow">Diferencia para 10 kWh</span>
+          <span class="eyebrow">Diferencia media 10 kWh</span>
           <strong id="timingSpread">--</strong>
-          <small id="timingSpreadHint">Diferencia entre la hora PVPC más barata y la más cara.</small>
+          <small id="timingSpreadHint">Diferencia entre el PVPC medio estacional.</small>
         </article>
       </section>
 
@@ -91,9 +87,9 @@
         <div class="section-heading">
           <div>
             <span class="eyebrow">Mix de generación</span>
-            <h2>Qué tecnologías aportaron electricidad el día seleccionado</h2>
+            <h2>Renovables y tecnologías principales por temporada</h2>
           </div>
-          <p id="generationMixNote" class="section-note">Valores agrupados a partir de la estructura de generación de REE.</p>
+          <p id="generationMixNote" class="section-note">Valores agrupados a partir de la estructura de generación de REE para cada rango.</p>
         </div>
         <div class="mix-stack" aria-label="Generación renovable frente a no renovable">
           <span id="renewableStack" class="mix-stack-renewable"></span>
@@ -106,9 +102,9 @@
         <div class="section-heading">
           <div>
             <span class="eyebrow">Forma del precio PVPC</span>
-            <h2>Componente horario de precio durante el día seleccionado</h2>
+            <h2>Precio medio por hora: verano frente a invierno</h2>
           </div>
-          <p id="priceShapeNote" class="section-note">Las barras más bajas son mejores señales para consumos flexibles. Precios en €/kWh.</p>
+          <p id="priceShapeNote" class="section-note">Dos barras por hora: verano e invierno. Precios en €/kWh.</p>
         </div>
         <div id="statsPriceChart" class="stats-price-chart" aria-live="polite"></div>
       </section>
@@ -116,8 +112,9 @@
       <footer class="source-note">
         <p>
           Las estadísticas usan respuestas REData de Red Eléctrica cacheadas por Power Window.
-          Los datos de generación pueden ser parciales durante el día actual y deben leerse como
-          una señal operativa, no como una cifra contable anual definitiva.
+          El verano se muestra hasta hoy si aún está en curso; el invierno usa la temporada
+          invernal más reciente. Los datos de generación deben leerse como señal operativa,
+          no como cifra contable anual definitiva.
         </p>
       </footer>
     </main>

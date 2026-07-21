@@ -33,6 +33,10 @@ export default {
       return handleGeneration(request, env, url, ctx);
     }
 
+    if (url.pathname === "/api/statistics/seasons") {
+      return handleSeasonStatistics(request, env, url, ctx);
+    }
+
     if (url.pathname === "/api/connectors") {
       return handleConnectors(request);
     }
@@ -482,6 +486,117 @@ async function handleGeneration(request, env, url, ctx) {
   }
 }
 
+async function handleSeasonStatistics(request, env, url, ctx) {
+  if (request.method !== "GET") {
+    return jsonResponse({ error: "método no permitido" }, 405, request);
+  }
+
+  const bindingError = marketBindingError(env);
+  if (bindingError) {
+    return jsonResponse({ error: bindingError }, 500, request);
+  }
+
+  const date = url.searchParams.get("date") || madridDateString(0);
+  if (!isValidDateValue(date)) {
+    return jsonResponse({ error: "la fecha debe tener formato YYYY-MM-DD" }, 400, request);
+  }
+
+  if (date > madridDateString(0)) {
+    return jsonResponse({ error: "las estadísticas estacionales solo llegan hasta hoy" }, 400, request);
+  }
+
+  const forceRefresh = url.searchParams.get("refresh") === "1";
+  try {
+    const ranges = seasonRangesForDate(date);
+    const result = await seasonStatisticsEntry(env, ranges, { forceRefresh, ctx });
+    return jsonResponse(
+      {
+        source: "ree",
+        cacheStatus: result.cacheStatus,
+        cachedAt: result.entry.cachedAt,
+        seasons: result.entry.payload.seasons
+      },
+      200,
+      request
+    );
+  } catch (error) {
+    return jsonResponse({ error: error.message || "la solicitud a REE ha fallado" }, 502, request);
+  }
+}
+
+async function seasonStatisticsEntry(env, ranges, options = {}) {
+  const cacheKey = `statistics:seasons:${ranges
+    .map((range) => `${range.id}:${range.startDate}:${range.endDate}`)
+    .join(":")}`;
+  const forceRefresh = options.forceRefresh === true;
+  const ttlSeconds = seasonStatisticsCacheTtl(ranges);
+  const cached = forceRefresh ? null : await readCache(env, cacheKey);
+
+  if (cached) {
+    if (isFreshCacheEntry(cached, ttlSeconds)) {
+      return { cacheStatus: "hit", entry: cached };
+    }
+
+    scheduleSeasonStatisticsRefresh(env, cacheKey, ranges, options.ctx);
+    return { cacheStatus: "stale", entry: cached };
+  }
+
+  const entry = await refreshSeasonStatistics(env, cacheKey, ranges);
+  return { cacheStatus: "miss", entry };
+}
+
+async function refreshSeasonStatistics(env, cacheKey, ranges) {
+  const seasons = await Promise.all(
+    ranges.map(async (range) => {
+      const [marketPayload, generationPayload] = await Promise.all([
+        fetchREERangeWidget(MARKET_WIDGET, range.startDate, range.endDate, "hour"),
+        fetchREERangeWidget(GENERATION_WIDGET, range.startDate, range.endDate, "day")
+      ]);
+
+      return {
+        ...range,
+        market: {
+          cachedAt: new Date().toISOString(),
+          payload: marketPayload
+        },
+        generation: {
+          cachedAt: new Date().toISOString(),
+          payload: generationPayload
+        }
+      };
+    })
+  );
+  const entry = { cachedAt: new Date().toISOString(), payload: { seasons } };
+  await writeCache(env, cacheKey, entry);
+  return entry;
+}
+
+function scheduleSeasonStatisticsRefresh(env, cacheKey, ranges, ctx) {
+  if (!ctx) return;
+  if (seasonStatisticsCacheTtl(ranges) === Infinity) return;
+  ctx.waitUntil(refreshSeasonStatisticsWithLock(env, cacheKey, ranges));
+}
+
+async function refreshSeasonStatisticsWithLock(env, cacheKey, ranges) {
+  const lockKey = `refresh:${cacheKey}`;
+  const existingLock = await env.MARKET_CACHE.get(lockKey, { type: "json" });
+  if (existingLock?.startedAt && Date.now() - existingLock.startedAt < 2 * MINUTE * 1000) {
+    return;
+  }
+
+  await env.MARKET_CACHE.put(
+    lockKey,
+    JSON.stringify({ startedAt: Date.now() }),
+    { expirationTtl: 2 * MINUTE }
+  );
+
+  try {
+    await refreshSeasonStatistics(env, cacheKey, ranges);
+  } finally {
+    await env.MARKET_CACHE.delete(lockKey);
+  }
+}
+
 async function marketEntryForDate(env, date, options = {}) {
   const cacheKey = `market:${date}`;
   const forceRefresh = options.forceRefresh === true;
@@ -642,28 +757,7 @@ function isFreshCacheEntry(entry, ttlSeconds) {
 }
 
 async function fetchREE(date) {
-  const endpoint = new URL(`${REE_BASE_URL}/${MARKET_WIDGET}`);
-  endpoint.searchParams.set("start_date", `${date}T00:00`);
-  endpoint.searchParams.set("end_date", `${date}T23:59`);
-  endpoint.searchParams.set("time_trunc", "hour");
-
-  const response = await fetch(endpoint, {
-    headers: {
-      Accept: "application/json",
-      "User-Agent": "PowerWindow/1.0"
-    }
-  });
-
-  if (!response.ok) {
-    throw new Error(`REE returned HTTP ${response.status}`);
-  }
-
-  const payload = await response.json();
-  if (Array.isArray(payload.errors) && payload.errors.length) {
-    throw new Error(payload.errors[0].detail || "REE returned an error");
-  }
-
-  return payload;
+  return fetchREERangeWidget(MARKET_WIDGET, date, date, "hour");
 }
 
 async function fetchREEGeneration(date) {
@@ -671,9 +765,13 @@ async function fetchREEGeneration(date) {
 }
 
 async function fetchREEWidget(widget, date, timeTrunc) {
+  return fetchREERangeWidget(widget, date, date, timeTrunc);
+}
+
+async function fetchREERangeWidget(widget, startDate, endDate, timeTrunc) {
   const endpoint = new URL(`${REE_BASE_URL}/${widget}`);
-  endpoint.searchParams.set("start_date", `${date}T00:00`);
-  endpoint.searchParams.set("end_date", `${date}T23:59`);
+  endpoint.searchParams.set("start_date", `${startDate}T00:00`);
+  endpoint.searchParams.set("end_date", `${endDate}T23:59`);
   endpoint.searchParams.set("time_trunc", timeTrunc);
 
   const response = await fetch(endpoint, {
@@ -911,6 +1009,61 @@ function generationCacheTtlForDate(date) {
   if (date === today) return 30 * MINUTE;
   if (date < today) return Infinity;
   return 5 * MINUTE;
+}
+
+function seasonStatisticsCacheTtl(ranges) {
+  const today = madridDateString(0);
+  return ranges.some((range) => range.endDate >= today) ? 30 * MINUTE : Infinity;
+}
+
+function seasonRangesForDate(dateValue) {
+  const { year, month } = parseDateParts(dateValue);
+  const summerYear = month < 6 ? year - 1 : year;
+  const summerStart = dateFromParts(summerYear, 6, 1);
+  const summerNaturalEnd = dateFromParts(summerYear, 8, 31);
+  const summerEnd =
+    dateValue >= summerStart && dateValue < summerNaturalEnd ? dateValue : summerNaturalEnd;
+
+  let winterStart;
+  let winterEnd;
+  if (month === 12) {
+    winterStart = dateFromParts(year, 12, 1);
+    winterEnd = dateValue;
+  } else if (month <= 2) {
+    winterStart = dateFromParts(year - 1, 12, 1);
+    winterEnd = dateValue;
+  } else {
+    winterStart = dateFromParts(year - 1, 12, 1);
+    winterEnd = dateFromParts(year, 2, lastDayOfMonth(year, 2));
+  }
+
+  return [
+    {
+      id: "summer",
+      startDate: summerStart,
+      endDate: summerEnd,
+      complete: summerEnd === summerNaturalEnd
+    },
+    {
+      id: "winter",
+      startDate: winterStart,
+      endDate: winterEnd,
+      complete: month > 2 && month < 12
+    }
+  ];
+}
+
+function parseDateParts(value) {
+  const [year, month, day] = value.split("-").map(Number);
+  return { year, month, day };
+}
+
+function dateFromParts(year, month, day) {
+  return [year, String(month).padStart(2, "0"), String(day).padStart(2, "0")].join("-");
+}
+
+function lastDayOfMonth(year, month) {
+  return new Date(Date.UTC(year, month, 0)).getUTCDate();
 }
 
 function monthToDateValues(dateValue) {

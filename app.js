@@ -386,12 +386,12 @@ async function loadGridPressure(dateValue, options = {}) {
   const today = startOfDay(new Date());
   if (selected > today) {
     state.grid = {
-      status: "unavailable",
+      status: "future",
       cacheStatus: "none",
       demandPoints: [],
       generationMix: null,
       cachedAt: "",
-      reason: "La demanda y el mix operativo de REE solo están disponibles hasta hoy.",
+      reason: "La demanda y el mix operativo de REE se publican como datos operativos del día.",
     };
     renderGridPressure(state.best);
     return;
@@ -752,6 +752,16 @@ function renderGridPressure(best) {
     return;
   }
 
+  if (state.grid.status === "future") {
+    els.gridPressurePanel.className = "grid-pressure-panel";
+    els.gridPressureTitle.textContent = "Señal de red pendiente para esta fecha";
+    els.gridPressureReason.textContent =
+      "El precio puede estar disponible con antelación, pero la demanda real y el mix operativo de REE llegan el mismo día. La recomendación sigue usando el precio horario disponible.";
+    updateGridMetricText("--", "--", "--", "--");
+    els.gridPressureMeta.textContent = "Se activará cuando REE publique los datos operativos del día seleccionado.";
+    return;
+  }
+
   if (state.grid.status !== "ready") {
     els.gridPressurePanel.className = "grid-pressure-panel";
     els.gridPressureTitle.textContent = "Señal de red no disponible";
@@ -814,7 +824,7 @@ function gridPressureSignal(best) {
   const renewableText = mix ? formatPercent(mix.renewableShare) : "renovables no disponibles";
   const gasText = mix ? formatPercent(mix.combinedCycleShare) : "gas no disponible";
   const nuclearText = mix ? formatPercent(mix.nuclearShare) : "nuclear no disponible";
-  const demandText = windowDemand ? formatMw(windowDemand) : "demanda no disponible";
+  const demandText = windowDemand ? formatMw(windowDemand) : "demanda horaria no publicada";
 
   if (pressureScore >= 0.66) {
     return {

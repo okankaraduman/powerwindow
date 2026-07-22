@@ -573,20 +573,19 @@ function parseMarketData(data) {
 
 function parseDemandData(data) {
   const included = Array.isArray(data?.included) ? data.included : [];
-  const real = findSeries(included, ["real demand", "real", "demand"]);
-  const forecasted = findSeries(included, ["forecasted", "prevista"]);
-  const series = hasValues(real) ? real : forecasted;
-  if (!series?.attributes?.values?.length) return [];
+  const seriesPriority = [
+    findSeries(included, ["real demand", "real"]),
+    findSeries(included, ["forecasted", "prevista"]),
+    findSeries(included, ["scheduled", "programada"]),
+    findSeries(included, ["total scheduled", "programada total"]),
+  ].filter(hasValues);
 
   const hourly = new Map();
-  series.attributes.values.forEach((item) => {
-    const hour = Number(String(item.datetime || "").match(/T(\d{2}):/)?.[1]);
-    const value = Number(item.value);
-    if (!Number.isFinite(hour) || !Number.isFinite(value)) return;
-    const current = hourly.get(hour) || { total: 0, count: 0, datetime: item.datetime };
-    current.total += value;
-    current.count += 1;
-    hourly.set(hour, current);
+  seriesPriority.forEach((series) => {
+    const seriesHourly = hourlyDemandForSeries(series);
+    seriesHourly.forEach((bucket, hour) => {
+      if (!hourly.has(hour)) hourly.set(hour, bucket);
+    });
   });
 
   return Array.from(hourly.entries())
@@ -594,9 +593,28 @@ function parseDemandData(data) {
       hour,
       demandMw: bucket.total / bucket.count,
       datetime: bucket.datetime,
-      label: series.attributes.title || "Demand",
+      label: bucket.label,
     }))
     .sort((a, b) => a.hour - b.hour);
+}
+
+function hourlyDemandForSeries(series) {
+  const hourly = new Map();
+  series.attributes.values.forEach((item) => {
+    const hour = Number(String(item.datetime || "").match(/T(\d{2}):/)?.[1]);
+    const value = Number(item.value);
+    if (!Number.isFinite(hour) || !Number.isFinite(value)) return;
+    const current = hourly.get(hour) || {
+      total: 0,
+      count: 0,
+      datetime: item.datetime,
+      label: series.attributes.title || series.type || "Demand",
+    };
+    current.total += value;
+    current.count += 1;
+    hourly.set(hour, current);
+  });
+  return hourly;
 }
 
 function parseGenerationMix(data) {
@@ -824,7 +842,7 @@ function gridPressureSignal(best) {
   const renewableText = mix ? formatPercent(mix.renewableShare) : "renewables unavailable";
   const gasText = mix ? formatPercent(mix.combinedCycleShare) : "gas unavailable";
   const nuclearText = mix ? formatPercent(mix.nuclearShare) : "nuclear unavailable";
-  const demandText = windowDemand ? formatMw(windowDemand) : "hourly demand not published";
+  const demandText = windowDemand ? formatMw(windowDemand) : "demand unavailable for this window";
 
   if (pressureScore >= 0.66) {
     return {
@@ -872,7 +890,7 @@ function gridPressureMetaText() {
         ? "direct REE"
         : "cached data";
   const updated = state.grid.cachedAt ? ` · ${formatDateTime(state.grid.cachedAt)}` : "";
-  return `Real-time demand + daily generation mix, ${source}${updated}. Directional signal, not exact marginality.`;
+  return `Real/forecast demand + daily generation mix, ${source}${updated}. Directional signal, not exact marginality.`;
 }
 
 function renderChart(points, bestHours, lowCut, highCut, firstStart = 0) {

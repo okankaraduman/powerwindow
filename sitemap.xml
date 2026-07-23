@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://powerwindow.energy/</loc>
+    <lastmod>2026-07-23</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://powerwindow.energy/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://powerwindow.energy/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://powerwindow.energy/" />
+  </url>
+  <url>
+    <loc>https://powerwindow.energy/en/</loc>
+    <lastmod>2026-07-23</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://powerwindow.energy/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://powerwindow.energy/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://powerwindow.energy/" />
+  </url>
+  <url>
+    <loc>https://powerwindow.energy/compare</loc>
+    <lastmod>2026-07-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://powerwindow.energy/compare" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://powerwindow.energy/en/compare" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://powerwindow.energy/compare" />
+  </url>
+  <url>
+    <loc>https://powerwindow.energy/en/compare</loc>
+    <lastmod>2026-07-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://powerwindow.energy/compare" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://powerwindow.energy/en/compare" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://powerwindow.energy/compare" />
+  </url>
+  <url>
+    <loc>https://powerwindow.energy/statistics</loc>
+    <lastmod>2026-07-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://powerwindow.energy/statistics" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://powerwindow.energy/en/statistics" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://powerwindow.energy/statistics" />
+  </url>
+  <url>
+    <loc>https://powerwindow.energy/en/statistics</loc>
+    <lastmod>2026-07-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://powerwindow.energy/statistics" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://powerwindow.energy/en/statistics" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://powerwindow.energy/statistics" />
+  </url>
+  <url>
+    <loc>https://powerwindow.energy/methodology</loc>
+    <lastmod>2026-07-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://powerwindow.energy/methodology" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://powerwindow.energy/en/methodology" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://powerwindow.energy/methodology" />
+  </url>
+  <url>
+    <loc>https://powerwindow.energy/en/methodology</loc>
+    <lastmod>2026-07-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://powerwindow.energy/methodology" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://powerwindow.energy/en/methodology" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://powerwindow.energy/methodology" />
+  </url>
+  <url>
+    <loc>https://powerwindow.energy/mission</loc>
+    <lastmod>2026-07-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://powerwindow.energy/mission" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://powerwindow.energy/en/mission" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://powerwindow.energy/mission" />
+  </url>
+  <url>
+    <loc>https://powerwindow.energy/en/mission</loc>
+    <lastmod>2026-07-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://powerwindow.energy/mission" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://powerwindow.energy/en/mission" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://powerwindow.energy/mission" />
+  </url>
+  <url>
+    <loc>https://powerwindow.energy/privacy</loc>
+    <lastmod>2026-07-23</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://powerwindow.energy/privacy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://powerwindow.energy/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://powerwindow.energy/privacy" />
+  </url>
+  <url>
+    <loc>https://powerwindow.energy/en/privacy</loc>
+    <lastmod>2026-07-23</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://powerwindow.energy/privacy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://powerwindow.energy/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://powerwindow.energy/privacy" />
+  </url>
+</urlset>

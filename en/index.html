@@ -7,12 +7,83 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Power Window" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <title>Best Time To Use Power</title>
+    <title>Best Time to Use Electricity in Spain | Power Window</title>
+    <meta
+      name="description"
+      content="Find the best hour to charge an EV, run appliances, or shift flexible electricity use in Spain with hourly PVPC price data."
+    />
+    <link rel="canonical" href="https://powerwindow.energy/en/" />
+    <link rel="alternate" hreflang="es" href="https://powerwindow.energy/" />
+    <link rel="alternate" hreflang="en" href="https://powerwindow.energy/en/" />
+    <link rel="alternate" hreflang="x-default" href="https://powerwindow.energy/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:locale:alternate" content="es_ES" />
+    <meta property="og:site_name" content="Power Window" />
+    <meta property="og:title" content="Best Time to Use Electricity in Spain" />
+    <meta
+      property="og:description"
+      content="Plan EV charging, laundry, dishwashing, and cooling around hourly Spanish electricity prices."
+    />
+    <meta property="og:url" content="https://powerwindow.energy/en/" />
+    <meta property="og:image" content="https://powerwindow.energy/store/assets/feature-graphic.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Best Time to Use Electricity in Spain" />
+    <meta
+      name="twitter:description"
+      content="Find low-price hours for flexible electricity use with hourly PVPC data."
+    />
+    <meta name="twitter:image" content="https://powerwindow.energy/store/assets/feature-graphic.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <link rel="manifest" href="/manifest.en.webmanifest" />
     <link rel="stylesheet" href="/styles.css" />
     <script defer src="/analytics.en.js"></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://powerwindow.energy/#organization",
+            "name": "Power Window",
+            "url": "https://powerwindow.energy/",
+            "logo": "https://powerwindow.energy/store/assets/icon-512.png"
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://powerwindow.energy/#website",
+            "name": "Power Window",
+            "url": "https://powerwindow.energy/",
+            "publisher": {
+              "@id": "https://powerwindow.energy/#organization"
+            },
+            "inLanguage": ["es", "en"]
+          },
+          {
+            "@type": "WebApplication",
+            "@id": "https://powerwindow.energy/#app",
+            "name": "Power Window",
+            "url": "https://powerwindow.energy/en/",
+            "applicationCategory": "UtilitiesApplication",
+            "operatingSystem": "Web, Android",
+            "inLanguage": ["es", "en"],
+            "description": "A tool for finding lower-price hours for flexible electricity loads in Spain using Red Electrica hourly data.",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "EUR"
+            },
+            "featureList": [
+              "PVPC hourly price planner",
+              "EV charging planner",
+              "Tariff comparison",
+              "Seasonal electricity statistics"
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <main class="app-shell">
@@ -87,6 +158,38 @@
           <div class="button-cluster" aria-label="Planner actions">
             <button id="saveProfileButton" class="secondary-button" type="button">Save</button>
             <button id="refreshButton" class="primary-button refresh-button" type="button">Update</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="usage-demo-panel" aria-label="Animated Power Window usage preview">
+        <div class="usage-demo-copy">
+          <span class="eyebrow">Quick flow</span>
+          <h2>Date, load, best hour.</h2>
+        </div>
+        <div class="usage-motion" aria-hidden="true">
+          <div class="usage-step-list">
+            <span><b>1</b> Date</span>
+            <span><b>2</b> Load</span>
+            <span><b>3</b> Window</span>
+          </div>
+          <div class="usage-mini-ui">
+            <div class="demo-input demo-date">23/07/2026</div>
+            <div class="demo-input demo-load">EV charging · 3.7 kW</div>
+            <div class="demo-bars">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <div class="demo-result">
+              <span>Best window</span>
+              <strong>2 PM-4 PM</strong>
+            </div>
           </div>
         </div>
       </section>

@@ -7,12 +7,83 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Power Window" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <title>Mejor Hora Para Usar Electricidad</title>
+    <title>Mejor hora para usar electricidad en España | Power Window</title>
+    <meta
+      name="description"
+      content="Consulta precios PVPC por horas y encuentra la mejor hora para cargar el coche eléctrico, poner lavadora o mover consumos flexibles en España."
+    />
+    <link rel="canonical" href="https://powerwindow.energy/" />
+    <link rel="alternate" hreflang="es" href="https://powerwindow.energy/" />
+    <link rel="alternate" hreflang="en" href="https://powerwindow.energy/en/" />
+    <link rel="alternate" hreflang="x-default" href="https://powerwindow.energy/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:locale:alternate" content="en_GB" />
+    <meta property="og:site_name" content="Power Window" />
+    <meta property="og:title" content="Mejor hora para usar electricidad en España" />
+    <meta
+      property="og:description"
+      content="Planifica coche eléctrico, lavadora, lavavajillas y climatización con precios PVPC horarios de España."
+    />
+    <meta property="og:url" content="https://powerwindow.energy/" />
+    <meta property="og:image" content="https://powerwindow.energy/store/assets/feature-graphic.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Mejor hora para usar electricidad en España" />
+    <meta
+      name="twitter:description"
+      content="Encuentra horas baratas para consumos flexibles con datos PVPC horarios."
+    />
+    <meta name="twitter:image" content="https://powerwindow.energy/store/assets/feature-graphic.png" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="favicon.svg" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="stylesheet" href="styles.css" />
     <script defer src="analytics.js"></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://powerwindow.energy/#organization",
+            "name": "Power Window",
+            "url": "https://powerwindow.energy/",
+            "logo": "https://powerwindow.energy/store/assets/icon-512.png"
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://powerwindow.energy/#website",
+            "name": "Power Window",
+            "url": "https://powerwindow.energy/",
+            "publisher": {
+              "@id": "https://powerwindow.energy/#organization"
+            },
+            "inLanguage": ["es", "en"]
+          },
+          {
+            "@type": "WebApplication",
+            "@id": "https://powerwindow.energy/#app",
+            "name": "Power Window",
+            "url": "https://powerwindow.energy/",
+            "applicationCategory": "UtilitiesApplication",
+            "operatingSystem": "Web, Android",
+            "inLanguage": ["es", "en"],
+            "description": "Herramienta para encontrar horas de menor precio para consumos eléctricos flexibles en España usando datos horarios de Red Eléctrica.",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "EUR"
+            },
+            "featureList": [
+              "Planificador horario PVPC",
+              "Planificador de carga de coche eléctrico",
+              "Comparador de tarifas",
+              "Estadísticas eléctricas estacionales"
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <main class="app-shell">
@@ -86,6 +157,38 @@
           <div class="button-cluster" aria-label="Acciones del planificador">
             <button id="saveProfileButton" class="secondary-button" type="button">Guardar</button>
             <button id="refreshButton" class="primary-button refresh-button" type="button">Actualizar</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="usage-demo-panel" aria-label="Vista animada del uso de Power Window">
+        <div class="usage-demo-copy">
+          <span class="eyebrow">Flujo rápido</span>
+          <h2>Fecha, consumo, mejor hora.</h2>
+        </div>
+        <div class="usage-motion" aria-hidden="true">
+          <div class="usage-step-list">
+            <span><b>1</b> Fecha</span>
+            <span><b>2</b> Consumo</span>
+            <span><b>3</b> Ventana</span>
+          </div>
+          <div class="usage-mini-ui">
+            <div class="demo-input demo-date">23/07/2026</div>
+            <div class="demo-input demo-load">Coche eléctrico · 3,7 kW</div>
+            <div class="demo-bars">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <div class="demo-result">
+              <span>Mejor ventana</span>
+              <strong>2 PM-4 PM</strong>
+            </div>
           </div>
         </div>
       </section>

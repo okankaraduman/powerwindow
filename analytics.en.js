@@ -11,7 +11,7 @@ function initAnalyticsConsent() {
   }
 
   if (consent === "declined") return;
-  renderAnalyticsPrompt();
+  window.setTimeout(renderAnalyticsPrompt, 7000);
 }
 
 function readAnalyticsConsent() {

@@ -162,21 +162,24 @@
         </div>
       </section>
 
-      <section class="usage-demo-panel" aria-label="Animated Power Window usage preview">
-        <div class="usage-demo-copy">
-          <span class="eyebrow">Quick flow</span>
-          <h2>Date, load, best hour.</h2>
+      <section class="guided-demo-panel" aria-label="Animated Power Window usage demo">
+        <div class="guided-demo-copy">
+          <span class="eyebrow">Watch it work</span>
+          <h2>Pick a load. See the best window.</h2>
         </div>
-        <div class="usage-motion" aria-hidden="true">
-          <div class="usage-step-list">
-            <span><b>1</b> Date</span>
-            <span><b>2</b> Load</span>
-            <span><b>3</b> Window</span>
-          </div>
-          <div class="usage-mini-ui">
-            <div class="demo-input demo-date">23/07/2026</div>
-            <div class="demo-input demo-load">EV charging · 3.7 kW</div>
-            <div class="demo-bars">
+        <div class="guided-demo-stage" aria-hidden="true">
+          <div class="guided-demo-window">
+            <div class="guided-demo-top">
+              <span>Planner</span>
+              <b>Hourly PVPC</b>
+            </div>
+            <div class="guided-demo-form">
+              <div class="guided-field guided-date"><small>Date</small><strong>24/07/2026</strong></div>
+              <div class="guided-field guided-hours"><small>Duration</small><strong>2 hours</strong></div>
+              <div class="guided-field guided-load"><small>Load</small><strong>EV charging - 3.7 kW</strong></div>
+              <div class="guided-refresh">Update</div>
+            </div>
+            <div class="guided-demo-chart">
               <span></span>
               <span></span>
               <span></span>
@@ -186,10 +189,15 @@
               <span></span>
               <span></span>
             </div>
-            <div class="demo-result">
-              <span>Best window</span>
+            <div class="guided-answer">
+              <small>Best window</small>
               <strong>2 PM-4 PM</strong>
+              <span>Estimated saving versus expensive hours</span>
             </div>
+            <div class="guided-caption guided-caption-date"><b>1</b> Pick day and duration</div>
+            <div class="guided-caption guided-caption-load"><b>2</b> Pick the load</div>
+            <div class="guided-caption guided-caption-result"><b>3</b> Start in the best window</div>
+            <div class="guided-cursor"></div>
           </div>
         </div>
       </section>

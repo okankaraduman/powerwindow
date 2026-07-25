@@ -474,6 +474,35 @@ h1 {
   height: 50px;
 }
 
+.compare-demo-chart {
+  grid-template-columns: repeat(5, minmax(34px, 1fr));
+}
+
+.compare-demo-chart span:nth-child(1) {
+  height: 54px;
+  background: var(--accent);
+}
+
+.compare-demo-chart span:nth-child(2) {
+  height: 68px;
+  background: var(--blue);
+}
+
+.compare-demo-chart span:nth-child(3) {
+  height: 76px;
+  background: var(--amber);
+}
+
+.compare-demo-chart span:nth-child(4) {
+  height: 88px;
+  background: var(--red);
+}
+
+.compare-demo-chart span:nth-child(5) {
+  height: 62px;
+  background: #94a3b8;
+}
+
 .guided-answer {
   position: absolute;
   right: 14px;

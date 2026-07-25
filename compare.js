@@ -16,6 +16,13 @@ const COMPARE_DAYS_PER_MONTH = 30.42;
 const COMPARE_DEFAULT_POWER_DAY = 0.105;
 const COMPARE_DEFAULT_SOCIAL_BONUS_DAY = 0.024688;
 const COMPARE_ELECTRICITY_TAX_MIN_EUR_PER_KWH = 0.001;
+const COMPARE_TAX_REGION_PRESETS = {
+  mainland: { rate: 21 },
+  "canary-low": { rate: 0 },
+  "canary-high": { rate: 3 },
+  "ceuta-melilla": { rate: 1 },
+  manual: { rate: null },
+};
 
 const compareText = COMPARE_IS_ES
   ? {
@@ -281,6 +288,7 @@ const compareEls = {
   peakShare: document.querySelector("#peakShareInput"),
   flatShare: document.querySelector("#flatShareInput"),
   valleyShare: document.querySelector("#valleyShareInput"),
+  taxRegion: document.querySelector("#taxRegionCompareInput"),
   vat: document.querySelector("#vatCompareInput"),
   tax: document.querySelector("#taxCompareInput"),
   socialBonus: document.querySelector("#socialBonusCompareInput"),
@@ -325,11 +333,12 @@ function bindCompareEvents() {
     compareEls.peakShare,
     compareEls.flatShare,
     compareEls.valleyShare,
-    compareEls.vat,
     compareEls.tax,
     compareEls.socialBonus,
   ].forEach((input) => input.addEventListener("input", handleSettingsInput));
 
+  compareEls.taxRegion.addEventListener("change", handleCompareTaxRegionChange);
+  compareEls.vat.addEventListener("input", handleCompareVatInput);
   compareEls.tariffEditor.addEventListener("input", handleTariffInput);
   compareEls.tariffEditor.addEventListener("change", handleTariffInput);
   compareEls.tariffEditor.addEventListener("click", handleTariffClick);
@@ -346,6 +355,10 @@ function populateSettingsInputs() {
   compareEls.peakShare.value = compareState.settings.peakShare;
   compareEls.flatShare.value = compareState.settings.flatShare;
   compareEls.valleyShare.value = compareState.settings.valleyShare;
+  compareEls.taxRegion.value = normalizeCompareTaxRegion(
+    compareState.settings.taxRegion,
+    compareState.settings.vat
+  );
   compareEls.vat.value = compareState.settings.vat;
   compareEls.tax.value = compareState.settings.tax;
   compareEls.socialBonus.value = compareState.settings.socialBonusDaily;
@@ -355,6 +368,19 @@ function handleSettingsInput() {
   compareState.settings = readCompareSettingsFromInputs();
   saveCompareSettings();
   renderCompare();
+}
+
+function handleCompareTaxRegionChange() {
+  const preset = COMPARE_TAX_REGION_PRESETS[compareEls.taxRegion.value];
+  if (preset && Number.isFinite(preset.rate)) {
+    compareEls.vat.value = String(preset.rate);
+  }
+  handleSettingsInput();
+}
+
+function handleCompareVatInput() {
+  compareEls.taxRegion.value = inferCompareTaxRegion(Number(compareEls.vat.value)) || "manual";
+  handleSettingsInput();
 }
 
 function handleTariffInput(event) {
@@ -788,6 +814,7 @@ function normalizeSettings(settings) {
     peakShare: shares[0] / totalShare,
     flatShare: shares[1] / totalShare,
     valleyShare: shares[2] / totalShare,
+    taxRegion: normalizeCompareTaxRegion(settings.taxRegion, settings.vat),
     vat: clamp(Number(settings.vat) || 0, 0, 30),
     tax: clamp(Number(settings.tax) || 0, 0, 10),
     socialBonusDaily: clamp(Number(settings.socialBonusDaily) || 0, 0, 1),
@@ -802,10 +829,25 @@ function readCompareSettingsFromInputs() {
     peakShare: readInputNumber(compareEls.peakShare, 25),
     flatShare: readInputNumber(compareEls.flatShare, 35),
     valleyShare: readInputNumber(compareEls.valleyShare, 40),
+    taxRegion: compareEls.taxRegion.value || "mainland",
     vat: readInputNumber(compareEls.vat, 21),
     tax: readInputNumber(compareEls.tax, 5.1127),
     socialBonusDaily: readInputNumber(compareEls.socialBonus, COMPARE_DEFAULT_SOCIAL_BONUS_DAY),
   };
+}
+
+function normalizeCompareTaxRegion(region, rate) {
+  if (region === "manual") return "manual";
+  if (COMPARE_TAX_REGION_PRESETS[region]) return region;
+  if (Number.isFinite(Number(rate))) return inferCompareTaxRegion(Number(rate)) || "manual";
+  return "mainland";
+}
+
+function inferCompareTaxRegion(rate) {
+  if (!Number.isFinite(rate)) return "";
+  return Object.entries(COMPARE_TAX_REGION_PRESETS).find(
+    ([region, preset]) => region !== "manual" && Math.abs(preset.rate - rate) < 0.0001
+  )?.[0];
 }
 
 function electricityTaxCost(base, kwh, rate) {
@@ -886,7 +928,11 @@ function hasValues(series) {
 function loadCompareSettings() {
   try {
     const parsed = JSON.parse(localStorage.getItem(COMPARE_SETTINGS_KEY));
-    return { ...defaultCompareSettings(), ...(parsed || {}) };
+    const settings = { ...defaultCompareSettings(), ...(parsed || {}) };
+    if (!parsed?.taxRegion) {
+      settings.taxRegion = normalizeCompareTaxRegion("", settings.vat);
+    }
+    return settings;
   } catch {
     return defaultCompareSettings();
   }
@@ -945,6 +991,7 @@ function defaultCompareSettings() {
     peakShare: 25,
     flatShare: 35,
     valleyShare: 40,
+    taxRegion: "mainland",
     vat: 21,
     tax: 5.1127,
     socialBonusDaily: COMPARE_DEFAULT_SOCIAL_BONUS_DAY,

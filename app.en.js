@@ -16,6 +16,13 @@ const VEHICLE_STORAGE_KEY = "power-window:vehicle";
 const CONNECTOR_USER_STORAGE_KEY = "power-window:connector-user";
 const MAX_DURATION = 12;
 const ELECTRICITY_TAX_MIN_EUR_PER_KWH = 0.001;
+const TAX_REGION_PRESETS = {
+  mainland: { rate: 21, label: "VAT" },
+  "canary-low": { rate: 0, label: "IGIC" },
+  "canary-high": { rate: 3, label: "IGIC" },
+  "ceuta-melilla": { rate: 1, label: "IPSI" },
+  manual: { rate: null, label: "indirect tax" },
+};
 const MINUTE = 60 * 1000;
 const DAY = 24 * 60 * MINUTE;
 const DEMO_NOTICE =
@@ -189,6 +196,7 @@ const els = {
   connectorStatus: document.querySelector("#connectorStatus"),
   saveProfileButton: document.querySelector("#saveProfileButton"),
   costModeInput: document.querySelector("#costModeInput"),
+  taxRegionInput: document.querySelector("#taxRegionInput"),
   vatInput: document.querySelector("#vatInput"),
   electricityTaxInput: document.querySelector("#electricityTaxInput"),
   adderInput: document.querySelector("#adderInput"),
@@ -259,7 +267,8 @@ function init() {
   els.startMockButton.addEventListener("click", () => sendDeviceCommand("start"));
   els.stopMockButton.addEventListener("click", () => sendDeviceCommand("stop"));
   els.costModeInput.addEventListener("change", handleBillSettingsChange);
-  els.vatInput.addEventListener("input", handleBillSettingsChange);
+  els.taxRegionInput.addEventListener("change", handleTaxRegionChange);
+  els.vatInput.addEventListener("input", handleIndirectTaxInput);
   els.electricityTaxInput.addEventListener("input", handleBillSettingsChange);
   els.adderInput.addEventListener("input", handleBillSettingsChange);
   els.socialBonusInput.addEventListener("input", handleBillSettingsChange);
@@ -1212,9 +1221,11 @@ function estimateBillCost(marketCost, kwh) {
 }
 
 function billSettings() {
+  const vat = clamp(Number(els.vatInput.value) || 0, 0, 30);
   return {
     mode: els.costModeInput.value,
-    vat: clamp(Number(els.vatInput.value) || 0, 0, 30),
+    taxRegion: normalizeTaxRegion(els.taxRegionInput.value, vat),
+    vat,
     electricityTax: clamp(Number(els.electricityTaxInput.value) || 0, 0, 10),
     adder: clamp(Number(els.adderInput.value) || 0, 0, 0.5),
     socialBonusDaily: clamp(Number(els.socialBonusInput.value) || 0, 0, 1),
@@ -1227,10 +1238,11 @@ function costHintText(kw, duration) {
     return `${kw.toFixed(1)} kW for ${duration}h, market component only`;
   }
 
+  const taxLabel = indirectTaxLabel(settings);
   const fixedText = settings.socialBonusDaily
-    ? `. Fixed social bonus: ${formatMoney(socialBonusDailyAfterVat(settings))}/day after VAT; it does not change the best hour`
+    ? `. Fixed social bonus: ${formatMoney(socialBonusDailyAfterVat(settings))}/day after ${taxLabel}; it does not change the best hour`
     : "";
-  return `${kw.toFixed(1)} kW for ${duration}h incl. ${settings.vat}% VAT, ${settings.electricityTax}% electricity tax, and ${formatEurKwh(settings.adder)} adders${fixedText}`;
+  return `${kw.toFixed(1)} kW for ${duration}h incl. ${settings.vat}% ${taxLabel}, ${settings.electricityTax}% electricity tax, and ${formatEurKwh(settings.adder)} adders${fixedText}`;
 }
 
 function socialBonusDailyAfterVat(settings) {
@@ -1247,11 +1259,29 @@ function handleBillSettingsChange() {
   render();
 }
 
+function handleTaxRegionChange() {
+  const preset = TAX_REGION_PRESETS[els.taxRegionInput.value];
+  if (preset && Number.isFinite(preset.rate)) {
+    els.vatInput.value = String(preset.rate);
+  }
+  handleBillSettingsChange();
+}
+
+function handleIndirectTaxInput() {
+  els.taxRegionInput.value = inferTaxRegion(Number(els.vatInput.value)) || "manual";
+  handleBillSettingsChange();
+}
+
 function loadBillSettings() {
   try {
     const settings = JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY) || "{}");
     if (settings.mode) els.costModeInput.value = settings.mode;
+    const taxRegion = normalizeTaxRegion(settings.taxRegion, settings.vat);
+    els.taxRegionInput.value = taxRegion;
     if (Number.isFinite(settings.vat)) els.vatInput.value = String(settings.vat);
+    else if (Number.isFinite(TAX_REGION_PRESETS[taxRegion]?.rate)) {
+      els.vatInput.value = String(TAX_REGION_PRESETS[taxRegion].rate);
+    }
     if (Number.isFinite(settings.electricityTax)) {
       els.electricityTaxInput.value = String(settings.electricityTax);
     }
@@ -1270,6 +1300,24 @@ function saveBillSettings() {
   } catch {
     // Settings are optional; rendering can continue with defaults.
   }
+}
+
+function normalizeTaxRegion(region, rate) {
+  if (region === "manual") return "manual";
+  if (TAX_REGION_PRESETS[region]) return region;
+  if (Number.isFinite(Number(rate))) return inferTaxRegion(Number(rate)) || "manual";
+  return "mainland";
+}
+
+function inferTaxRegion(rate) {
+  if (!Number.isFinite(rate)) return "";
+  return Object.entries(TAX_REGION_PRESETS).find(
+    ([region, preset]) => region !== "manual" && Math.abs(preset.rate - rate) < 0.0001
+  )?.[0];
+}
+
+function indirectTaxLabel(settings) {
+  return TAX_REGION_PRESETS[settings.taxRegion]?.label || TAX_REGION_PRESETS.manual.label;
 }
 
 function initVehiclePlanner() {

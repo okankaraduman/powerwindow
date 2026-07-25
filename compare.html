@@ -98,7 +98,33 @@
             <input id="valleyShareInput" type="number" min="0" max="100" step="1" value="40" />
           </label>
           <label class="field compact-field">
-            <span>IVA %</span>
+            <span class="label-with-help">
+              Territorio fiscal
+              <span
+                class="help-tip"
+                tabindex="0"
+                aria-label="Explicación del territorio fiscal"
+                data-tip="Península y Baleares usan IVA. Canarias usa IGIC, y Ceuta/Melilla usan IPSI. El selector cambia el porcentaje; déjalo en Manual si tu factura no encaja."
+              >?</span>
+            </span>
+            <select id="taxRegionCompareInput">
+              <option value="mainland">Península/Baleares 21%</option>
+              <option value="canary-low">Canarias &lt;10 kW 0%</option>
+              <option value="canary-high">Canarias 10 kW+ 3%</option>
+              <option value="ceuta-melilla">Ceuta/Melilla 1%</option>
+              <option value="manual">Manual</option>
+            </select>
+          </label>
+          <label class="field compact-field">
+            <span class="label-with-help">
+              Impuesto indirecto %
+              <span
+                class="help-tip"
+                tabindex="0"
+                aria-label="Explicación del impuesto indirecto"
+                data-tip="Este campo representa IVA, IGIC o IPSI según el territorio fiscal seleccionado. Sigue siendo editable porque las condiciones de cada factura pueden variar."
+              >?</span>
+            </span>
             <input id="vatCompareInput" type="number" min="0" max="30" step="0.1" value="21" />
           </label>
           <label class="field compact-field">

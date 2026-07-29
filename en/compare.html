@@ -40,6 +40,72 @@
     <link rel="stylesheet" href="/styles.css" />
     <script defer src="/analytics.en.js"></script>
     <script defer src="/compare.js"></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            "@id": "https://powerwindow.energy/en/compare#webpage",
+            "url": "https://powerwindow.energy/en/compare",
+            "name": "Spanish electricity tariff comparison",
+            "description": "Compare Spanish PVPC with editable electricity offers and estimate monthly cost for EV charging, flexible loads, taxes, and fixed charges.",
+            "inLanguage": "en",
+            "isPartOf": {
+              "@id": "https://powerwindow.energy/#website"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://powerwindow.energy/en/compare#breadcrumbs",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Power Window",
+                "item": "https://powerwindow.energy/en/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Compare",
+                "item": "https://powerwindow.energy/en/compare"
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://powerwindow.energy/en/compare#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What does PVPC with flexible usage mean?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "It estimates the regulated case if the month's flexible kWh are shifted into the cheapest available PVPC hours."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I compare electricity supplier offers?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. You can enter energy prices, power terms, monthly fees, taxes, and whether the advertised offer prices include taxes."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Does the ranking depend on referral links?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. The ranking is calculated by estimated cost. Referral links, if added, should be labelled and should not decide which tariff appears best."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <main class="app-shell">
@@ -269,6 +335,42 @@
             terms, contract lock-in, price source, and referral link when one exists.
           </p>
         </article>
+      </section>
+
+      <section class="chart-section seo-section" aria-labelledby="compare-faq-title">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Frequently asked questions</span>
+            <h2 id="compare-faq-title">Compare PVPC with electricity offers for a flexible household</h2>
+          </div>
+          <p class="section-note">
+            The comparator is designed for homes with EV charging, cooling, laundry, or other
+            loads that can move into cheaper hours.
+          </p>
+        </div>
+        <div class="method-grid seo-faq-grid">
+          <article class="method-card">
+            <h3>What does PVPC with flexible usage mean?</h3>
+            <p>
+              It is a simulation of the regulated case: base usage keeps the peak, shoulder, and
+              valley split, while flexible kWh are placed in the cheapest PVPC hours.
+            </p>
+          </article>
+          <article class="method-card">
+            <h3>Can I compare electricity supplier offers?</h3>
+            <p>
+              Yes. Enter the energy price, power term, monthly fee, and taxes from a real offer,
+              then mark whether those prices already include taxes.
+            </p>
+          </article>
+          <article class="method-card method-card--wide">
+            <h3>Does the ranking depend on referral links?</h3>
+            <p>
+              No. The ranking should come from estimated monthly cost. Future referral or
+              affiliate links will be labelled as commercial and will not decide the order.
+            </p>
+          </article>
+        </div>
       </section>
 
       <footer class="source-note">

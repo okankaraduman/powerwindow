@@ -80,6 +80,36 @@
               "Tariff comparison",
               "Seasonal electricity statistics"
             ]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://powerwindow.energy/en/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What is the best time to use electricity in Spain?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "The best time changes every day. Power Window ranks the hourly PVPC prices published by Red Electrica and recommends the cheapest window for the selected duration and load."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I use it for EV charging?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. You can choose a car brand, model, battery size, current charge, target charge, and charger power to estimate the session length and find the cheapest PVPC window."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Is the estimated cost a full electricity bill?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. The app estimates the effect of shifting flexible usage. Fixed or editable items such as contracted power, taxes, retailer margin, and social-bonus cost are kept separate."
+                }
+              }
+            ]
           }
         ]
       }
@@ -475,6 +505,43 @@
           </div>
         </div>
         <div id="windowList" class="window-list"></div>
+      </section>
+
+      <section class="chart-section seo-section" aria-labelledby="seo-home-title">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Frequently asked questions</span>
+            <h2 id="seo-home-title">Hourly electricity prices, EV charging, and flexible loads in Spain</h2>
+          </div>
+          <p class="section-note">
+            Power Window uses hourly PVPC data published by Red Electrica to help shift flexible
+            electricity use such as EV charging, laundry, dishwashing, or cooling.
+          </p>
+        </div>
+        <div class="method-grid seo-faq-grid">
+          <article class="method-card">
+            <h3>What is the best time to use electricity in Spain?</h3>
+            <p>
+              There is no single best hour every day. The app compares the selected day's hourly
+              PVPC series and finds the cheapest window for the selected duration.
+            </p>
+          </article>
+          <article class="method-card">
+            <h3>Can I use it for EV charging?</h3>
+            <p>
+              Yes. The EV planner estimates energy from battery size, current charge, target charge,
+              and charger power, then finds the lowest-price hours for that session.
+            </p>
+          </article>
+          <article class="method-card method-card--wide">
+            <h3>Is the estimated cost a full electricity bill?</h3>
+            <p>
+              No. It is an estimate for deciding when to shift flexible usage. Contracted power,
+              meter rental, taxes, retailer margin, and other bill items can vary by contract and
+              fiscal territory.
+            </p>
+          </article>
+        </div>
       </section>
 
       <footer class="source-note">

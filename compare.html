@@ -40,6 +40,72 @@
     <link rel="stylesheet" href="styles.css" />
     <script defer src="analytics.js"></script>
     <script defer src="compare.js"></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            "@id": "https://powerwindow.energy/compare#webpage",
+            "url": "https://powerwindow.energy/compare",
+            "name": "Comparador de tarifas de luz en España",
+            "description": "Compara PVPC con ofertas de luz editables para hogares en España y estima el impacto mensual de coche eléctrico, consumo flexible e impuestos.",
+            "inLanguage": "es",
+            "isPartOf": {
+              "@id": "https://powerwindow.energy/#website"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://powerwindow.energy/compare#breadcrumbs",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Power Window",
+                "item": "https://powerwindow.energy/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Comparador",
+                "item": "https://powerwindow.energy/compare"
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://powerwindow.energy/compare#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "¿Qué significa PVPC con consumo flexible?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Es una estimación del coste regulado si los kWh flexibles del mes se mueven a las horas PVPC más baratas disponibles."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "¿Puedo comparar ofertas de compañías eléctricas?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Sí. Puedes introducir precios de energía, potencia, cuota mensual, impuestos y si el precio de la oferta aparece con impuestos incluidos o no."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "¿El ranking depende de enlaces de referido?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. El ranking se calcula por coste estimado. Los enlaces de referido, si existen, deben estar marcados y no deben decidir qué tarifa aparece como mejor."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <main class="app-shell">
@@ -269,6 +335,42 @@
             de actualización, términos básicos, permanencia, fuente del precio y enlace de referido cuando exista.
           </p>
         </article>
+      </section>
+
+      <section class="chart-section seo-section" aria-labelledby="compare-faq-title">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Preguntas frecuentes</span>
+            <h2 id="compare-faq-title">Comparar PVPC con ofertas de luz para un hogar flexible</h2>
+          </div>
+          <p class="section-note">
+            El comparador está pensado para hogares con coche eléctrico, climatización, lavadora u
+            otros consumos que pueden moverse a horas baratas.
+          </p>
+        </div>
+        <div class="method-grid seo-faq-grid">
+          <article class="method-card">
+            <h3>¿Qué significa PVPC con consumo flexible?</h3>
+            <p>
+              Es una simulación del caso regulado: el consumo base mantiene los repartos punta,
+              llano y valle, y los kWh flexibles se colocan en las horas PVPC más baratas.
+            </p>
+          </article>
+          <article class="method-card">
+            <h3>¿Puedo comparar ofertas de compañías eléctricas?</h3>
+            <p>
+              Sí. Introduce el precio de energía, potencia, cuota mensual e impuestos que ves en
+              una oferta real, y marca si esos precios ya incluyen impuestos.
+            </p>
+          </article>
+          <article class="method-card method-card--wide">
+            <h3>¿El ranking depende de enlaces de referido?</h3>
+            <p>
+              No. El ranking debe salir del coste mensual estimado. Si hay enlaces de referido o
+              afiliación en el futuro, se marcarán como comerciales y no decidirán el orden.
+            </p>
+          </article>
+        </div>
       </section>
 
       <footer class="source-note">

@@ -1511,6 +1511,10 @@ h1 {
   padding: clamp(18px, 3vw, 24px);
 }
 
+.seo-section .method-card {
+  min-height: 0;
+}
+
 .method-card--wide {
   grid-column: 1 / -1;
   min-height: auto;

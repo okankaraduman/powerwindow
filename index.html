@@ -80,6 +80,36 @@
               "Comparador de tarifas",
               "Estadísticas eléctricas estacionales"
             ]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://powerwindow.energy/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "¿Cuál es la mejor hora para usar electricidad en España?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "La mejor hora cambia cada día. Power Window ordena las horas del PVPC publicado por Red Eléctrica y recomienda la ventana más barata para la duración y el consumo elegidos."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "¿Sirve para cargar un coche eléctrico?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Sí. Puedes elegir marca, modelo, batería, nivel actual y objetivo de carga para estimar cuántas horas necesitas y buscar la ventana PVPC más barata."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "¿El coste estimado es una factura completa?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. La app estima el impacto de mover un consumo flexible. Mantiene separados conceptos fijos o editables como potencia contratada, impuestos, margen y bono social."
+                }
+              }
+            ]
           }
         ]
       }
@@ -474,6 +504,43 @@
           </div>
         </div>
         <div id="windowList" class="window-list"></div>
+      </section>
+
+      <section class="chart-section seo-section" aria-labelledby="seo-home-title">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Preguntas frecuentes</span>
+            <h2 id="seo-home-title">Precio de la luz por horas, coche eléctrico y consumo flexible</h2>
+          </div>
+          <p class="section-note">
+            Power Window usa datos horarios PVPC publicados por Red Eléctrica para ayudar a mover
+            consumos flexibles como coche eléctrico, lavadora, lavavajillas o climatización.
+          </p>
+        </div>
+        <div class="method-grid seo-faq-grid">
+          <article class="method-card">
+            <h3>¿Cuál es la mejor hora para usar electricidad en España?</h3>
+            <p>
+              No hay una única hora buena todos los días. La app compara la serie horaria PVPC del
+              día seleccionado y busca la ventana más barata para la duración elegida.
+            </p>
+          </article>
+          <article class="method-card">
+            <h3>¿Sirve para cargar un coche eléctrico?</h3>
+            <p>
+              Sí. El planificador de coche eléctrico estima la energía necesaria desde batería,
+              porcentaje actual, objetivo y potencia del cargador, y luego busca las horas más baratas.
+            </p>
+          </article>
+          <article class="method-card method-card--wide">
+            <h3>¿El coste estimado es una factura completa?</h3>
+            <p>
+              No. Es una estimación para decidir cuándo mover un consumo flexible. La potencia
+              contratada, alquiler de contador, impuestos, margen comercial y otros conceptos pueden
+              variar por contrato y territorio fiscal.
+            </p>
+          </article>
+        </div>
       </section>
 
       <footer class="source-note">

@@ -86,6 +86,13 @@ h1 {
   letter-spacing: 0;
 }
 
+.brand-title {
+  display: block;
+  font-size: 1.28rem;
+  font-weight: 850;
+  line-height: 1.05;
+}
+
 .brand p {
   margin-top: 4px;
   color: var(--muted);
@@ -944,6 +951,15 @@ h1 {
   letter-spacing: 0;
 }
 
+.guide-hero h1 {
+  margin-top: 12px;
+  max-width: 980px;
+  color: #ffffff;
+  font-size: clamp(3rem, 7vw, 6.2rem);
+  line-height: 0.9;
+  letter-spacing: 0;
+}
+
 .hero-panel p {
   max-width: 760px;
   margin-top: 20px;
@@ -1582,6 +1598,13 @@ h1 {
   line-height: 1.55;
 }
 
+.method-card ul {
+  margin: 14px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
 .method-card code {
   display: block;
   margin-top: 16px;
@@ -1881,6 +1904,21 @@ h1 {
 .source-grid small {
   color: var(--muted);
   line-height: 1.42;
+}
+
+.guide-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.guide-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  text-decoration: none;
 }
 
 .stats-filter-panel {

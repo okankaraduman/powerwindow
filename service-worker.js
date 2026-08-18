@@ -1,9 +1,13 @@
-const CACHE_NAME = "power-window-v51";
+const CACHE_NAME = "power-window-v52";
 const APP_ASSETS = [
   "/",
   "/index.html",
   "/compare",
   "/compare.html",
+  "/precio-luz-hoy",
+  "/precio-luz-hoy.html",
+  "/precio-luz-manana",
+  "/precio-luz-manana.html",
   "/precio-luz-coche-electrico",
   "/precio-luz-coche-electrico.html",
   "/mejor-hora-lavadora",
@@ -18,6 +22,10 @@ const APP_ASSETS = [
   "/en/index.html",
   "/en/compare",
   "/en/compare.html",
+  "/en/electricity-price-spain-today",
+  "/en/electricity-price-spain-today.html",
+  "/en/electricity-price-spain-tomorrow",
+  "/en/electricity-price-spain-tomorrow.html",
   "/en/ev-charging-electricity-price-spain",
   "/en/ev-charging-electricity-price-spain.html",
   "/en/best-time-washing-machine-spain",
@@ -33,6 +41,7 @@ const APP_ASSETS = [
   "/app.en.js",
   "/analytics.js",
   "/analytics.en.js",
+  "/daily-seo.js",
   "/compare.js",
   "/statistics.js",
   "/statistics.en.js",

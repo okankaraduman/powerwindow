@@ -1921,6 +1921,94 @@ h1 {
   text-decoration: none;
 }
 
+.daily-hero {
+  align-items: end;
+}
+
+.daily-status-panel {
+  display: grid;
+  gap: 12px;
+  align-content: center;
+  justify-items: start;
+  min-height: 170px;
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
+  padding-left: clamp(18px, 4vw, 34px);
+}
+
+.daily-status-panel strong {
+  font-size: clamp(1.6rem, 3vw, 2.6rem);
+  line-height: 1;
+  color: #ffffff;
+}
+
+.daily-status-panel small {
+  color: rgba(255, 255, 255, 0.68);
+  line-height: 1.4;
+}
+
+.daily-snapshot-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.daily-snapshot-grid .method-card {
+  min-height: 158px;
+}
+
+.snapshot-value,
+.inline-stat {
+  display: block;
+  margin-top: 8px;
+  color: var(--ink);
+  font-size: clamp(1.7rem, 3.2vw, 2.8rem);
+  line-height: 1;
+}
+
+.inline-stat {
+  margin-top: 18px;
+  color: var(--accent);
+}
+
+.daily-hour-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.daily-hour {
+  display: grid;
+  gap: 6px;
+  min-height: 76px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: #ffffff;
+}
+
+.daily-hour span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.daily-hour strong {
+  font-size: 0.96rem;
+}
+
+.daily-hour--low {
+  border-color: rgba(21, 160, 116, 0.55);
+  background: #f0fbf7;
+}
+
+.daily-hour--high {
+  border-color: rgba(166, 56, 54, 0.35);
+  background: #fff5f3;
+}
+
 .stats-filter-panel {
   align-items: center;
 }
@@ -2190,6 +2278,8 @@ h1 {
   .dashboard-grid,
   .offer-library-grid,
   .stats-kpi-grid,
+  .daily-snapshot-grid,
+  .daily-hour-grid,
   .decision-grid,
   .window-list,
   .mission-grid,
@@ -2208,6 +2298,14 @@ h1 {
 
   .price-driver-grid {
     grid-template-columns: 1fr;
+  }
+
+  .daily-status-panel {
+    min-height: auto;
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+    padding-left: 0;
+    padding-top: 20px;
   }
 
   .guided-demo-panel,
@@ -2327,6 +2425,8 @@ h1 {
   .offer-library-grid,
   .stats-kpi-grid,
   .stats-controls,
+  .daily-snapshot-grid,
+  .daily-hour-grid,
   .decision-grid,
   .window-list,
   .mission-grid,

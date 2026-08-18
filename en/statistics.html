@@ -40,6 +40,73 @@
     <link rel="stylesheet" href="/styles.css" />
     <script defer src="/analytics.en.js"></script>
     <script defer src="/statistics.en.js"></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            "@id": "https://powerwindow.energy/en/statistics#webpage",
+            "url": "https://powerwindow.energy/en/statistics",
+            "name": "Spain Electricity Price and Renewable Statistics",
+            "description": "Seasonal comparison of PVPC prices and renewable generation in Spain.",
+            "inLanguage": "en",
+            "dateModified": "2026-08-18",
+            "isPartOf": {
+              "@id": "https://powerwindow.energy/#website"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://powerwindow.energy/en/statistics#breadcrumbs",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Power Window",
+                "item": "https://powerwindow.energy/en/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Statistics",
+                "item": "https://powerwindow.energy/en/statistics"
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://powerwindow.energy/en/statistics#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Why compare summer and winter?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Solar generation, demand, and hourly prices change by season. Comparing summer and winter helps show when more favorable flexible-load hours tend to appear."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Are renewable figures final annual statistics?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Power Window shows operational signals grouped from Red Electrica REData. They are useful for orientation but do not replace final official annual statistics."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How are renewables related to hourly price?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Higher renewable output can push some hours lower, but price also depends on demand, interconnections, hydro availability, gas, nuclear, and market rules."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <main class="app-shell">
@@ -135,6 +202,46 @@
           <p id="priceShapeNote" class="section-note">Two bars per hour: summer and winter. Prices in €/kWh.</p>
         </div>
         <div id="statsPriceChart" class="stats-price-chart" aria-live="polite"></div>
+      </section>
+
+      <section class="chart-section seo-section" aria-labelledby="stats-explainer-title">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Reading the data</span>
+            <h2 id="stats-explainer-title">What the electricity statistics show</h2>
+          </div>
+          <p class="section-note">
+            Power Window is not trying to prove that one season is always cheap. The point is to
+            show patterns: how hourly price shape changes and how generation is distributed across
+            technologies over longer periods.
+          </p>
+        </div>
+        <div class="method-grid seo-faq-grid">
+          <article class="method-card">
+            <h3>Summer and winter do not have the same shape</h3>
+            <p>
+              In summer, solar production can make some midday hours competitive. In winter,
+              demand and lower solar output change the curve. That is why hourly averages matter
+              more than a single daily average.
+            </p>
+          </article>
+          <article class="method-card">
+            <h3>Renewable does not mean zero price</h3>
+            <p>
+              Even with strong solar and wind output, hourly prices also depend on demand,
+              marginal technologies, hydro, interconnections, and system adjustments. Renewable
+              share is a signal, not the whole explanation.
+            </p>
+          </article>
+          <article class="method-card method-card--wide">
+            <h3>Why this matters for flexible users</h3>
+            <p>
+              If a household can shift some consumption, seasonal statistics help reveal when
+              opportunities tend to appear. The planner then uses the specific day to decide the
+              actual hour for a charge or appliance.
+            </p>
+          </article>
+        </div>
       </section>
 
       <footer class="source-note">

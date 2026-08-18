@@ -40,6 +40,73 @@
     <link rel="stylesheet" href="styles.css" />
     <script defer src="analytics.js"></script>
     <script defer src="statistics.js"></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            "@id": "https://powerwindow.energy/statistics#webpage",
+            "url": "https://powerwindow.energy/statistics",
+            "name": "Estadísticas de precio luz y renovables en España",
+            "description": "Comparativa estacional de precios PVPC y generación renovable en España.",
+            "inLanguage": "es",
+            "dateModified": "2026-08-18",
+            "isPartOf": {
+              "@id": "https://powerwindow.energy/#website"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://powerwindow.energy/statistics#breadcrumbs",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Power Window",
+                "item": "https://powerwindow.energy/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Estadísticas",
+                "item": "https://powerwindow.energy/statistics"
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://powerwindow.energy/statistics#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "¿Por qué comparar verano e invierno?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "La generación solar, la demanda y los precios horarios cambian por temporada. Comparar verano e invierno ayuda a entender cuándo aparecen horas más favorables para consumos flexibles."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "¿Los datos de renovables son una cifra anual definitiva?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Power Window muestra señales operativas agrupadas desde datos REData de Red Eléctrica. Sirven para orientación, no para sustituir estadísticas oficiales anuales cerradas."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "¿Cómo se relacionan renovables y precio horario?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Una mayor producción renovable puede presionar a la baja algunas horas, pero el precio también depende de demanda, interconexiones, disponibilidad hidráulica, gas, nuclear y reglas del mercado."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <main class="app-shell">
@@ -134,6 +201,46 @@
           <p id="priceShapeNote" class="section-note">Dos barras por hora: verano e invierno. Precios en €/kWh.</p>
         </div>
         <div id="statsPriceChart" class="stats-price-chart" aria-live="polite"></div>
+      </section>
+
+      <section class="chart-section seo-section" aria-labelledby="stats-explainer-title">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Lectura de datos</span>
+            <h2 id="stats-explainer-title">Qué nos dicen las estadísticas eléctricas</h2>
+          </div>
+          <p class="section-note">
+            Power Window no intenta demostrar que una estación sea siempre barata. La idea es
+            enseñar patrones: cómo cambia la forma del precio por hora y cómo se reparte la
+            generación entre tecnologías cuando comparamos periodos largos.
+          </p>
+        </div>
+        <div class="method-grid seo-faq-grid">
+          <article class="method-card">
+            <h3>Verano e invierno no tienen la misma forma</h3>
+            <p>
+              En verano, la producción solar puede hacer que algunas horas centrales sean
+              competitivas. En invierno, la demanda y la menor producción solar cambian la curva.
+              Por eso conviene mirar medias por hora y no solo una media diaria.
+            </p>
+          </article>
+          <article class="method-card">
+            <h3>Renovable no significa precio cero</h3>
+            <p>
+              Aunque España tenga mucha solar y eólica, el precio horario también depende de
+              demanda, tecnologías marginales, hidráulica, interconexiones y ajustes del sistema.
+              La cuota renovable es una señal, no una explicación completa.
+            </p>
+          </article>
+          <article class="method-card method-card--wide">
+            <h3>Por qué esto importa para usuarios flexibles</h3>
+            <p>
+              Si un hogar puede mover parte del consumo, las estadísticas ayudan a ver cuándo
+              suelen aparecer oportunidades. Después, el planificador usa el día concreto para
+              decidir la hora real de una carga o electrodoméstico.
+            </p>
+          </article>
+        </div>
       </section>
 
       <footer class="source-note">

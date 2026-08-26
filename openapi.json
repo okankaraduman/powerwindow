@@ -1,0 +1,723 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Power Window API",
+    "version": "1.0.0",
+    "description": "Public electricity-market data endpoints and sandbox-only EV charging actions for Power Window. Market, generation, and demand payloads originate from Red Electrica de Espana (REE). Connector actions currently affect only a demo wallbox and never real hardware.",
+    "contact": {
+      "name": "Power Window",
+      "url": "https://powerwindow.energy/",
+      "email": "privacy@powerwindow.energy"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.powerwindow.energy",
+      "description": "Production API"
+    }
+  ],
+  "tags": [
+    {
+      "name": "System",
+      "description": "Service status"
+    },
+    {
+      "name": "Electricity data",
+      "description": "Read-only REE electricity data cached by Power Window"
+    },
+    {
+      "name": "Demo actions",
+      "description": "Sandbox-only connector and charging actions. These endpoints do not control real hardware."
+    }
+  ],
+  "security": [],
+  "paths": {
+    "/healthz": {
+      "get": {
+        "operationId": "getHealth",
+        "summary": "Check API availability",
+        "tags": ["System"],
+        "responses": {
+          "200": {
+            "description": "API is available",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/market": {
+      "get": {
+        "operationId": "getMarketDay",
+        "summary": "Get hourly electricity prices for one day",
+        "description": "Returns the cached REE market payload for a date. Daily price data can be requested through tomorrow in Europe/Madrid.",
+        "tags": ["Electricity data"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequiredDate"
+          },
+          {
+            "$ref": "#/components/parameters/Refresh"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ReePayload"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "502": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/market/month": {
+      "get": {
+        "operationId": "getMarketMonthToDate",
+        "summary": "Get electricity prices from the start of a month through a date",
+        "tags": ["Electricity data"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/OptionalDate"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Available daily market payloads",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketMonthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "502": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/generation": {
+      "get": {
+        "operationId": "getGenerationDay",
+        "summary": "Get the electricity generation mix for one day",
+        "description": "Returns the cached REE generation payload. Generation data is available through today in Europe/Madrid.",
+        "tags": ["Electricity data"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/OptionalDate"
+          },
+          {
+            "$ref": "#/components/parameters/Refresh"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ReePayload"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "502": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/demand": {
+      "get": {
+        "operationId": "getDemandDay",
+        "summary": "Get electricity demand for one day",
+        "description": "Returns the cached REE demand payload. Demand data is available through today in Europe/Madrid.",
+        "tags": ["Electricity data"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/OptionalDate"
+          },
+          {
+            "$ref": "#/components/parameters/Refresh"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ReePayload"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "502": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/statistics/seasons": {
+      "get": {
+        "operationId": "getSeasonStatistics",
+        "summary": "Compare seasonal price and generation data",
+        "tags": ["Electricity data"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/OptionalDate"
+          },
+          {
+            "$ref": "#/components/parameters/Refresh"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Seasonal statistics and their source payloads",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["source", "cacheStatus", "cachedAt", "seasons"],
+                  "properties": {
+                    "source": {
+                      "type": "string",
+                      "const": "ree"
+                    },
+                    "cacheStatus": {
+                      "$ref": "#/components/schemas/CacheStatus"
+                    },
+                    "cachedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "seasons": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "502": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/connectors": {
+      "get": {
+        "operationId": "listDemoConnectors",
+        "summary": "List available demo connectors",
+        "description": "Returns sandbox connectors only. No listed connector controls real hardware.",
+        "tags": ["Demo actions"],
+        "responses": {
+          "200": {
+            "description": "Available demo connectors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["connectors"],
+                  "properties": {
+                    "connectors": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Connector"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/connectors/mock/pair": {
+      "post": {
+        "operationId": "pairDemoWallbox",
+        "summary": "Create or reuse a demo wallbox",
+        "description": "Sandbox only. Creates a simulated device and does not pair real hardware.",
+        "tags": ["Demo actions"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PairDemoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/DemoPair"
+          },
+          "201": {
+            "$ref": "#/components/responses/DemoPair"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/devices": {
+      "get": {
+        "operationId": "listDemoDevices",
+        "summary": "List demo devices for a browser-local user identifier",
+        "description": "Sandbox only. The userId is a demo namespace, not an authenticated account.",
+        "tags": ["Demo actions"],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Demo devices",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["devices"],
+                  "properties": {
+                    "devices": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Device"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/charge-plans": {
+      "post": {
+        "operationId": "createDemoChargePlan",
+        "summary": "Schedule a charge on a demo wallbox",
+        "description": "Sandbox only. Records a simulated schedule and does not control real hardware.",
+        "tags": ["Demo actions"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChargePlanRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Demo schedule accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/devices/{deviceId}/commands": {
+      "post": {
+        "operationId": "sendDemoDeviceCommand",
+        "summary": "Send a command to a demo wallbox",
+        "description": "Sandbox only. Changes simulated device state and never controls real hardware.",
+        "tags": ["Demo actions"],
+        "parameters": [
+          {
+            "name": "deviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceCommandRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Demo command accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "RequiredDate": {
+        "name": "date",
+        "in": "query",
+        "required": true,
+        "description": "Calendar date interpreted in Europe/Madrid.",
+        "schema": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "OptionalDate": {
+        "name": "date",
+        "in": "query",
+        "required": false,
+        "description": "Calendar date interpreted in Europe/Madrid. Defaults to today.",
+        "schema": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "Refresh": {
+        "name": "refresh",
+        "in": "query",
+        "required": false,
+        "description": "Set to 1 to request a synchronous source refresh.",
+        "schema": {
+          "type": "string",
+          "enum": ["1"]
+        }
+      }
+    },
+    "responses": {
+      "ReePayload": {
+        "description": "REE payload with Power Window cache metadata",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ReePayloadResponse"
+            }
+          }
+        }
+      },
+      "Error": {
+        "description": "Request or upstream error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      },
+      "DemoPair": {
+        "description": "Demo wallbox pair result",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["device", "reused"],
+              "properties": {
+                "account": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": true
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "device": {
+                  "$ref": "#/components/schemas/Device"
+                },
+                "reused": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "required": ["status"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["error"],
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "CacheStatus": {
+        "type": "string",
+        "enum": ["hit", "miss", "stale", "database", "mixed"]
+      },
+      "ReePayloadResponse": {
+        "type": "object",
+        "required": ["source", "cacheStatus", "cachedAt", "payload"],
+        "properties": {
+          "source": {
+            "type": "string",
+            "const": "ree"
+          },
+          "cacheStatus": {
+            "$ref": "#/components/schemas/CacheStatus"
+          },
+          "cachedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "payload": {
+            "type": "object",
+            "description": "Source response from the REData API.",
+            "additionalProperties": true
+          }
+        }
+      },
+      "MarketMonthResponse": {
+        "type": "object",
+        "required": ["source", "cacheStatus", "days"],
+        "properties": {
+          "source": {
+            "type": "string",
+            "const": "ree"
+          },
+          "cacheStatus": {
+            "$ref": "#/components/schemas/CacheStatus"
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["date", "cacheStatus", "cachedAt", "payload"],
+              "properties": {
+                "date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "cacheStatus": {
+                  "$ref": "#/components/schemas/CacheStatus"
+                },
+                "cachedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "payload": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "Connector": {
+        "type": "object",
+        "required": ["id", "name", "status", "capabilities", "credentialMode"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "const": "mock"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["schedule", "start", "stop"]
+            }
+          },
+          "credentialMode": {
+            "type": "string",
+            "const": "none"
+          }
+        }
+      },
+      "Device": {
+        "type": "object",
+        "required": ["id", "userId", "provider", "displayName", "kind", "status", "maxKw"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string",
+            "const": "mock"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "const": "charger"
+          },
+          "status": {
+            "type": "string"
+          },
+          "maxKw": {
+            "type": "number"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "PairDemoRequest": {
+        "type": "object",
+        "required": ["userId"],
+        "properties": {
+          "userId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "displayName": {
+            "type": "string",
+            "maxLength": 60
+          },
+          "maxKw": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 22,
+            "default": 7.4
+          }
+        }
+      },
+      "ChargePlanRequest": {
+        "type": "object",
+        "required": ["userId", "deviceId", "date", "startHour", "durationHours"],
+        "properties": {
+          "userId": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "deviceId": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "startHour": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 23
+          },
+          "durationHours": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12
+          },
+          "targetKwh": {
+            "type": "number",
+            "minimum": 0.1,
+            "maximum": 150
+          },
+          "chargerKw": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 22
+          },
+          "windowLabel": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "estimatedCost": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "DeviceCommandRequest": {
+        "type": "object",
+        "required": ["userId", "command"],
+        "properties": {
+          "userId": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "command": {
+            "type": "string",
+            "enum": ["start", "stop", "pause", "resume"]
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,44 @@
+# Power Window
+
+> Power Window helps households in Spain find lower-price hours for flexible electricity use, including EV charging and appliances, using hourly PVPC data published by Red Electrica de Espana (REE).
+
+Power Window is a free, independent planning tool. It is not affiliated with or endorsed by REE, OMIE, electricity retailers, or public authorities. Results are estimates for shifting flexible usage and are not a complete electricity bill or financial advice.
+
+## Primary pages
+
+- [Spanish planner](https://powerwindow.energy/): Find the cheapest available window for a selected date, duration, and electrical load.
+- [English planner](https://powerwindow.energy/en/): English version of the planner.
+- [Price today](https://powerwindow.energy/precio-luz-hoy): Today's hourly PVPC prices and practical examples.
+- [Price tomorrow](https://powerwindow.energy/precio-luz-manana): Tomorrow's prices when REE has published them.
+- [EV charging guide](https://powerwindow.energy/precio-luz-coche-electrico): Plan a home charging session by battery, charge level, and charger power.
+- [Washing machine guide](https://powerwindow.energy/mejor-hora-lavadora): Find lower-price hours for movable household loads.
+- [Tariff comparison](https://powerwindow.energy/comparador-tarifas-luz-pvpc): Compare PVPC with editable supplier-offer assumptions.
+- [Statistics](https://powerwindow.energy/statistics): Seasonal electricity-price and generation comparisons.
+- [Methodology](https://powerwindow.energy/methodology): Data sources, calculations, scoring, and limitations.
+- [Mission and sources](https://powerwindow.energy/mission): Purpose, evidence, examples, and source links.
+- [Privacy](https://powerwindow.energy/privacy): Data handling, analytics, permissions, and contact details.
+
+## Machine-readable access
+
+- [OpenAPI specification](https://powerwindow.energy/openapi.json): Public contract for the Power Window API.
+- API base URL: https://api.powerwindow.energy
+- Health check: https://api.powerwindow.energy/healthz
+- Hourly market data: `GET https://api.powerwindow.energy/api/market?date=YYYY-MM-DD`
+- Generation mix: `GET https://api.powerwindow.energy/api/generation?date=YYYY-MM-DD`
+- Electricity demand: `GET https://api.powerwindow.energy/api/demand?date=YYYY-MM-DD`
+
+Public data endpoints require no credentials. The connector and device-command endpoints currently operate only on a clearly labelled demo wallbox; they do not control real hardware. Do not represent demo commands as real-world actions.
+
+## Data interpretation
+
+- Dates use `YYYY-MM-DD`; electricity data is interpreted in the `Europe/Madrid` time zone.
+- PVPC and market payloads originate from the REData API and retain REE's source structure.
+- A low-price window is a relative comparison within the selected day, not a guaranteed saving.
+- Fixed bill components, taxes, retailer terms, charger losses, and local network constraints may change the user's actual cost.
+- Prefer the methodology and privacy pages when explaining calculations, caveats, or data handling.
+
+## Attribution and contact
+
+When citing the service, use the name "Power Window" and link to https://powerwindow.energy/. Attribute underlying electricity data to Red Electrica de Espana where appropriate.
+
+Privacy and data requests: privacy@powerwindow.energy

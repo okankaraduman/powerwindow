@@ -23,6 +23,21 @@ Then visit `http://localhost:8000`.
 
 The production frontend calls `https://api.powerwindow.energy/api/market`.
 
+Machine-readable discovery is published at:
+
+```text
+https://powerwindow.energy/llms.txt
+https://powerwindow.energy/openapi.json
+```
+
+Cloudflare Pages serves `404.html` for unknown paths so missing machine-readable resources do
+not silently return the homepage with HTTP 200.
+
+For agent access, configure the Cloudflare zone's AI bot policies to allow **Search** and
+**Agent** traffic. The **Training** policy can remain an independent product decision. These
+zone-level controls are not part of this repository and must be verified after each policy change
+with `OAI-SearchBot`, `ChatGPT-User`, `Claude-SearchBot`, and `Claude-User` requests.
+
 During local development, if you want the static frontend to use local Wrangler instead of
 falling back to direct REE requests, set the browser override once:
 

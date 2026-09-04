@@ -1,3 +1,14 @@
+import {
+  bestWindow,
+  dailyStats,
+  formatDateHuman,
+  formatHourRange,
+  formatMoney,
+  formatPrice,
+  madridDate,
+  parseMarketData,
+} from "./shared/daily-market.mjs";
+
 const DAILY_API_BASE =
   window.POWER_WINDOW_API_BASE ||
   (window.location.hostname === "powerwindow.energy" ||
@@ -17,9 +28,10 @@ async function initDailySeoPage() {
   const dayOffset = Number(root.dataset.dayOffset || 0);
   const dateValue = madridDate(dayOffset);
   const labels = labelsFor(lang, dayOffset);
+  const hasServerData = document.body.dataset.serverRendered === "true";
 
   setText("seoDateLabel", formatDateHuman(dateValue, lang));
-  setText("seoStatus", labels.loading);
+  if (!hasServerData) setText("seoStatus", labels.loading);
 
   try {
     const payload = await fetchMarketPayload(dateValue);
@@ -45,6 +57,10 @@ async function initDailySeoPage() {
     setText("seoSummary", labels.summary(stats, ev, dishwasher));
     renderHourlyList(points, stats, lang);
   } catch (error) {
+    if (hasServerData) {
+      console.warn("Keeping server-rendered PVPC data after client refresh failed", error);
+      return;
+    }
     setText("seoStatus", labels.error);
     setText("seoSummary", error.message || labels.noData);
   }
@@ -75,73 +91,6 @@ async function fetchMarketPayload(dateValue) {
   return payload;
 }
 
-function parseMarketData(data) {
-  const included = Array.isArray(data?.included) ? data.included : [];
-  const pvpc = findSeries(included, ["PVPC"]);
-  const spot = findSeries(included, ["Spot market price", "spot"]);
-  const series = hasValues(pvpc) ? pvpc : spot;
-  if (!series?.attributes?.values?.length) return [];
-
-  const hourly = new Map();
-  series.attributes.values.forEach((item) => {
-    const hour = Number(String(item.datetime || "").match(/T(\d{2}):/)?.[1]);
-    const value = Number(item.value);
-    if (!Number.isFinite(hour) || !Number.isFinite(value)) return;
-    const current = hourly.get(hour) || { total: 0, count: 0, datetime: item.datetime };
-    current.total += value;
-    current.count += 1;
-    hourly.set(hour, current);
-  });
-
-  return Array.from({ length: 24 }, (_, hour) => {
-    const bucket = hourly.get(hour);
-    if (!bucket) return null;
-    return {
-      hour,
-      datetime: bucket.datetime,
-      price: bucket.total / bucket.count,
-    };
-  }).filter(Boolean);
-}
-
-function findSeries(series, names) {
-  const normalized = names.map((name) => name.toLowerCase());
-  return series.find((item) => {
-    const title = String(item?.attributes?.title || item?.type || "").toLowerCase();
-    return normalized.some((name) => title.includes(name));
-  });
-}
-
-function hasValues(series) {
-  return Array.isArray(series?.attributes?.values) && series.attributes.values.length > 0;
-}
-
-function dailyStats(points) {
-  const prices = points.map((point) => point.price);
-  const min = points.reduce((best, point) => (point.price < best.price ? point : best), points[0]);
-  const max = points.reduce((worst, point) => (point.price > worst.price ? point : worst), points[0]);
-  const average = prices.reduce((sum, price) => sum + price, 0) / prices.length;
-  const spreadPercent = max.price > 0 ? ((max.price - min.price) / max.price) * 100 : 0;
-  const updatedAt = points.reduce((latest, point) => {
-    const value = new Date(point.datetime).getTime();
-    return Number.isFinite(value) && value > latest ? value : latest;
-  }, 0);
-  return { min, max, average, spreadPercent, updatedAt: updatedAt ? new Date(updatedAt).toISOString() : "" };
-}
-
-function bestWindow(points, duration, kw) {
-  const maxStart = Math.max(0, points.length - duration);
-  let best = null;
-  for (let start = 0; start <= maxStart; start += 1) {
-    const slice = points.slice(start, start + duration);
-    const avgPrice = slice.reduce((sum, point) => sum + point.price, 0) / slice.length;
-    const cost = slice.reduce((sum, point) => sum + (point.price / 1000) * kw, 0);
-    const item = { start, duration, avgPrice, cost };
-    if (!best || item.avgPrice < best.avgPrice) best = item;
-  }
-  return best || { start: 0, duration, avgPrice: 0, cost: 0 };
-}
-
 function renderHourlyList(points, stats, lang) {
   const list = document.querySelector("#seoHourlyList");
   if (!list) return;
@@ -159,57 +108,6 @@ function renderHourlyList(points, stats, lang) {
       `;
     })
     .join("");
-}
-
-function madridDate(offset) {
-  const base = new Date(Date.now() + offset * 24 * 60 * 60 * 1000);
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Europe/Madrid",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(base);
-  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
-  return `${values.year}-${values.month}-${values.day}`;
-}
-
-function formatDateHuman(value, lang) {
-  const [year, month, day] = value.split("-").map(Number);
-  return new Intl.DateTimeFormat(lang === "en" ? "en-GB" : "es-ES", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "Europe/Madrid",
-  }).format(new Date(Date.UTC(year, month - 1, day, 12)));
-}
-
-function formatHourRange(start, duration, lang) {
-  const end = start + duration;
-  return `${formatHour(start, lang)}-${formatHour(end, lang)}`;
-}
-
-function formatHour(hour, lang) {
-  const normalized = ((hour % 24) + 24) % 24;
-  const suffix = normalized >= 12 ? "PM" : "AM";
-  const display = normalized % 12 || 12;
-  return lang === "en" ? `${display} ${suffix}` : `${display} ${suffix}`;
-}
-
-function formatPrice(value, lang) {
-  return `${new Intl.NumberFormat(lang === "en" ? "en-GB" : "es-ES", {
-    minimumFractionDigits: 3,
-    maximumFractionDigits: 3,
-  }).format((value || 0) / 1000)} €/kWh`;
-}
-
-function formatMoney(value, lang) {
-  return new Intl.NumberFormat(lang === "en" ? "en-GB" : "es-ES", {
-    style: "currency",
-    currency: "EUR",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value || 0);
 }
 
 function labelsFor(lang, dayOffset) {

@@ -1,3 +1,5 @@
+import { APPLIANCES, VEHICLE_BRANDS } from "./data/catalog.mjs";
+
 const API_BASE = "https://apidatos.ree.es/en/datos";
 const DEFAULT_BACKEND_API_BASE =
   window.location.hostname === "powerwindow.energy" ||
@@ -29,127 +31,7 @@ const DEMO_NOTICE =
   "Demo prices are shown because the REE API did not return usable hourly data for this date.";
 const VEHICLE_PRESETS = {
   Custom: [{ model: "My EV", batteryKwh: 60 }],
-  Audi: [
-    { model: "Q4 e-tron 45", batteryKwh: 77 },
-    { model: "Q6 e-tron", batteryKwh: 94.9 },
-    { model: "Q8 e-tron 55", batteryKwh: 106 },
-  ],
-  BMW: [
-    { model: "i3 120 Ah", batteryKwh: 37.9 },
-    { model: "i4 eDrive40", batteryKwh: 81.1 },
-    { model: "iX1 xDrive30", batteryKwh: 64.7 },
-    { model: "iX3", batteryKwh: 73.8 },
-  ],
-  BYD: [
-    { model: "Dolphin", batteryKwh: 60.4 },
-    { model: "Atto 3", batteryKwh: 60.5 },
-    { model: "Seal", batteryKwh: 82.5 },
-    { model: "Seal U", batteryKwh: 71.8 },
-  ],
-  Citroen: [
-    { model: "e-C3", batteryKwh: 44 },
-    { model: "e-C4", batteryKwh: 50 },
-    { model: "e-Berlingo", batteryKwh: 50 },
-  ],
-  Cupra: [
-    { model: "Born 58", batteryKwh: 58 },
-    { model: "Born 77", batteryKwh: 77 },
-    { model: "Tavascan", batteryKwh: 77 },
-  ],
-  Dacia: [{ model: "Spring", batteryKwh: 26.8 }],
-  Fiat: [
-    { model: "500e", batteryKwh: 37.3 },
-    { model: "600e", batteryKwh: 51 },
-  ],
-  Ford: [
-    { model: "Explorer EV", batteryKwh: 77 },
-    { model: "Mustang Mach-E Standard", batteryKwh: 72 },
-    { model: "Mustang Mach-E Extended", batteryKwh: 91 },
-  ],
-  Hyundai: [
-    { model: "Kona Electric 48", batteryKwh: 48.4 },
-    { model: "Kona Electric 65", batteryKwh: 65.4 },
-    { model: "Ioniq 5 Standard", batteryKwh: 58 },
-    { model: "Ioniq 5 Long Range", batteryKwh: 77.4 },
-    { model: "Ioniq 6 Long Range", batteryKwh: 77.4 },
-  ],
-  Jeep: [{ model: "Avenger Electric", batteryKwh: 51 }],
-  Kia: [
-    { model: "Niro EV", batteryKwh: 64.8 },
-    { model: "EV3 Standard", batteryKwh: 58.3 },
-    { model: "EV3 Long Range", batteryKwh: 81.4 },
-    { model: "EV4 Standard", batteryKwh: 58.3 },
-    { model: "EV4 Long Range", batteryKwh: 81.4 },
-    { model: "EV6 Long Range", batteryKwh: 77.4 },
-    { model: "EV9", batteryKwh: 99.8 },
-  ],
-  Mazda: [{ model: "MX-30", batteryKwh: 30 }],
-  Mercedes: [
-    { model: "EQA 250+", batteryKwh: 70.5 },
-    { model: "EQB 250+", batteryKwh: 70.5 },
-    { model: "EQE 350+", batteryKwh: 90.6 },
-  ],
-  MG: [
-    { model: "MG4 Standard", batteryKwh: 50.8 },
-    { model: "MG4 Long Range", batteryKwh: 61.7 },
-    { model: "MG4 Extended Range", batteryKwh: 74.4 },
-    { model: "ZS EV Standard", batteryKwh: 49 },
-    { model: "ZS EV Long Range", batteryKwh: 68.3 },
-  ],
-  Mini: [
-    { model: "Cooper E", batteryKwh: 36.6 },
-    { model: "Cooper SE", batteryKwh: 49.2 },
-  ],
-  Nissan: [
-    { model: "Leaf 40", batteryKwh: 39 },
-    { model: "Leaf e+", batteryKwh: 59 },
-    { model: "Ariya 63", batteryKwh: 63 },
-    { model: "Ariya 87", batteryKwh: 87 },
-  ],
-  Opel: [
-    { model: "Corsa Electric", batteryKwh: 51 },
-    { model: "Mokka Electric", batteryKwh: 51 },
-    { model: "Astra Electric", batteryKwh: 54 },
-  ],
-  Peugeot: [
-    { model: "e-208", batteryKwh: 51 },
-    { model: "e-2008", batteryKwh: 54 },
-    { model: "e-308", batteryKwh: 54 },
-    { model: "e-Rifter", batteryKwh: 50 },
-  ],
-  Polestar: [
-    { model: "2 Standard Range", batteryKwh: 67 },
-    { model: "2 Long Range", batteryKwh: 79 },
-  ],
-  Tesla: [
-    { model: "Model 3 RWD", batteryKwh: 57.5 },
-    { model: "Model 3 Long Range", batteryKwh: 75 },
-    { model: "Model Y RWD", batteryKwh: 57.5 },
-    { model: "Model Y Long Range", batteryKwh: 75 },
-  ],
-  Renault: [
-    { model: "5 E-Tech 40", batteryKwh: 40 },
-    { model: "5 E-Tech 52", batteryKwh: 52 },
-    { model: "Zoe ZE50", batteryKwh: 52 },
-    { model: "Megane E-Tech", batteryKwh: 60 },
-    { model: "Scenic E-Tech", batteryKwh: 87 },
-  ],
-  Skoda: [
-    { model: "Enyaq 60", batteryKwh: 58 },
-    { model: "Enyaq 85", batteryKwh: 77 },
-  ],
-  Volkswagen: [
-    { model: "ID.3 Pro", batteryKwh: 58 },
-    { model: "ID.3 Pro S", batteryKwh: 77 },
-    { model: "ID.4 Pro", batteryKwh: 77 },
-    { model: "ID.5 Pro", batteryKwh: 77 },
-    { model: "ID.7 Pro", batteryKwh: 77 },
-  ],
-  Volvo: [
-    { model: "EX30 Single Motor", batteryKwh: 49 },
-    { model: "EX30 Extended Range", batteryKwh: 64 },
-    { model: "EX40", batteryKwh: 79 },
-  ],
+  ...VEHICLE_BRANDS,
 };
 
 const state = {
@@ -237,6 +119,7 @@ const els = {
 };
 
 function init() {
+  initApplianceCatalog();
   loadProfiles();
   loadBillSettings();
   initVehiclePlanner();
@@ -284,6 +167,17 @@ function init() {
 
   loadConnectorDevices();
   loadDate(state.selectedDate);
+}
+
+function initApplianceCatalog() {
+  const selectedPower = els.applianceInput.value;
+  els.applianceInput.innerHTML = APPLIANCES.map(
+    (item) => `<option value="${item.kw}">${escapeHTML(item.labels.en)} - ${item.kw.toFixed(1)} kW</option>`
+  ).join("");
+
+  if (APPLIANCES.some((item) => String(item.kw) === selectedPower)) {
+    els.applianceInput.value = selectedPower;
+  }
 }
 
 async function loadDate(dateValue, options = {}) {

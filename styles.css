@@ -299,6 +299,7 @@ h1 {
   transform: translateY(0);
 }
 
+.planner-copy h1,
 .planner-copy h2 {
   margin-top: 6px;
   max-width: 340px;

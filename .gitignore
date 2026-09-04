@@ -1,5 +1,6 @@
 backend/.gocache/
 backend/.wrangler/
+/.wrangler/
 backend/node_modules/
 backend/data/*.json
 backend/data/*.tmp

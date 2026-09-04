@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "include": [
+    "/precio-luz-hoy",
+    "/precio-luz-hoy/",
+    "/precio-luz-hoy.html",
+    "/precio-luz-manana",
+    "/precio-luz-manana/",
+    "/precio-luz-manana.html",
+    "/en/electricity-price-spain-today",
+    "/en/electricity-price-spain-today/",
+    "/en/electricity-price-spain-today.html",
+    "/en/electricity-price-spain-tomorrow",
+    "/en/electricity-price-spain-tomorrow/",
+    "/en/electricity-price-spain-tomorrow.html",
+    "/sitemap.xml"
+  ],
+  "exclude": []
+}

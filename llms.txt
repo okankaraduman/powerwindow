@@ -12,7 +12,7 @@ Power Window is a free, independent planning tool. It is not affiliated with or 
 - [Price tomorrow](https://powerwindow.energy/precio-luz-manana): Tomorrow's prices when REE has published them.
 - [EV charging guide](https://powerwindow.energy/precio-luz-coche-electrico): Plan a home charging session by battery, charge level, and charger power.
 - [Washing machine guide](https://powerwindow.energy/mejor-hora-lavadora): Find lower-price hours for movable household loads.
-- [Tariff comparison](https://powerwindow.energy/comparador-tarifas-luz-pvpc): Compare PVPC with editable supplier-offer assumptions.
+- [Tariff comparison](https://powerwindow.energy/compare): Compare PVPC with editable supplier-offer assumptions.
 - [Statistics](https://powerwindow.energy/statistics): Seasonal electricity-price and generation comparisons.
 - [Methodology](https://powerwindow.energy/methodology): Data sources, calculations, scoring, and limitations.
 - [Mission and sources](https://powerwindow.energy/mission): Purpose, evidence, examples, and source links.

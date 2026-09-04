@@ -8,20 +8,42 @@ time window for flexible electricity use in Spain.
 Run the Worker backend:
 
 ```sh
-cd /Users/okankaraduman/Documents/Electricity/backend
+cd /Users/okankaraduman/Projects/powerwindow/backend
 npx wrangler dev
 ```
 
 Then serve the frontend:
 
 ```sh
-cd /Users/okankaraduman/Documents/Electricity
-python3 -m http.server 8000
+cd /Users/okankaraduman/Projects/powerwindow
+npm --prefix backend ci
+./backend/node_modules/.bin/wrangler pages dev .
 ```
 
-Then visit `http://localhost:8000`.
+Then visit the local URL printed by Wrangler. A plain static server still works for frontend-only
+development, but Wrangler is required to exercise the server-rendered daily SEO responses.
 
 The production frontend calls `https://api.powerwindow.energy/api/market`.
+
+## Daily SEO rendering
+
+Cloudflare Pages Functions renders the four Spanish and English today/tomorrow pages with the
+current date, PVPC facts, hourly table, social metadata, and structured-data modification time in
+the initial HTML response. `_routes.json` limits Function invocations to those pages and the XML
+sitemap; all other assets remain static.
+
+The renderer uses the optional `POWER_WINDOW_API` service binding when it is configured on the
+Pages project. Bind it to the `powerwindow-api` Worker in production to avoid a public network hop.
+Until that binding is present, the renderer safely falls back to `https://api.powerwindow.energy`.
+If the API is unavailable, the original static HTML is returned and `daily-seo.js` still attempts
+client-side hydration.
+
+Run the data and SEO regressions before publishing:
+
+```sh
+node --test tests/*.test.mjs
+node scripts/validate-seo.mjs
+```
 
 Machine-readable discovery is published at:
 

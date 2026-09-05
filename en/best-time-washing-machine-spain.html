@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#101412" />
+    <meta name="theme-color" content="#173e30" />
     <title>Best time to run a washing machine in Spain | Power Window</title>
     <meta
       name="description"
@@ -29,6 +29,8 @@
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <link rel="manifest" href="/manifest.en.webmanifest" />
     <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/navigation.css" />
+    <script defer src="/navigation.js"></script>
     <script defer src="/analytics.en.js"></script>
     <script
       async
@@ -103,27 +105,53 @@
     </script>
   </head>
   <body>
-    <main class="app-shell">
-      <section class="toolbar">
-        <div class="brand">
-          <span class="brand-mark" aria-hidden="true">P</span>
-          <div>
-            <span class="brand-title">Power Window</span>
-            <p>Cheap hours for flexible home loads.</p>
-          </div>
-        </div>
-        <nav class="app-nav" aria-label="App pages">
-          <a href="/en/">Planner</a>
-          <a href="/en/compare">Compare</a>
-          <a href="/en/statistics">Statistics</a>
-          <a href="/en/methodology">How it works</a>
-          <a href="/mejor-hora-lavadora">Español</a>
+    <a class="site-skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="site-brand" href="/en/" aria-label="Power Window — planner">
+          <span class="site-brand-mark" aria-hidden="true"></span>
+          <span>Power Window</span>
+        </a>
+        <nav class="site-nav" aria-label="Main navigation">
+          <a class="site-nav-link" href="/en/">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-11 5 2 2 4-4"/></svg>
+            <span>Planner</span>
+          </a>
+          <a class="site-nav-link" href="/en/compare">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg>
+            <span class="site-nav-full">Compare tariffs</span><span class="site-nav-short">Compare</span>
+          </a>
+          <a class="site-nav-link" href="/en/statistics">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 20h16M7 16v-5m5 5V5m5 11V8"/></svg>
+            <span>Statistics</span>
+          </a>
+          <details class="site-more" data-current="true">
+            <summary><svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span>More</span></summary>
+            <div class="site-menu">
+              <div class="site-menu-group">
+                <span class="site-menu-label">Prices & guides</span>
+                <a href="/en/electricity-price-spain-today">Today’s electricity prices</a>
+                <a href="/en/electricity-price-spain-tomorrow">Tomorrow’s electricity prices</a>
+                <a href="/en/ev-charging-electricity-price-spain">EV charging guide</a>
+                <a href="/en/best-time-washing-machine-spain" aria-current="page">Laundry guide</a>
+              </div>
+              <div class="site-menu-group">
+                <span class="site-menu-label">About Power Window</span>
+                <a href="/en/methodology">How it works</a>
+                <a href="/en/mission">Our mission</a>
+                <a href="/en/privacy">Privacy</a>
+              </div>
+            </div>
+          </details>
         </nav>
-      </section>
+        <a class="site-language" href="/mejor-hora-lavadora" lang="es" hreflang="es">Español</a>
+      </div>
+    </header>
+    <main id="main-content" class="app-shell site-content" tabindex="-1">
+      <p class="site-page-intro">Cheap hours for flexible home loads.</p>
 
       <section class="hero-panel guide-hero">
         <div>
-          <span class="eyebrow">Laundry and appliances</span>
           <h1>Best time to run a washing machine in Spain</h1>
           <p>
             Washing machines, dishwashers, and dryers can often wait a few hours. Power Window
@@ -138,7 +166,6 @@
 
       <section class="method-grid">
         <article class="method-card">
-          <span class="eyebrow">Washing machine</span>
           <h3>Choose a realistic duration</h3>
           <p>
             A quick cycle and a long cycle do not use the same window. Set the duration so the
@@ -146,7 +173,6 @@
           </p>
         </article>
         <article class="method-card">
-          <span class="eyebrow">Dishwasher</span>
           <h3>Treat it as flexible load</h3>
           <p>
             A dishwasher often fits well into valley periods or cheap solar-heavy hours. The app
@@ -154,7 +180,6 @@
           </p>
         </article>
         <article class="method-card">
-          <span class="eyebrow">Dryer</span>
           <h3>Higher power, higher impact</h3>
           <p>
             A dryer usually draws more power than smaller appliances. Moving it away from expensive
@@ -162,7 +187,6 @@
           </p>
         </article>
         <article class="method-card">
-          <span class="eyebrow">Habit</span>
           <h3>Repeat the pattern</h3>
           <p>
             The practical saving comes from repetition: a couple of laundry runs, several
@@ -174,7 +198,6 @@
       <section class="chart-section seo-section">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Practical guide</span>
             <h2>How to shift appliances without overthinking it</h2>
           </div>
           <p class="section-note">
@@ -213,7 +236,6 @@
       <section class="chart-section seo-section" aria-labelledby="laundry-faq-title">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Frequently asked questions</span>
             <h2 id="laundry-faq-title">Using appliances in cheaper hours</h2>
           </div>
         </div>
@@ -245,7 +267,6 @@
       <section class="chart-section">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">More guides</span>
             <h2>Home energy planning</h2>
           </div>
         </div>

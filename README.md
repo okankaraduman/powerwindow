@@ -86,13 +86,14 @@ Asset Links.
 ## Charger connector MVP
 
 The backend includes a demo charger connector for testing the smart-charging flow without
-real charger credentials. The planner can connect a `Demo Wallbox`, send the selected best
-window as a charge plan, and issue start/stop commands. These are persisted in D1 through
+real charger credentials. The demo is no longer exposed in the redesigned planner. The backend retains the ability
+to send a selected window as a charge plan and issue start/stop commands for later integration.
+These are persisted in D1 through
 `connector_accounts`, `devices`, `charge_plans`, and `charge_commands`.
 
 This demo path is the contract for later real connectors such as Enode, Easee partner API,
-or OCPP. The Android app remains a WebView wrapper, so it exercises the same backend flow as
-the website.
+or OCPP. The Android app shares the web interface. EV battery and timing calculations remain available;
+charger controls should return only when a real integration is connected.
 
 ## Store release prep
 
@@ -146,3 +147,16 @@ complete household bill calculation.
 The old SwiftUI sketch remains in `ios/BestTimePower`, but it is not the active product
 track. Current focus is the web app, Android PWA install flow, and the Android wrapper in
 `android/`.
+
+## Interface and navigation
+
+Spanish and English pages share navigation.css and navigation.js. The planner has quick
+appliance/day choices, saved setups, expandable EV and cost settings, and an accessible
+hourly price table. Mobile shows the recommendation first, with a direct link to edit the
+plan and persistent bottom navigation. Comparator results precede the tariff editor.
+
+The synthetic walkthrough and demo charger controls are no longer exposed. Existing demo
+price fallback is still explicitly labeled when actual REE prices are unavailable.
+
+Bump the service-worker cache when changing application assets, and include new shared
+assets in APP_ASSETS so the installed app receives the same interface.

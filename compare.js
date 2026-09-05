@@ -414,7 +414,7 @@ function handleTariffClick(event) {
 }
 
 function addTariff() {
-  compareState.tariffs.push({
+  const tariff = {
     id: `custom-${Date.now()}`,
     name: compareText.customOffer,
     type: "period",
@@ -426,10 +426,25 @@ function addTariff() {
     monthlyFee: 0,
     taxMode: "preTax",
     referralUrl: "",
-  });
+  };
+  compareState.tariffs.push(tariff);
   saveCompareTariffs();
   renderTariffEditor();
   renderCompare();
+  focusTariffEditor(tariff.id);
+}
+
+function focusTariffEditor(tariffId) {
+  const nameInput = Array.from(
+    compareEls.tariffEditor.querySelectorAll('input[data-field="name"][data-tariff-id]')
+  ).reverse().find((input) => input.dataset.tariffId === tariffId);
+  if (!nameInput) return;
+
+  nameInput.focus({ preventScroll: true });
+  nameInput.scrollIntoView({
+    block: "center",
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+  });
 }
 
 function resetComparator() {
@@ -449,10 +464,12 @@ function handleOfferLibraryClick(event) {
   const offer = PUBLIC_OFFERS.find((item) => item.id === button.dataset.addPublicOffer);
   if (!offer) return;
 
-  compareState.tariffs.push(tariffFromPublicOffer(offer));
+  const tariff = tariffFromPublicOffer(offer);
+  compareState.tariffs.push(tariff);
   saveCompareTariffs();
   renderTariffEditor();
   renderCompare(`${compareText.addedOffer}: ${offer.company} ${offer.name}`);
+  focusTariffEditor(tariff.id);
 }
 
 async function loadPvpcRates(options = {}) {

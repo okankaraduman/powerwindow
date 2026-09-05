@@ -4,37 +4,72 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex" />
-    <meta name="theme-color" content="#101412" />
+    <meta name="theme-color" content="#173e30" />
     <title>Page not found | Power Window</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/navigation.css" />
+    <script defer src="/navigation.js"></script>
   </head>
   <body>
-    <main class="app-shell">
-      <section class="toolbar" aria-label="Power Window">
-        <div class="brand">
-          <span class="brand-mark" aria-hidden="true">P</span>
-          <div>
-            <h1>Page not found</h1>
-            <p>The requested Power Window page does not exist.</p>
-          </div>
-        </div>
-        <nav class="app-nav" aria-label="Available pages">
-          <a href="/">Español</a>
-          <a href="/en/">English</a>
-          <a href="/methodology">Methodology</a>
+    <a class="site-skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="site-brand" href="/en/" aria-label="Power Window — planner">
+          <span class="site-brand-mark" aria-hidden="true"></span>
+          <span>Power Window</span>
+        </a>
+        <nav class="site-nav" aria-label="Main navigation">
+          <a class="site-nav-link" href="/en/">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-11 5 2 2 4-4"/></svg>
+            <span>Planner</span>
+          </a>
+          <a class="site-nav-link" href="/en/compare">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg>
+            <span class="site-nav-full">Compare tariffs</span><span class="site-nav-short">Compare</span>
+          </a>
+          <a class="site-nav-link" href="/en/statistics">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 20h16M7 16v-5m5 5V5m5 11V8"/></svg>
+            <span>Statistics</span>
+          </a>
+          <details class="site-more">
+            <summary><svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span>More</span></summary>
+            <div class="site-menu">
+              <div class="site-menu-group">
+                <span class="site-menu-label">Prices & guides</span>
+                <a href="/en/electricity-price-spain-today">Today’s electricity prices</a>
+                <a href="/en/electricity-price-spain-tomorrow">Tomorrow’s electricity prices</a>
+                <a href="/en/ev-charging-electricity-price-spain">EV charging guide</a>
+                <a href="/en/best-time-washing-machine-spain">Laundry guide</a>
+              </div>
+              <div class="site-menu-group">
+                <span class="site-menu-label">About Power Window</span>
+                <a href="/en/methodology">How it works</a>
+                <a href="/en/mission">Our mission</a>
+                <a href="/en/privacy">Privacy</a>
+              </div>
+            </div>
+          </details>
         </nav>
-      </section>
+        <a class="site-language" href="/" lang="es" hreflang="es">Español</a>
+      </div>
+    </header>
+    <main id="main-content" class="app-shell site-content" tabindex="-1">
+      <h1>404 — Page not found</h1>
+      <p class="site-page-intro">The requested Power Window page does not exist.</p>
 
       <section class="chart-section">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">404</span>
             <h2>Return to the electricity planner</h2>
           </div>
           <p class="section-note">
             Vuelve al planificador para encontrar las horas más baratas, or open the English version.
           </p>
+        </div>
+        <div class="guide-actions">
+          <a class="primary-button" href="/en/">Open the planner</a>
+          <a class="secondary-button" href="/" lang="es">Abrir el planificador</a>
         </div>
       </section>
     </main>

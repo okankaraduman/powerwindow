@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#101412" />
+    <meta name="theme-color" content="#173e30" />
     <title>Comparador tarifas luz PVPC y ofertas | Power Window</title>
     <meta
       name="description"
@@ -29,6 +29,8 @@
     <link rel="apple-touch-icon" href="favicon.svg" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/navigation.css" />
+    <script defer src="/navigation.js"></script>
     <script defer src="analytics.js"></script>
     <script
       async
@@ -103,27 +105,53 @@
     </script>
   </head>
   <body>
-    <main class="app-shell">
-      <section class="toolbar">
-        <div class="brand">
-          <span class="brand-mark" aria-hidden="true">P</span>
-          <div>
-            <span class="brand-title">Power Window</span>
-            <p>Compara tarifas con consumo flexible.</p>
-          </div>
-        </div>
-        <nav class="app-nav" aria-label="Páginas de la app">
-          <a href="/">Planificador</a>
-          <a href="/compare">Comparador</a>
-          <a href="/statistics">Estadísticas</a>
-          <a href="/methodology">Cómo funciona</a>
-          <a href="/en/compare-pvpc-electricity-tariffs-spain">English</a>
+    <a class="site-skip-link" href="#main-content">Saltar al contenido</a>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="site-brand" href="/" aria-label="Power Window — planificador">
+          <span class="site-brand-mark" aria-hidden="true"></span>
+          <span>Power Window</span>
+        </a>
+        <nav class="site-nav" aria-label="Navegación principal">
+          <a class="site-nav-link" href="/">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-11 5 2 2 4-4"/></svg>
+            <span>Planificador</span>
+          </a>
+          <a class="site-nav-link" href="/compare">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg>
+            <span class="site-nav-full">Comparar tarifas</span><span class="site-nav-short">Comparar</span>
+          </a>
+          <a class="site-nav-link" href="/statistics">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 20h16M7 16v-5m5 5V5m5 11V8"/></svg>
+            <span>Estadísticas</span>
+          </a>
+          <details class="site-more">
+            <summary><svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span>Más</span></summary>
+            <div class="site-menu">
+              <div class="site-menu-group">
+                <span class="site-menu-label">Precios y guías</span>
+                <a href="/precio-luz-hoy">Precio de la luz hoy</a>
+                <a href="/precio-luz-manana">Precio de la luz mañana</a>
+                <a href="/precio-luz-coche-electrico">Guía para cargar el coche</a>
+                <a href="/mejor-hora-lavadora">Guía para poner la lavadora</a>
+              </div>
+              <div class="site-menu-group">
+                <span class="site-menu-label">Sobre Power Window</span>
+                <a href="/methodology">Cómo funciona</a>
+                <a href="/mission">Nuestra misión</a>
+                <a href="/privacy">Privacidad</a>
+              </div>
+            </div>
+          </details>
         </nav>
-      </section>
+        <a class="site-language" href="/en/compare-pvpc-electricity-tariffs-spain" lang="en" hreflang="en">English</a>
+      </div>
+    </header>
+    <main id="main-content" class="app-shell site-content" tabindex="-1">
+      <p class="site-page-intro">Compara tarifas con consumo flexible.</p>
 
       <section class="hero-panel guide-hero">
         <div>
-          <span class="eyebrow">Comparador PVPC</span>
           <h1>Comparador de tarifas de luz PVPC y ofertas</h1>
           <p>
             Una oferta barata en el anuncio no siempre gana en tu factura. Compara PVPC con precios
@@ -138,7 +166,6 @@
 
       <section class="method-grid">
         <article class="method-card">
-          <span class="eyebrow">PVPC</span>
           <h3>La parte flexible cambia el resultado</h3>
           <p>
             Si puedes mover coche eléctrico, lavadora o climatización, PVPC puede mejorar frente a
@@ -146,7 +173,6 @@
           </p>
         </article>
         <article class="method-card">
-          <span class="eyebrow">Ofertas</span>
           <h3>Introduce precios reales</h3>
           <p>
             Copia energía, potencia, cuota mensual y si los precios incluyen impuestos. Así el
@@ -154,7 +180,6 @@
           </p>
         </article>
         <article class="method-card">
-          <span class="eyebrow">Impuestos</span>
           <h3>Territorio fiscal importa</h3>
           <p>
             La app separa IVA, IGIC o IPSI mediante presets editables. También puedes ajustar el
@@ -162,7 +187,6 @@
           </p>
         </article>
         <article class="method-card">
-          <span class="eyebrow">Criterio</span>
           <h3>Coste primero, referidos después</h3>
           <p>
             Si añadimos enlaces de referido, deben estar marcados. El ranking debe seguir ordenado
@@ -174,7 +198,6 @@
       <section class="chart-section seo-section">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Cómo comparar</span>
             <h2>Qué mirar antes de cambiar de tarifa de luz</h2>
           </div>
           <p class="section-note">
@@ -222,7 +245,6 @@
       <section class="chart-section seo-section" aria-labelledby="tariff-faq-title">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Preguntas frecuentes</span>
             <h2 id="tariff-faq-title">Comparar tarifas de luz con PVPC</h2>
           </div>
         </div>
@@ -254,7 +276,6 @@
       <section class="chart-section">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Más guías</span>
             <h2>Antes de contratar</h2>
           </div>
         </div>

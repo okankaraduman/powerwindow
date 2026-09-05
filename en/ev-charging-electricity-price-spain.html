@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#101412" />
+    <meta name="theme-color" content="#173e30" />
     <title>EV charging electricity price in Spain today | Power Window</title>
     <meta
       name="description"
@@ -29,6 +29,8 @@
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <link rel="manifest" href="/manifest.en.webmanifest" />
     <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/navigation.css" />
+    <script defer src="/navigation.js"></script>
     <script defer src="/analytics.en.js"></script>
     <script
       async
@@ -103,27 +105,53 @@
     </script>
   </head>
   <body>
-    <main class="app-shell">
-      <section class="toolbar">
-        <div class="brand">
-          <span class="brand-mark" aria-hidden="true">P</span>
-          <div>
-            <span class="brand-title">Power Window</span>
-            <p>PVPC planner for flexible electricity use in Spain.</p>
-          </div>
-        </div>
-        <nav class="app-nav" aria-label="App pages">
-          <a href="/en/">Planner</a>
-          <a href="/en/compare">Compare</a>
-          <a href="/en/statistics">Statistics</a>
-          <a href="/en/methodology">How it works</a>
-          <a href="/precio-luz-coche-electrico">Español</a>
+    <a class="site-skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="site-brand" href="/en/" aria-label="Power Window — planner">
+          <span class="site-brand-mark" aria-hidden="true"></span>
+          <span>Power Window</span>
+        </a>
+        <nav class="site-nav" aria-label="Main navigation">
+          <a class="site-nav-link" href="/en/">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-11 5 2 2 4-4"/></svg>
+            <span>Planner</span>
+          </a>
+          <a class="site-nav-link" href="/en/compare">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg>
+            <span class="site-nav-full">Compare tariffs</span><span class="site-nav-short">Compare</span>
+          </a>
+          <a class="site-nav-link" href="/en/statistics">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 20h16M7 16v-5m5 5V5m5 11V8"/></svg>
+            <span>Statistics</span>
+          </a>
+          <details class="site-more" data-current="true">
+            <summary><svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span>More</span></summary>
+            <div class="site-menu">
+              <div class="site-menu-group">
+                <span class="site-menu-label">Prices & guides</span>
+                <a href="/en/electricity-price-spain-today">Today’s electricity prices</a>
+                <a href="/en/electricity-price-spain-tomorrow">Tomorrow’s electricity prices</a>
+                <a href="/en/ev-charging-electricity-price-spain" aria-current="page">EV charging guide</a>
+                <a href="/en/best-time-washing-machine-spain">Laundry guide</a>
+              </div>
+              <div class="site-menu-group">
+                <span class="site-menu-label">About Power Window</span>
+                <a href="/en/methodology">How it works</a>
+                <a href="/en/mission">Our mission</a>
+                <a href="/en/privacy">Privacy</a>
+              </div>
+            </div>
+          </details>
         </nav>
-      </section>
+        <a class="site-language" href="/precio-luz-coche-electrico" lang="es" hreflang="es">Español</a>
+      </div>
+    </header>
+    <main id="main-content" class="app-shell site-content" tabindex="-1">
+      <p class="site-page-intro">PVPC planner for flexible electricity use in Spain.</p>
 
       <section class="hero-panel guide-hero">
         <div>
-          <span class="eyebrow">Electric car</span>
           <h1>Electricity price for EV charging in Spain today</h1>
           <p>
             Charging at home does not cost the same at every hour. Use the hourly PVPC signal to
@@ -138,7 +166,6 @@
 
       <section class="method-grid">
         <article class="method-card">
-          <span class="eyebrow">1. Energy</span>
           <h3>Estimate the kWh you need</h3>
           <p>
             A session depends on the car battery, current charge, target charge, and charger power.
@@ -147,7 +174,6 @@
           <code>needed kWh = battery kWh * (target - current) / 100</code>
         </article>
         <article class="method-card">
-          <span class="eyebrow">2. Hours</span>
           <h3>Find a complete window</h3>
           <p>
             If you need three, five, or eight hours, the full-session average matters more than a
@@ -155,7 +181,6 @@
           </p>
         </article>
         <article class="method-card">
-          <span class="eyebrow">3. Bill</span>
           <h3>Separate energy price from the full bill</h3>
           <p>
             PVPC helps choose timing. A final bill can include contracted power, taxes, charges,
@@ -163,7 +188,6 @@
           </p>
         </article>
         <article class="method-card">
-          <span class="eyebrow">4. Routine</span>
           <h3>Check before plugging in</h3>
           <p>
             Solar-heavy days can favor midday; other days, cheap hours appear overnight. The
@@ -175,7 +199,6 @@
       <section class="chart-section seo-section">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Practical guide</span>
             <h2>How to decide when to charge an electric car</h2>
           </div>
           <p class="section-note">
@@ -215,7 +238,6 @@
       <section class="chart-section seo-section" aria-labelledby="ev-faq-title">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Frequently asked questions</span>
             <h2 id="ev-faq-title">EV charging with Spanish PVPC prices</h2>
           </div>
         </div>
@@ -247,7 +269,6 @@
       <section class="chart-section">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">More guides</span>
             <h2>Other flexible loads</h2>
           </div>
         </div>

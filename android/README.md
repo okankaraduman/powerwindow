@@ -24,7 +24,7 @@ https://powerwindow.energy/
 ```
 
 After Cloudflare Pages deploys the latest `main`, the Android app shows the same planner,
-statistics, and demo smart-charging connector as the website.
+statistics, and EV timing planner as the website.
 
 ## Build From Terminal
 
@@ -109,9 +109,10 @@ android/app/build/outputs/bundle/release/
 2. Visit `https://powerwindow.energy/`.
 3. Use Chrome's install option to install the PWA.
 4. Open Power Window from the launcher.
-5. In the planner, use `Connect demo`, then `Send plan`, then `Start` / `Stop`.
+5. Choose an appliance and day, check the recommendation, then open the EV planner to calculate a charging window.
 
-That tests the production backend and the same UI the TWA loads.
+That tests the production data and the same UI the TWA loads. Demo charger controls have
+been removed from the interface until a real integration is available.
 
 ## Play Store Next Step
 

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#101412" />
+    <meta name="theme-color" content="#173e30" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Power Window" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -40,6 +40,8 @@
     <link rel="alternate" type="text/plain" href="/llms.txt" title="Power Window guide for AI agents" />
     <link rel="service-desc" type="application/vnd.oai.openapi+json;version=3.1" href="/openapi.json" title="Power Window API" />
     <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/navigation.css" />
+    <script defer src="/navigation.js"></script>
     <script defer src="/analytics.en.js"></script>
     <script
       async
@@ -122,46 +124,73 @@
       }
     </script>
   </head>
-  <body>
-    <main class="app-shell">
-      <section class="toolbar" aria-label="App navigation">
-        <div class="brand">
-          <span class="brand-mark" aria-hidden="true">P</span>
-          <div>
-            <span class="brand-title">Power Window</span>
-            <p>Find the lowest-price hours for flexible electricity use in Spain.</p>
-          </div>
-        </div>
-
-        <nav class="app-nav" aria-label="App pages">
-          <a href="/en/" aria-current="page">Planner</a>
-          <a href="/en/compare">Compare</a>
-          <a href="/en/statistics">Statistics</a>
-          <a href="/en/methodology">How it works</a>
-          <a href="/en/mission">Mission</a>
-          <a href="/en/privacy">Privacy</a>
-          <a href="/">Español</a>
-
+  <body class="planner-page">
+    <a class="site-skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="site-brand" href="/en/" aria-label="Power Window — planner">
+          <span class="site-brand-mark" aria-hidden="true"></span>
+          <span>Power Window</span>
+        </a>
+        <nav class="site-nav" aria-label="Main navigation">
+          <a class="site-nav-link" href="/en/" aria-current="page">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-11 5 2 2 4-4"/></svg>
+            <span>Planner</span>
+          </a>
+          <a class="site-nav-link" href="/en/compare">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg>
+            <span class="site-nav-full">Compare tariffs</span><span class="site-nav-short">Compare</span>
+          </a>
+          <a class="site-nav-link" href="/en/statistics">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 20h16M7 16v-5m5 5V5m5 11V8"/></svg>
+            <span>Statistics</span>
+          </a>
+          <details class="site-more">
+            <summary><svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span>More</span></summary>
+            <div class="site-menu">
+              <div class="site-menu-group">
+                <span class="site-menu-label">Prices & guides</span>
+                <a href="/en/electricity-price-spain-today">Today’s electricity prices</a>
+                <a href="/en/electricity-price-spain-tomorrow">Tomorrow’s electricity prices</a>
+                <a href="/en/ev-charging-electricity-price-spain">EV charging guide</a>
+                <a href="/en/best-time-washing-machine-spain">Laundry guide</a>
+              </div>
+              <div class="site-menu-group">
+                <span class="site-menu-label">About Power Window</span>
+                <a href="/en/methodology">How it works</a>
+                <a href="/en/mission">Our mission</a>
+                <a href="/en/privacy">Privacy</a>
+              </div>
+            </div>
+          </details>
         </nav>
-      </section>
+        <a class="site-language" href="/" lang="es" hreflang="es">Español</a>
+      </div>
+    </header>
+    <main class="app-shell planner-app" id="main-content" tabindex="-1">
 
-      <section class="planner-panel" aria-label="Power timing controls">
-        <div class="planner-copy">
-          <span class="eyebrow">Planner</span>
-          <h1>Find the best time to use electricity in Spain</h1>
-        </div>
-        <div class="controls">
-          <label class="field">
-            <span>Profile</span>
-            <select id="profileInput">
-              <option value="">Custom load</option>
+      <header class="planner-heading">
+        <div><h1>Better timing. Lower energy costs.</h1><p>Find the cheapest hours to use electricity in Spain.</p></div>
+        <a class="data-source-link" href="/en/methodology">PVPC data · Red Eléctrica <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+      </header>
+      <div class="planner-workspace">
+        <section class="planner-panel planner-setup" aria-labelledby="setup-title">
+          <h2 id="setup-title" tabindex="-1">What are you running?</h2>
+          <div class="appliance-choices" role="group" aria-label="Common appliances"><button type="button" class="appliance-choice" data-appliance-id="washing-machine" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="13" r="5"/><path d="M4 7h16M7 5h.01M10 5h.01M8 13c2-3 5 3 8 0"/></svg><span>Washing machine</span></button><button type="button" class="appliance-choice" data-appliance-id="dishwasher" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 8h16M7 5.5h.01M10 5.5h.01M8 12v5M12 12v5M16 12v5M7 18h10"/></svg><span>Dishwasher</span></button><button type="button" class="appliance-choice" data-appliance-id="ev-wallbox" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 8 2-4h8l2 4M5 8h14l1 8H4l1-8ZM6 16v3M18 16v3M7 11h.01M17 11h.01M12 9l-2 4h4l-2 3"/></svg><span>Electric vehicle</span></button><button type="button" class="appliance-choice" data-appliance-id="air-conditioning" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="8" rx="2"/><path d="M6 9h12M8 15v4M12 15v6M16 15v4"/></svg><span>Air conditioning</span></button></div>
+          <div class="setup-fields"><label class="field">
+            <span>Appliance</span>
+            <select id="applianceInput">
+              <option value="0.8">Dishwasher - 0.8 kW</option>
+              <option value="1.2">Washing machine - 1.2 kW</option>
+              <option value="2.2">Dryer - 2.2 kW</option>
+              <option value="1.2">Air conditioner - 1.2 kW</option>
+              <option value="2.3">EV granny cable - 2.3 kW</option>
+              <option value="3.7">EV slow charge - 3.7 kW</option>
+              <option value="7.4">EV home charger - 7.4 kW</option>
+              <option value="11">EV three-phase - 11.0 kW</option>
+              <option value="1.5">Heat pump - 1.5 kW</option>
             </select>
-          </label>
-          <label class="field">
-            <span>Date</span>
-            <input id="dateInput" type="date" />
-          </label>
-          <label class="field">
+          </label><label class="field">
             <span>Duration</span>
             <select id="durationInput">
               <option value="1">1 hour</option>
@@ -177,72 +206,17 @@
               <option value="11">11 hours</option>
               <option value="12">12 hours</option>
             </select>
-          </label>
-          <label class="field">
-            <span>Load</span>
-            <select id="applianceInput">
-              <option value="0.8">Dishwasher - 0.8 kW</option>
-              <option value="1.2">Washing machine - 1.2 kW</option>
-              <option value="2.2">Dryer - 2.2 kW</option>
-              <option value="1.2">Air conditioner - 1.2 kW</option>
-              <option value="2.3">EV granny cable - 2.3 kW</option>
-              <option value="3.7">EV slow charge - 3.7 kW</option>
-              <option value="7.4">EV home charger - 7.4 kW</option>
-              <option value="11">EV three-phase - 11.0 kW</option>
-              <option value="1.5">Heat pump - 1.5 kW</option>
-            </select>
-          </label>
-          <div class="button-cluster" aria-label="Planner actions">
-            <button id="saveProfileButton" class="secondary-button" type="button">Save</button>
-            <button id="refreshButton" class="primary-button refresh-button" type="button">Update</button>
-          </div>
-        </div>
-      </section>
+          </label></div>
+          <div class="date-controls"><h3>When?</h3><div class="date-shortcuts" role="group" aria-label="Choose day"><button type="button" data-date-offset="0" aria-pressed="true">Today</button><button type="button" data-date-offset="1" aria-pressed="false">Tomorrow</button></div><label class="field">
+            <span>Date</span>
+            <input id="dateInput" type="date" />
+          </label></div>
+          <p class="auto-update-note">Your plan updates as you change your choices.</p>
+          <a class="see-plan-link" href="#recommendationTitle">See my best time <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
 
-      <section class="guided-demo-panel" aria-label="Animated Power Window usage demo">
-        <div class="guided-demo-copy">
-          <span class="eyebrow">Watch it work</span>
-          <h2>Pick a load. See the best window.</h2>
-        </div>
-        <div class="guided-demo-stage" aria-hidden="true">
-          <div class="guided-demo-window">
-            <div class="guided-demo-top">
-              <span>Planner</span>
-              <b>Hourly PVPC</b>
-            </div>
-            <div class="guided-demo-form">
-              <div class="guided-field guided-date"><small>Date</small><strong>24/07/2026</strong></div>
-              <div class="guided-field guided-hours"><small>Duration</small><strong>2 hours</strong></div>
-              <div class="guided-field guided-load"><small>Load</small><strong>EV charging - 3.7 kW</strong></div>
-              <div class="guided-refresh">Update</div>
-            </div>
-            <div class="guided-demo-chart">
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-            <div class="guided-answer">
-              <small>Best window</small>
-              <strong>2 PM-4 PM</strong>
-              <span>Estimated saving versus expensive hours</span>
-            </div>
-            <div class="guided-caption guided-caption-date"><b>1</b> Pick day and duration</div>
-            <div class="guided-caption guided-caption-load"><b>2</b> Pick the load</div>
-            <div class="guided-caption guided-caption-result"><b>3</b> Start in the best window</div>
-            <div class="guided-cursor"></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="vehicle-panel" aria-label="EV charging planner">
+          <details id="vehicle-details" class="planner-disclosure"><summary><span><strong>Plan an EV charge</strong><small>Battery, target and charger</small></span></summary><div class="disclosure-body"><section class="vehicle-panel" aria-label="EV charging planner">
         <div>
-          <span class="eyebrow">EV charging</span>
-          <h2>Plan by car model and charging need.</h2>
+          <p class="form-explanation">Calculate the time needed from your battery and charging target.</p>
         </div>
         <div class="vehicle-grid">
           <label class="field">
@@ -255,15 +229,15 @@
           </label>
           <label class="field compact-field">
             <span>Battery kWh</span>
-            <input id="vehicleBatteryInput" type="number" min="10" max="130" step="0.1" value="60" />
+            <input id="vehicleBatteryInput" aria-describedby="vehicleHint" type="number" min="10" max="130" step="0.1" value="60" />
           </label>
           <label class="field compact-field">
             <span>Current %</span>
-            <input id="chargeFromInput" type="number" min="0" max="100" step="1" value="50" />
+            <input id="chargeFromInput" aria-describedby="vehicleHint" type="number" min="0" max="100" step="1" value="50" />
           </label>
           <label class="field compact-field">
             <span>Target %</span>
-            <input id="chargeToInput" type="number" min="0" max="100" step="1" value="80" />
+            <input id="chargeToInput" aria-describedby="vehicleHint" type="number" min="0" max="100" step="1" value="80" />
           </label>
           <label class="field compact-field">
             <span>Charger</span>
@@ -277,32 +251,37 @@
           <button id="useVehicleButton" class="secondary-button" type="button">Use vehicle</button>
           <small id="vehicleHint">Choose a car to estimate charging duration.</small>
         </div>
-      </section>
+      </section></div></details>
 
-      <section class="connector-panel" aria-label="Smart charger connector">
-        <div>
-          <span class="eyebrow">Demo smart charging</span>
-          <h2>Test charger scheduling without real hardware.</h2>
+        </section>
+        <div class="planner-results" id="plan-results" tabindex="-1">
+          <section class="hero-panel recommendation-panel" aria-label="Your best window">
+            <div class="recommendation-top"><span class="recommendation-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Your best window</span><span id="dataStatus" role="status">Connecting</span></div>
+            <div class="recommendation-answer" aria-live="polite" aria-atomic="true"><h2 id="recommendationTitle">Finding your best time…</h2><p id="bestReason">Checking hourly prices from Red Eléctrica.</p></div>
+            <div class="recommendation-bottom"><div class="recommendation-cost"><span>Estimated cost for this run</span><strong id="costEstimate">—</strong><small id="costHint">Energy component only</small></div><div class="reminder-action"><button id="reminderButton" class="secondary-button" type="button" disabled>Remind me</button><small id="reminderStatus">No reminder set</small></div></div>
+          <a class="mobile-edit-plan" href="#setup-title">Change appliance or day<span aria-hidden="true">↓</span></a></section>
+          <div class="data-freshness"><div><span id="dataNote">Checking availability</span><span id="lastUpdated">Source pending</span></div><button id="refreshButton" class="secondary-button" type="button">Refresh data</button></div>
+          <section class="chart-section planner-chart" id="hourly-prices" aria-label="Hourly prices">
+        <div class="section-heading"><div><h2>Every hour, at a glance</h2><p class="chart-description">Lower bars mean lower prices.</p></div><span class="chart-unit">€/kWh</span></div><div id="hourChart" class="hour-chart" role="img" aria-label="Hourly market price chart"></div>
+      <div class="chart-key"><span><i class="key-best"></i>Your best window</span><span><i class="key-low"></i>Lower price</span><span><i class="key-high"></i>Higher price</span><span>Past hours are faded</span></div><details class="hourly-table-details"><summary>View hourly prices</summary><table class="hourly-price-table"><thead><tr><th scope="col">Hour</th><th scope="col">Price (€/kWh)</th><th scope="col">Window</th></tr></thead><tbody id="hourPriceTable"></tbody></table></details></section>
+          <section class="planning-outlook" aria-label="Compare alternatives"><article><h3>Now or later?</h3><strong id="nowVsBest">—</strong><small id="savingsHint">The comparison will appear once prices load.</small></article><article><h3>A look at tomorrow</h3><strong id="tomorrowBest">—</strong><small id="tomorrowHint">We check prices when they become available.</small></article></section>
+          <section class="windows-section" id="available-windows">
+        <div class="section-heading">
+          <div>
+            <h2>Other times that work</h2>
+          </div>
         </div>
-        <div class="connector-grid">
-          <label class="field">
-            <span>Device</span>
-            <select id="chargerDeviceInput">
-              <option value="">No charger connected</option>
+        <div id="windowList" class="window-list"></div>
+      </section>
+        </div>
+        <div class="planner-options"><details id="profile-details" class="planner-disclosure"><summary><span><strong>Saved setups</strong><small>Reuse your preferences</small></span></summary><div class="disclosure-body"><label class="field">
+            <span>Profile</span>
+            <select id="profileInput">
+              <option value="">Custom load</option>
             </select>
-          </label>
-          <button id="connectMockButton" class="secondary-button" type="button">Connect demo</button>
-          <button id="sendPlanButton" class="primary-button" type="button">Send plan</button>
-          <button id="startMockButton" class="secondary-button" type="button">Start</button>
-          <button id="stopMockButton" class="secondary-button" type="button">Stop</button>
-          <small id="connectorStatus">Demo only. No real charger is controlled.</small>
-        </div>
-      </section>
-
-      <section class="settings-panel" aria-label="Cost estimate settings">
+          </label><button id="saveProfileButton" class="secondary-button" type="button">Save this setup</button></div></details><details id="cost-details" class="planner-disclosure"><summary><span><strong>Cost settings</strong><small>Energy price or bill estimate</small></span></summary><div class="disclosure-body"><section class="settings-panel" aria-label="Cost estimate settings">
         <div>
-          <span class="eyebrow">Cost mode</span>
-          <h2>Estimate the bill impact, not only the market price.</h2>
+          <p class="form-explanation">Choose how the cost of your run is estimated.</p>
         </div>
         <div class="settings-grid">
           <label class="field">
@@ -379,52 +358,9 @@
             <input id="socialBonusInput" type="number" min="0" max="1" step="0.000001" value="0.024688" />
           </label>
         </div>
-      </section>
-
-      <section class="hero-panel" aria-live="polite">
-        <div class="answer-copy">
-          <span class="eyebrow">Best window</span>
-          <h2 id="recommendationTitle">Loading REE data...</h2>
-          <p id="bestReason">Prices will appear after the REE response is parsed.</p>
-        </div>
-        <div class="status-meta">
-          <span id="dataStatus">Connecting</span>
-          <span id="dataNote">Checking availability</span>
-          <span id="lastUpdated">Source pending</span>
-        </div>
-      </section>
-
-      <section class="grid-pressure-panel" aria-live="polite">
-        <div class="grid-pressure-copy">
-          <span class="eyebrow">Grid pressure</span>
-          <h2 id="gridPressureTitle">Checking demand and mix...</h2>
-          <p id="gridPressureReason">
-            We combine demand, renewable generation, and combined-cycle gas to explain why an hour
-            may be cheap or expensive. It is a signal, not an exact market prediction.
-          </p>
-        </div>
-        <div class="grid-pressure-metrics">
-          <div>
-            <span>Demand</span>
-            <strong id="gridDemand">--</strong>
-          </div>
-          <div>
-            <span>Renewables</span>
-            <strong id="gridRenewableShare">--</strong>
-          </div>
-          <div>
-            <span>Combined cycle</span>
-            <strong id="gridGasShare">--</strong>
-          </div>
-          <div>
-            <span>Nuclear</span>
-            <strong id="gridNuclearShare">--</strong>
-          </div>
-        </div>
-        <small id="gridPressureMeta">Source pending</small>
-      </section>
-
-      <section class="dashboard-grid">
+      </section></div></details></div>
+      </div>
+      <section class="planner-extras" aria-labelledby="extras-title"><h2 id="extras-title">A little more about your plan</h2><details id="insights-details" class="planner-disclosure"><summary><span><strong>View energy and grid insights</strong><small>Timing score, estimated energy and generation mix</small></span></summary><div class="disclosure-body"><section class="dashboard-grid">
         <article class="summary-panel">
           <div class="summary-copy">
             <span class="eyebrow">Recommended action</span>
@@ -457,67 +393,39 @@
           <small id="loadHint">Estimated consumption class</small>
         </article>
 
-        <article class="metric-card">
-          <span class="eyebrow">Estimated cost</span>
-          <strong id="costEstimate">--</strong>
-          <small id="costHint">Energy component only</small>
-        </article>
-      </section>
 
-      <section class="decision-grid">
-        <article class="decision-card primary-decision">
-          <span class="eyebrow">Run now vs best</span>
-          <strong id="nowVsBest">--</strong>
-          <small id="savingsHint">Waiting can be compared once today's hourly data is loaded.</small>
-        </article>
-        <article class="decision-card">
-          <span class="eyebrow">Tomorrow check</span>
-          <strong id="tomorrowBest">--</strong>
-          <small id="tomorrowHint">Day-ahead data is checked when available.</small>
-        </article>
-        <article class="decision-card action-card">
-          <span class="eyebrow">Reminder</span>
-          <strong id="reminderStatus">No reminder set</strong>
-          <button id="reminderButton" class="secondary-button" type="button">Remind me</button>
-        </article>
-        <article class="decision-card action-card">
-          <span class="eyebrow">Android</span>
-          <strong>Install as app</strong>
-          <button id="installButton" class="secondary-button" type="button">Install</button>
-          <small id="installHint">Use Chrome on Android for the best install flow.</small>
-        </article>
-      </section>
-
-      <section class="chart-section">
-        <div class="section-heading">
+      </section><section class="grid-pressure-panel" aria-live="polite">
+        <div class="grid-pressure-copy">
+          <h2 id="gridPressureTitle">Checking demand and mix...</h2>
+          <p id="gridPressureReason">
+            We combine demand, renewable generation, and combined-cycle gas to explain why an hour
+            may be cheap or expensive. It is a signal, not an exact market prediction.
+          </p>
+        </div>
+        <div class="grid-pressure-metrics">
           <div>
-            <span class="eyebrow">Hourly price signal</span>
-            <h2>Lower bars are better moments to run flexible loads. Past hours are muted.</h2>
+            <span>Demand</span>
+            <strong id="gridDemand">--</strong>
           </div>
-          <div class="legend">
-            <span><i class="legend-best"></i> best window</span>
-            <span><i class="legend-low"></i> low-price hour</span>
-            <span><i class="legend-high"></i> expensive hour</span>
-            <span>price in €/kWh</span>
+          <div>
+            <span>Renewables</span>
+            <strong id="gridRenewableShare">--</strong>
+          </div>
+          <div>
+            <span>Combined cycle</span>
+            <strong id="gridGasShare">--</strong>
+          </div>
+          <div>
+            <span>Nuclear</span>
+            <strong id="gridNuclearShare">--</strong>
           </div>
         </div>
-        <div id="hourChart" class="hour-chart" role="img" aria-label="Hourly market price chart"></div>
-      </section>
-
-      <section class="windows-section">
-        <div class="section-heading">
-          <div>
-            <span class="eyebrow">Ranked windows</span>
-            <h2>Remaining starts for this load</h2>
-          </div>
-        </div>
-        <div id="windowList" class="window-list"></div>
-      </section>
-
+        <small id="gridPressureMeta">Source pending</small>
+      </section></div></details></section>
+      <aside class="install-strip"><div><strong>Keep good timing close.</strong><p id="installHint">Add Power Window to your home screen for quick access.</p></div><button id="installButton" class="secondary-button" type="button">Install app</button></aside>
       <section class="chart-section seo-section" aria-labelledby="seo-home-title">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Frequently asked questions</span>
             <h2 id="seo-home-title">Hourly electricity prices, EV charging, and flexible loads in Spain</h2>
           </div>
           <p class="section-note">
@@ -554,11 +462,10 @@
       <section class="chart-section" aria-labelledby="seo-guides-title">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Electricity price guides</span>
             <h2 id="seo-guides-title">Plan the loads that can move most easily</h2>
           </div>
           <p class="section-note">
-            Focused search pages connected back into the real tools.
+            Practical guides for planning your next run.
           </p>
         </div>
         <div class="source-grid">
@@ -593,6 +500,7 @@
           <a href="/llms.txt">Agent guide</a>. <a href="/openapi.json">API</a>.
         </p>
       </footer>
+
     </main>
 
     <script type="module" src="/app.en.js"></script>

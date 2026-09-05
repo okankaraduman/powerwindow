@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#101412" />
+    <meta name="theme-color" content="#173e30" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Power Window" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -38,6 +38,8 @@
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <link rel="manifest" href="/manifest.en.webmanifest" />
     <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/navigation.css" />
+    <script defer src="/navigation.js"></script>
     <script defer src="/analytics.en.js"></script>
     <script
       async
@@ -113,30 +115,53 @@
     </script>
   </head>
   <body>
-    <main class="app-shell">
-      <section class="toolbar">
-        <div class="brand">
-          <span class="brand-mark" aria-hidden="true">P</span>
-          <div>
-            <span class="brand-title">Power Window</span>
-            <p>Compare PVPC with editable offers for homes with flexible electricity use.</p>
-          </div>
-        </div>
-
-        <nav class="app-nav" aria-label="App pages">
-          <a href="/en/">Planner</a>
-          <a href="/en/compare" aria-current="page">Compare</a>
-          <a href="/en/statistics">Statistics</a>
-          <a href="/en/methodology">How it works</a>
-          <a href="/en/mission">Mission</a>
-          <a href="/en/privacy">Privacy</a>
-          <a href="/compare">Español</a>
+    <a class="site-skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="site-brand" href="/en/" aria-label="Power Window — planner">
+          <span class="site-brand-mark" aria-hidden="true"></span>
+          <span>Power Window</span>
+        </a>
+        <nav class="site-nav" aria-label="Main navigation">
+          <a class="site-nav-link" href="/en/">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-11 5 2 2 4-4"/></svg>
+            <span>Planner</span>
+          </a>
+          <a class="site-nav-link" href="/en/compare" aria-current="page">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg>
+            <span class="site-nav-full">Compare tariffs</span><span class="site-nav-short">Compare</span>
+          </a>
+          <a class="site-nav-link" href="/en/statistics">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 20h16M7 16v-5m5 5V5m5 11V8"/></svg>
+            <span>Statistics</span>
+          </a>
+          <details class="site-more">
+            <summary><svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span>More</span></summary>
+            <div class="site-menu">
+              <div class="site-menu-group">
+                <span class="site-menu-label">Prices & guides</span>
+                <a href="/en/electricity-price-spain-today">Today’s electricity prices</a>
+                <a href="/en/electricity-price-spain-tomorrow">Tomorrow’s electricity prices</a>
+                <a href="/en/ev-charging-electricity-price-spain">EV charging guide</a>
+                <a href="/en/best-time-washing-machine-spain">Laundry guide</a>
+              </div>
+              <div class="site-menu-group">
+                <span class="site-menu-label">About Power Window</span>
+                <a href="/en/methodology">How it works</a>
+                <a href="/en/mission">Our mission</a>
+                <a href="/en/privacy">Privacy</a>
+              </div>
+            </div>
+          </details>
         </nav>
-      </section>
+        <a class="site-language" href="/compare" lang="es" hreflang="es">Español</a>
+      </div>
+    </header>
+    <main id="main-content" class="app-shell site-content" tabindex="-1">
+      <p class="site-page-intro">Compare PVPC with editable offers for homes with flexible electricity use.</p>
 
       <section class="planner-panel compare-panel" aria-label="Comparator assumptions">
         <div class="planner-copy">
-          <span class="eyebrow">Compare</span>
           <h1>Compare electricity tariffs and PVPC for your flexible usage</h1>
           <p>
             Edit monthly kWh, EV weight, and each offer's prices. The calculation uses REE hourly
@@ -156,6 +181,9 @@
             <span>Power kW</span>
             <input id="powerKwInput" type="number" min="1" max="20" step="0.1" value="4.6" />
           </label>
+          <details class="site-disclosure compare-advanced">
+            <summary>Tariff periods &amp; taxes</summary>
+            <div class="compare-controls">
           <label class="field compact-field">
             <span>Peak %</span>
             <input id="peakShareInput" type="number" min="0" max="100" step="1" value="25" />
@@ -206,6 +234,8 @@
             <span>Social bonus €/day</span>
             <input id="socialBonusCompareInput" type="number" min="0" max="1" step="0.000001" value="0.024688" />
           </label>
+            </div>
+          </details>
           <div class="button-cluster compare-actions" aria-label="Comparator actions">
             <button id="addTariffButton" class="secondary-button" type="button">Add offer</button>
             <button id="resetCompareButton" class="secondary-button" type="button">Reset</button>
@@ -214,60 +244,8 @@
         </div>
       </section>
 
-      <section class="guided-demo-panel compare-guided-panel" aria-label="Animated tariff comparison demo">
-        <div class="guided-demo-copy">
-          <span class="eyebrow">Compare in action</span>
-          <h2>Enter your usage. Compare offers.</h2>
-        </div>
-        <div class="guided-demo-stage" aria-hidden="true">
-          <div class="guided-demo-window">
-            <div class="guided-demo-top">
-              <span>Comparator</span>
-              <b>PVPC + offers</b>
-            </div>
-            <div class="guided-demo-form">
-              <div class="guided-field guided-date"><small>Total</small><strong>420 kWh/month</strong></div>
-              <div class="guided-field guided-hours"><small>Flexible</small><strong>140 kWh/month</strong></div>
-              <div class="guided-field guided-load"><small>Offer</small><strong>EV night tariff</strong></div>
-              <div class="guided-refresh">Compare</div>
-            </div>
-            <div class="guided-demo-chart compare-demo-chart">
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-            <div class="guided-answer">
-              <small>Best estimate</small>
-              <strong>PVPC</strong>
-              <span>Shifting flexible usage into cheap hours</span>
-            </div>
-            <div class="guided-caption guided-caption-date"><b>1</b> Add monthly usage</div>
-            <div class="guided-caption guided-caption-load"><b>2</b> Add or edit offers</div>
-            <div class="guided-caption guided-caption-result"><b>3</b> Check monthly cost</div>
-            <div class="guided-cursor"></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="chart-section offer-library-section">
-        <div class="section-heading">
-          <div>
-            <span class="eyebrow">Public offers</span>
-            <h2>Add an offer published by an energy company</h2>
-          </div>
-          <p class="section-note">
-            Prices seen on public company pages. Always verify the source before signing: promotions,
-            taxes, and services can change.
-          </p>
-        </div>
-        <div id="offerLibrary" class="offer-library-grid" aria-live="polite"></div>
-      </section>
-
       <section class="hero-panel compare-hero" aria-live="polite">
         <div class="answer-copy">
-          <span class="eyebrow">Best estimate</span>
           <h2 id="compareHeroTitle">Calculating comparison...</h2>
           <p id="compareHeroReason">Results will appear after PVPC data and editable offers are loaded.</p>
         </div>
@@ -304,7 +282,16 @@
       <section class="chart-section">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Editable offers</span>
+            <h2>Estimated monthly cost by tariff</h2>
+          </div>
+          <p id="compareResultsNote" class="section-note">Simplified estimate with energy, power, monthly fee, fixed social bonus, and editable taxes.</p>
+        </div>
+        <div id="comparisonResults" class="comparison-results" aria-live="polite"></div>
+      </section>
+
+      <section class="chart-section">
+        <div class="section-heading">
+          <div>
             <h2>Enter prices from a real offer</h2>
           </div>
           <p class="section-note">
@@ -315,20 +302,21 @@
         <div id="tariffEditor" class="tariff-editor-grid"></div>
       </section>
 
-      <section class="chart-section">
+      <section class="chart-section offer-library-section">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Ranking</span>
-            <h2>Estimated monthly cost by tariff</h2>
+            <h2>Add an offer published by an energy company</h2>
           </div>
-          <p id="compareResultsNote" class="section-note">Simplified estimate with energy, power, monthly fee, fixed social bonus, and editable taxes.</p>
+          <p class="section-note">
+            Prices seen on public company pages. Always verify the source before signing: promotions,
+            taxes, and services can change.
+          </p>
         </div>
-        <div id="comparisonResults" class="comparison-results" aria-live="polite"></div>
+        <div id="offerLibrary" class="offer-library-grid" aria-live="polite"></div>
       </section>
 
       <section class="method-grid">
         <article class="method-card method-card--wide">
-          <span class="eyebrow">Responsible monetization</span>
           <h3>Referrals can exist, but they should not decide the ranking.</h3>
           <p>
             Power Window can use referral or affiliate links when a supplier offers them. The
@@ -345,7 +333,6 @@
       <section class="chart-section seo-section" aria-labelledby="compare-faq-title">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Frequently asked questions</span>
             <h2 id="compare-faq-title">Compare PVPC with electricity offers for a flexible household</h2>
           </div>
           <p class="section-note">

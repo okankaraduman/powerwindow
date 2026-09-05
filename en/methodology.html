@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#101412" />
+    <meta name="theme-color" content="#173e30" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Power Window" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -38,6 +38,8 @@
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <link rel="manifest" href="/manifest.en.webmanifest" />
     <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/navigation.css" />
+    <script defer src="/navigation.js"></script>
     <script defer src="/analytics.en.js"></script>
     <script
       async
@@ -46,32 +48,54 @@
     ></script>
   </head>
   <body>
-    <main class="app-shell">
-      <section class="toolbar">
-        <div class="brand">
-          <span class="brand-mark" aria-hidden="true">P</span>
-          <div>
-            <h1>Power Window</h1>
-            <p>How recommendations, scores, and grades are calculated.</p>
-          </div>
-        </div>
-
-        <nav class="app-nav" aria-label="App pages">
-          <a href="/en/">Planner</a>
-          <a href="/en/compare">Compare</a>
-          <a href="/en/statistics">Statistics</a>
-          <a href="/en/methodology" aria-current="page">How it works</a>
-          <a href="/en/mission">Mission</a>
-          <a href="/en/privacy">Privacy</a>
-          <a href="/methodology">Español</a>
-
+    <a class="site-skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="site-brand" href="/en/" aria-label="Power Window — planner">
+          <span class="site-brand-mark" aria-hidden="true"></span>
+          <span>Power Window</span>
+        </a>
+        <nav class="site-nav" aria-label="Main navigation">
+          <a class="site-nav-link" href="/en/">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-11 5 2 2 4-4"/></svg>
+            <span>Planner</span>
+          </a>
+          <a class="site-nav-link" href="/en/compare">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg>
+            <span class="site-nav-full">Compare tariffs</span><span class="site-nav-short">Compare</span>
+          </a>
+          <a class="site-nav-link" href="/en/statistics">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 20h16M7 16v-5m5 5V5m5 11V8"/></svg>
+            <span>Statistics</span>
+          </a>
+          <details class="site-more" data-current="true">
+            <summary><svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span>More</span></summary>
+            <div class="site-menu">
+              <div class="site-menu-group">
+                <span class="site-menu-label">Prices & guides</span>
+                <a href="/en/electricity-price-spain-today">Today’s electricity prices</a>
+                <a href="/en/electricity-price-spain-tomorrow">Tomorrow’s electricity prices</a>
+                <a href="/en/ev-charging-electricity-price-spain">EV charging guide</a>
+                <a href="/en/best-time-washing-machine-spain">Laundry guide</a>
+              </div>
+              <div class="site-menu-group">
+                <span class="site-menu-label">About Power Window</span>
+                <a href="/en/methodology" aria-current="page">How it works</a>
+                <a href="/en/mission">Our mission</a>
+                <a href="/en/privacy">Privacy</a>
+              </div>
+            </div>
+          </details>
         </nav>
-      </section>
+        <a class="site-language" href="/methodology" lang="es" hreflang="es">Español</a>
+      </div>
+    </header>
+    <main id="main-content" class="app-shell site-content" tabindex="-1">
+      <p class="site-page-intro">How recommendations, scores, and grades are calculated.</p>
 
       <section class="hero-panel methodology-hero">
         <div>
-          <span class="eyebrow">Methodology</span>
-          <h2>We separate timing from consumption.</h2>
+          <h1>We separate timing from consumption.</h1>
           <p>
             The app gives one grade for when you run the appliance and one label for the
             estimated electricity consumed by the selected load.
@@ -81,7 +105,6 @@
 
       <section class="method-grid">
         <article class="method-card">
-          <span class="eyebrow">1. Price data</span>
           <h3>Get the day signal</h3>
           <p>
             Power Window requests REE's peninsular real-time market price widget for the
@@ -91,7 +114,6 @@
         </article>
 
         <article class="method-card method-card--wide price-driver-card">
-          <span class="eyebrow">What moves price</span>
           <h3>Hourly prices move with flexible supply, demand, and marginal cost.</h3>
           <p>
             Power Window does not assume Spain is cheap all day. It reads the hourly signal because
@@ -122,7 +144,6 @@
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">2. Cost estimate</span>
           <h3>Estimate the chosen load</h3>
           <p>
             For every candidate window, the app multiplies each hour's price by the selected
@@ -141,7 +162,6 @@
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">3. Score</span>
           <h3>Normalize against the day</h3>
           <p>
             The cheapest average window gets a score near 100 and the most expensive window
@@ -151,7 +171,6 @@
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">4. Timing grade</span>
           <h3>Show a simple A-F symbol</h3>
           <p>
             The A-F grade is a quick interpretation of the score for the selected day.
@@ -169,7 +188,6 @@
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">5. Decisions</span>
           <h3>Compare now, today, and tomorrow</h3>
           <p>
             When today's data is selected, Power Window compares running immediately with the
@@ -179,7 +197,6 @@
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">6. Load label</span>
           <h3>Estimate appliance-style consumption</h3>
           <p>
             The colored A-G load label is inspired by appliance energy labels, but it is not

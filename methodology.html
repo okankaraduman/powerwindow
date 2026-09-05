@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#101412" />
+    <meta name="theme-color" content="#173e30" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Power Window" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -38,6 +38,8 @@
     <link rel="apple-touch-icon" href="favicon.svg" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/navigation.css" />
+    <script defer src="/navigation.js"></script>
     <script defer src="analytics.js"></script>
     <script
       async
@@ -46,31 +48,54 @@
     ></script>
   </head>
   <body>
-    <main class="app-shell">
-      <section class="toolbar">
-        <div class="brand">
-          <span class="brand-mark" aria-hidden="true">P</span>
-          <div>
-            <h1>Power Window</h1>
-            <p>Cómo se calculan recomendaciones, puntuaciones y notas.</p>
-          </div>
-        </div>
-
-        <nav class="app-nav" aria-label="Páginas de la app">
-          <a href="/">Planificador</a>
-          <a href="/compare">Comparador</a>
-          <a href="/statistics">Estadísticas</a>
-          <a href="/methodology" aria-current="page">Cómo funciona</a>
-          <a href="/mission">Misión</a>
-          <a href="/privacy">Privacidad</a>
-          <a href="/en/methodology">English</a>
+    <a class="site-skip-link" href="#main-content">Saltar al contenido</a>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="site-brand" href="/" aria-label="Power Window — planificador">
+          <span class="site-brand-mark" aria-hidden="true"></span>
+          <span>Power Window</span>
+        </a>
+        <nav class="site-nav" aria-label="Navegación principal">
+          <a class="site-nav-link" href="/">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-11 5 2 2 4-4"/></svg>
+            <span>Planificador</span>
+          </a>
+          <a class="site-nav-link" href="/compare">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg>
+            <span class="site-nav-full">Comparar tarifas</span><span class="site-nav-short">Comparar</span>
+          </a>
+          <a class="site-nav-link" href="/statistics">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 20h16M7 16v-5m5 5V5m5 11V8"/></svg>
+            <span>Estadísticas</span>
+          </a>
+          <details class="site-more" data-current="true">
+            <summary><svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span>Más</span></summary>
+            <div class="site-menu">
+              <div class="site-menu-group">
+                <span class="site-menu-label">Precios y guías</span>
+                <a href="/precio-luz-hoy">Precio de la luz hoy</a>
+                <a href="/precio-luz-manana">Precio de la luz mañana</a>
+                <a href="/precio-luz-coche-electrico">Guía para cargar el coche</a>
+                <a href="/mejor-hora-lavadora">Guía para poner la lavadora</a>
+              </div>
+              <div class="site-menu-group">
+                <span class="site-menu-label">Sobre Power Window</span>
+                <a href="/methodology" aria-current="page">Cómo funciona</a>
+                <a href="/mission">Nuestra misión</a>
+                <a href="/privacy">Privacidad</a>
+              </div>
+            </div>
+          </details>
         </nav>
-      </section>
+        <a class="site-language" href="/en/methodology" lang="en" hreflang="en">English</a>
+      </div>
+    </header>
+    <main id="main-content" class="app-shell site-content" tabindex="-1">
+      <p class="site-page-intro">Cómo se calculan recomendaciones, puntuaciones y notas.</p>
 
       <section class="hero-panel methodology-hero">
         <div>
-          <span class="eyebrow">Metodología</span>
-          <h2>Separamos el horario del consumo.</h2>
+          <h1>Separamos el horario del consumo.</h1>
           <p>
             La app da una nota por el momento en que usas el aparato y una etiqueta para la
             electricidad estimada que consume la carga seleccionada.
@@ -80,7 +105,6 @@
 
       <section class="method-grid">
         <article class="method-card">
-          <span class="eyebrow">1. Datos de precio</span>
           <h3>Obtener la señal del día</h3>
           <p>
             Power Window consulta el widget de precios del mercado peninsular en tiempo real
@@ -90,7 +114,6 @@
         </article>
 
         <article class="method-card method-card--wide price-driver-card">
-          <span class="eyebrow">Qué mueve el precio</span>
           <h3>El precio horario cambia con la oferta flexible, la demanda y el coste marginal.</h3>
           <p>
             Power Window no asume que España sea barata todo el día. Lee la señal horaria porque
@@ -121,7 +144,6 @@
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">2. Estimación de coste</span>
           <h3>Estimar el consumo elegido</h3>
           <p>
             Para cada ventana candidata, la app multiplica el precio de cada hora por la
@@ -141,7 +163,6 @@
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">3. Puntuación</span>
           <h3>Normalizar frente al día</h3>
           <p>
             La ventana media más barata recibe una puntuación cercana a 100 y la más cara una
@@ -152,7 +173,6 @@
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">4. Nota de horario</span>
           <h3>Mostrar una señal A-F sencilla</h3>
           <p>
             La nota A-F es una interpretación rápida de la puntuación del día seleccionado.
@@ -169,7 +189,6 @@
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">5. Decisiones</span>
           <h3>Comparar ahora, hoy y mañana</h3>
           <p>
             Cuando se seleccionan los datos de hoy, Power Window compara usar electricidad ahora
@@ -179,7 +198,6 @@
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">6. Etiqueta de consumo</span>
           <h3>Estimar el consumo como en los electrodomésticos</h3>
           <p>
             La etiqueta A-G de colores se inspira en las etiquetas energéticas de los

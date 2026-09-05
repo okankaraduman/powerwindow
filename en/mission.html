@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#101412" />
+    <meta name="theme-color" content="#173e30" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Power Window" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -38,6 +38,8 @@
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <link rel="manifest" href="/manifest.en.webmanifest" />
     <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/navigation.css" />
+    <script defer src="/navigation.js"></script>
     <script defer src="/analytics.en.js"></script>
     <script
       async
@@ -46,32 +48,54 @@
     ></script>
   </head>
   <body>
-    <main class="app-shell">
-      <section class="toolbar">
-        <div class="brand">
-          <span class="brand-mark" aria-hidden="true">P</span>
-          <div>
-            <h1>Power Window</h1>
-            <p>Why flexible electricity timing matters.</p>
-          </div>
-        </div>
-
-        <nav class="app-nav" aria-label="App pages">
-          <a href="/en/">Planner</a>
-          <a href="/en/compare">Compare</a>
-          <a href="/en/statistics">Statistics</a>
-          <a href="/en/methodology">How it works</a>
-          <a href="/en/mission" aria-current="page">Mission</a>
-          <a href="/en/privacy">Privacy</a>
-          <a href="/mission">Español</a>
-
+    <a class="site-skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="site-brand" href="/en/" aria-label="Power Window — planner">
+          <span class="site-brand-mark" aria-hidden="true"></span>
+          <span>Power Window</span>
+        </a>
+        <nav class="site-nav" aria-label="Main navigation">
+          <a class="site-nav-link" href="/en/">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-11 5 2 2 4-4"/></svg>
+            <span>Planner</span>
+          </a>
+          <a class="site-nav-link" href="/en/compare">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg>
+            <span class="site-nav-full">Compare tariffs</span><span class="site-nav-short">Compare</span>
+          </a>
+          <a class="site-nav-link" href="/en/statistics">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 20h16M7 16v-5m5 5V5m5 11V8"/></svg>
+            <span>Statistics</span>
+          </a>
+          <details class="site-more" data-current="true">
+            <summary><svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span>More</span></summary>
+            <div class="site-menu">
+              <div class="site-menu-group">
+                <span class="site-menu-label">Prices & guides</span>
+                <a href="/en/electricity-price-spain-today">Today’s electricity prices</a>
+                <a href="/en/electricity-price-spain-tomorrow">Tomorrow’s electricity prices</a>
+                <a href="/en/ev-charging-electricity-price-spain">EV charging guide</a>
+                <a href="/en/best-time-washing-machine-spain">Laundry guide</a>
+              </div>
+              <div class="site-menu-group">
+                <span class="site-menu-label">About Power Window</span>
+                <a href="/en/methodology">How it works</a>
+                <a href="/en/mission" aria-current="page">Our mission</a>
+                <a href="/en/privacy">Privacy</a>
+              </div>
+            </div>
+          </details>
         </nav>
-      </section>
+        <a class="site-language" href="/mission" lang="es" hreflang="es">Español</a>
+      </div>
+    </header>
+    <main id="main-content" class="app-shell site-content" tabindex="-1">
+      <p class="site-page-intro">Why flexible electricity timing matters.</p>
 
       <section class="hero-panel mission-hero">
         <div>
-          <span class="eyebrow">Mission</span>
-          <h2>Find cheaper hours for flexible electricity use.</h2>
+          <h1>Find cheaper hours for flexible electricity use.</h1>
           <p>
             Power Window exists for tasks where the exact start time can move: charging a car,
             running a dishwasher, drying clothes, or heating water. If a task does not need to
@@ -82,7 +106,6 @@
 
       <section class="mission-grid">
         <article class="method-card mission-card mission-card--wide">
-          <span class="eyebrow">Household finances</span>
           <h3>Small timing choices compound</h3>
           <p>
             A single dishwasher run is not life-changing. An EV charge is larger. Repeated
@@ -124,7 +147,6 @@
         </article>
 
         <article class="method-card mission-card">
-          <span class="eyebrow">Grid usefulness</span>
           <h3>Why Spain has cheap electricity hours</h3>
           <p>
             Spain is one of Europe's major solar and wind electricity systems. Renewables now
@@ -147,7 +169,6 @@
         </article>
 
         <article class="method-card mission-card">
-          <span class="eyebrow">Why EVs matter</span>
           <h3>Cars are movable batteries of demand</h3>
           <p>
             EV charging is often the largest flexible load at home. A 20 kWh top-up can be
@@ -161,7 +182,6 @@
         </article>
 
         <article class="method-card mission-card">
-          <span class="eyebrow">What we will not claim</span>
           <h3>This is a signal, not a guarantee</h3>
           <p>
             Power Window does not know your network constraint, retailer contract, charger
@@ -178,7 +198,6 @@
       <section class="chart-section mission-sources">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Sources</span>
             <h2>What this page is based on</h2>
           </div>
         </div>

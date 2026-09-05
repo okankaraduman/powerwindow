@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#101412" />
+    <meta name="theme-color" content="#173e30" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Power Window" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -38,6 +38,8 @@
     <link rel="apple-touch-icon" href="favicon.svg" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/navigation.css" />
+    <script defer src="/navigation.js"></script>
     <script defer src="analytics.js"></script>
     <script
       async
@@ -46,31 +48,54 @@
     ></script>
   </head>
   <body>
-    <main class="app-shell">
-      <section class="toolbar">
-        <div class="brand">
-          <span class="brand-mark" aria-hidden="true">P</span>
-          <div>
-            <h1>Power Window</h1>
-            <p>Privacidad y prácticas de datos.</p>
-          </div>
-        </div>
-
-        <nav class="app-nav" aria-label="Páginas de la app">
-          <a href="/">Planificador</a>
-          <a href="/compare">Comparador</a>
-          <a href="/statistics">Estadísticas</a>
-          <a href="/methodology">Cómo funciona</a>
-          <a href="/mission">Misión</a>
-          <a href="/privacy" aria-current="page">Privacidad</a>
-          <a href="/en/privacy">English</a>
+    <a class="site-skip-link" href="#main-content">Saltar al contenido</a>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="site-brand" href="/" aria-label="Power Window — planificador">
+          <span class="site-brand-mark" aria-hidden="true"></span>
+          <span>Power Window</span>
+        </a>
+        <nav class="site-nav" aria-label="Navegación principal">
+          <a class="site-nav-link" href="/">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-11 5 2 2 4-4"/></svg>
+            <span>Planificador</span>
+          </a>
+          <a class="site-nav-link" href="/compare">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg>
+            <span class="site-nav-full">Comparar tarifas</span><span class="site-nav-short">Comparar</span>
+          </a>
+          <a class="site-nav-link" href="/statistics">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 20h16M7 16v-5m5 5V5m5 11V8"/></svg>
+            <span>Estadísticas</span>
+          </a>
+          <details class="site-more" data-current="true">
+            <summary><svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span>Más</span></summary>
+            <div class="site-menu">
+              <div class="site-menu-group">
+                <span class="site-menu-label">Precios y guías</span>
+                <a href="/precio-luz-hoy">Precio de la luz hoy</a>
+                <a href="/precio-luz-manana">Precio de la luz mañana</a>
+                <a href="/precio-luz-coche-electrico">Guía para cargar el coche</a>
+                <a href="/mejor-hora-lavadora">Guía para poner la lavadora</a>
+              </div>
+              <div class="site-menu-group">
+                <span class="site-menu-label">Sobre Power Window</span>
+                <a href="/methodology">Cómo funciona</a>
+                <a href="/mission">Nuestra misión</a>
+                <a href="/privacy" aria-current="page">Privacidad</a>
+              </div>
+            </div>
+          </details>
         </nav>
-      </section>
+        <a class="site-language" href="/en/privacy" lang="en" hreflang="en">English</a>
+      </div>
+    </header>
+    <main id="main-content" class="app-shell site-content" tabindex="-1">
+      <p class="site-page-intro">Privacidad y prácticas de datos.</p>
 
       <section class="hero-panel methodology-hero">
         <div>
-          <span class="eyebrow">Privacidad</span>
-          <h2>Power Window mantiene sencilla la versión inicial.</h2>
+          <h1>Power Window mantiene sencilla la versión inicial.</h1>
           <p>
             La app estima mejores horarios para consumos eléctricos flexibles usando datos de
             mercado y ajustes locales opcionales. Actualmente no requiere cuenta, permiso de
@@ -82,7 +107,6 @@
 
       <section class="method-grid">
         <article class="method-card">
-          <span class="eyebrow">Datos que tratamos</span>
           <h3>Datos del planificador</h3>
           <p>
             La app web guarda el consumo elegido, los ajustes de factura, el modelo de coche, el
@@ -93,7 +117,6 @@
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">Datos del backend</span>
           <h3>Datos de mercado y conector de prueba</h3>
           <p>
             Nuestro backend guarda respuestas de mercado de Red Eléctrica por fecha para que la
@@ -105,7 +128,6 @@
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">Proveedores</span>
           <h3>Alojamiento e infraestructura</h3>
           <p>
             Power Window está alojada en Cloudflare. Cloudflare puede tratar información técnica
@@ -115,7 +137,6 @@
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">Analítica opcional</span>
           <h3>Google Analytics</h3>
           <p>
             Si decides permitir la analítica, el sitio carga Google Analytics para medir vistas
@@ -126,7 +147,6 @@
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">Permisos</span>
           <h3>Permisos de Android y navegador</h3>
           <p>
             La app Android usa acceso a internet para cargar el sitio web de Power Window. Las
@@ -137,7 +157,6 @@
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">Conservación</span>
           <h3>Cuánto tiempo se conservan los datos</h3>
           <p>
             Los ajustes locales del planificador permanecen en tu dispositivo hasta que borras el
@@ -149,7 +168,6 @@
         </article>
 
         <article class="method-card">
-          <span class="eyebrow">Contacto</span>
           <h3>Consultas o eliminación</h3>
           <p>
             Para consultas de privacidad o solicitudes de eliminación, escribe a

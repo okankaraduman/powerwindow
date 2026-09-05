@@ -40,6 +40,7 @@ const state = {
   cacheStatus: "none",
   apiMeta: null,
   selectedDate: "",
+  loadRequestId: 0,
   profiles: [],
   ranked: [],
   allRanked: [],
@@ -123,6 +124,8 @@ function init() {
   loadProfiles();
   loadBillSettings();
   initVehiclePlanner();
+  initQuickChoices();
+  initResponsivePlanner();
 
   const today = new Date();
   const tomorrow = addDays(today, 1);
@@ -134,9 +137,8 @@ function init() {
   els.saveProfileButton.addEventListener("click", saveCurrentProfile);
   els.profileInput.addEventListener("change", applySelectedProfile);
   els.dateInput.addEventListener("change", () => loadDate(els.dateInput.value));
-  els.durationInput.addEventListener("input", render);
-  els.durationInput.addEventListener("change", render);
-  els.applianceInput.addEventListener("change", render);
+  els.durationInput.addEventListener("change", handlePlannerSelectionChange);
+  els.applianceInput.addEventListener("change", handlePlannerSelectionChange);
   els.vehicleBrandInput.addEventListener("change", handleVehicleBrandChange);
   els.vehicleModelInput.addEventListener("change", handleVehicleModelChange);
   els.vehicleBatteryInput.addEventListener("input", handleVehicleSettingsChange);
@@ -144,11 +146,14 @@ function init() {
   els.chargeToInput.addEventListener("input", handleVehicleSettingsChange);
   els.chargerPowerInput.addEventListener("change", handleVehicleSettingsChange);
   els.useVehicleButton.addEventListener("click", applyVehiclePlanner);
-  els.chargerDeviceInput.addEventListener("change", renderConnectorPanel);
-  els.connectMockButton.addEventListener("click", connectMockCharger);
-  els.sendPlanButton.addEventListener("click", sendSmartChargePlan);
-  els.startMockButton.addEventListener("click", () => sendDeviceCommand("start"));
-  els.stopMockButton.addEventListener("click", () => sendDeviceCommand("stop"));
+  if (els.chargerDeviceInput) {
+    els.chargerDeviceInput.addEventListener("change", renderConnectorPanel);
+    els.connectMockButton?.addEventListener("click", connectMockCharger);
+    els.sendPlanButton?.addEventListener("click", sendSmartChargePlan);
+    els.startMockButton?.addEventListener("click", () => sendDeviceCommand("start"));
+    els.stopMockButton?.addEventListener("click", () => sendDeviceCommand("stop"));
+    loadConnectorDevices();
+  }
   els.costModeInput.addEventListener("change", handleBillSettingsChange);
   els.taxRegionInput.addEventListener("change", handleTaxRegionChange);
   els.vatInput.addEventListener("input", handleIndirectTaxInput);
@@ -165,7 +170,6 @@ function init() {
     els.installHint.textContent = "Listo para instalar en Chrome para Android.";
   });
 
-  loadConnectorDevices();
   loadDate(state.selectedDate);
 }
 
@@ -173,12 +177,76 @@ function initApplianceCatalog() {
   const selectedPower = els.applianceInput.value;
   els.applianceInput.innerHTML = APPLIANCES.map((item) => {
     const power = item.kw.toFixed(1).replace(".", ",");
-    return `<option value="${item.kw}">${escapeHTML(item.labels.es)} - ${power} kW</option>`;
+    return `<option value="${item.kw}" data-appliance-id="${item.id}">${escapeHTML(item.labels.es)} - ${power} kW</option>`;
   }).join("");
 
   if (APPLIANCES.some((item) => String(item.kw) === selectedPower)) {
     els.applianceInput.value = selectedPower;
   }
+}
+
+function initResponsivePlanner() {
+  const setup = document.querySelector(".planner-setup");
+  const results = document.querySelector(".planner-results");
+  const chart = document.querySelector(".planner-chart");
+  if (!setup || !results || !chart || typeof window.matchMedia !== "function") return;
+
+  const mobile = window.matchMedia("(max-width: 760px)");
+  const syncOrder = () => {
+    if (mobile.matches) results.insertBefore(setup, chart);
+    else results.parentNode.insertBefore(setup, results);
+  };
+  syncOrder();
+  mobile.addEventListener("change", syncOrder);
+}
+
+function initQuickChoices() {
+  document.querySelectorAll("[data-date-offset]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const offset = Number(button.dataset.dateOffset);
+      if (offset !== 0 && offset !== 1) return;
+      els.dateInput.value = formatDateInput(addDays(new Date(), offset));
+      loadDate(els.dateInput.value);
+    });
+  });
+  document.querySelectorAll("button[data-appliance-id]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const appliance = APPLIANCES.find((item) => item.id === button.dataset.applianceId);
+      if (!appliance || !selectApplianceById(appliance.id)) return;
+      els.durationInput.value = String(appliance.defaultDuration);
+      if (appliance.id.startsWith("ev-")) {
+        const details = document.querySelector("#vehicle-details");
+        if (details) details.open = true;
+        els.chargerPowerInput.value = String(appliance.kw);
+        handleVehicleSettingsChange();
+      }
+      handlePlannerSelectionChange();
+    });
+  });
+}
+
+function handlePlannerSelectionChange() {
+  els.profileInput.value = "";
+  syncQuickChoices();
+  render();
+}
+
+function syncQuickChoices() {
+  const selectedId = els.applianceInput.selectedOptions[0]?.dataset.applianceId;
+  document.querySelectorAll("button[data-appliance-id]").forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.dataset.applianceId === selectedId));
+  });
+  document.querySelectorAll("[data-date-offset]").forEach((button) => {
+    const date = formatDateInput(addDays(new Date(), Number(button.dataset.dateOffset)));
+    button.setAttribute("aria-pressed", String(state.selectedDate === date));
+  });
+}
+
+function selectApplianceById(id) {
+  const index = Array.from(els.applianceInput.options).findIndex((option) => option.dataset.applianceId === id);
+  if (index < 0) return false;
+  els.applianceInput.selectedIndex = index;
+  return true;
 }
 
 async function loadDate(dateValue, options = {}) {
@@ -187,7 +255,14 @@ async function loadDate(dateValue, options = {}) {
     els.dateInput.value = safeDate;
   }
 
+  const requestId = ++state.loadRequestId;
   state.selectedDate = safeDate;
+  state.points = [];
+  state.ranked = [];
+  state.allRanked = [];
+  state.best = null;
+  state.source = "loading";
+  syncQuickChoices();
   state.tomorrow = {
     status: isSameDay(parseDateInput(safeDate), startOfDay(new Date())) ? "loading" : "idle",
     points: [],
@@ -204,6 +279,7 @@ async function loadDate(dateValue, options = {}) {
 
   try {
     const response = await getMarketData(safeDate, options);
+    if (requestId !== state.loadRequestId) return;
     const data = response.payload;
     const points = parseMarketData(data);
 
@@ -216,16 +292,19 @@ async function loadDate(dateValue, options = {}) {
     state.cacheStatus = response.cacheStatus;
     state.apiMeta = data.data?.attributes || null;
   } catch (error) {
+    if (requestId !== state.loadRequestId) return;
     state.points = makeDemoData(safeDate);
     state.source = "demo";
     state.cacheStatus = "none";
     state.apiMeta = { "last-update": null, title: "Señal horaria de precio de prueba" };
     console.warn(error);
   } finally {
-    setLoading(false);
-    render();
-    loadGridPressure(safeDate, options);
-    loadTomorrowComparison(safeDate);
+    if (requestId === state.loadRequestId) {
+      setLoading(false);
+      render();
+      loadGridPressure(safeDate, options, requestId);
+      loadTomorrowComparison(safeDate, requestId);
+    }
   }
 }
 
@@ -285,7 +364,8 @@ async function fetchMarketData(dateValue, options = {}) {
   return { payload: data, cacheStatus: "network" };
 }
 
-async function loadGridPressure(dateValue, options = {}) {
+async function loadGridPressure(dateValue, options = {}, requestId = state.loadRequestId) {
+  if (requestId !== state.loadRequestId) return;
   const selected = parseDateInput(dateValue);
   const today = startOfDay(new Date());
   if (selected > today) {
@@ -306,7 +386,7 @@ async function loadGridPressure(dateValue, options = {}) {
       fetchDailyGridPayload("demand", dateValue, options),
       fetchDailyGridPayload("generation", dateValue, options),
     ]);
-    if (state.selectedDate !== dateValue) return;
+    if (requestId !== state.loadRequestId) return;
 
     const demandPoints = parseDemandData(demandResponse.payload);
     const generationMix = parseGenerationMix(generationResponse.payload);
@@ -323,7 +403,7 @@ async function loadGridPressure(dateValue, options = {}) {
       cachedAt: latestDate([demandResponse.cachedAt, generationResponse.cachedAt]),
     };
   } catch (error) {
-    if (state.selectedDate !== dateValue) return;
+    if (requestId !== state.loadRequestId) return;
 
     state.grid = {
       status: "unavailable",
@@ -573,6 +653,7 @@ function hasValues(series) {
 }
 
 function render() {
+  syncQuickChoices();
   if (!state.points.length) return;
 
   const duration = clamp(Math.round(Number(els.durationInput.value) || 1), 1, MAX_DURATION);
@@ -798,6 +879,14 @@ function gridPressureMetaText() {
 }
 
 function renderChart(points, bestHours, lowCut, highCut, firstStart = 0) {
+  const table = document.querySelector("#hourPriceTable");
+  if (table) {
+    table.innerHTML = points.map((point) => {
+      const status = point.hour < firstStart ? "Hora pasada" : bestHours.has(point.hour) ? "Mejor ventana" :
+        point.price <= lowCut ? "Precio bajo" : point.price >= highCut ? "Precio alto" : "—";
+      return `<tr${bestHours.has(point.hour) ? ' class="best-price-row"' : ""}><th scope="row">${formatHour(point.hour)}</th><td>${formatPrice(point.price, true)}</td><td>${status}</td></tr>`;
+    }).join("");
+  }
   const max = Math.max(...points.map((point) => point.price));
   const min = Math.min(...points.map((point) => point.price));
   const range = Math.max(max - min, 1);
@@ -826,7 +915,6 @@ function renderWindowList(windows, duration) {
   if (!windows.length) {
     els.windowList.innerHTML = `
       <article class="window-item empty">
-        <span class="eyebrow">Inicios restantes</span>
         <strong>No queda hueco hoy</strong>
         <small>Elige mañana o acorta la duración para obtener una hora de inicio útil.</small>
       </article>
@@ -840,7 +928,7 @@ function renderWindowList(windows, duration) {
       const width = Math.max(12, (item.score / bestScore) * 100);
       return `
         <article class="window-item">
-          <span class="eyebrow">#${index + 1}</span>
+          <span class="window-rank">#${index + 1}</span>
           <strong>${formatWindow(item.start, duration)}</strong>
           <div class="window-meter" aria-hidden="true"><span style="width:${width}%"></span></div>
           <small>${formatPrice(item.avgPrice)} de media, ${formatMoney(item.cost)} estimados para este consumo.</small>
@@ -961,7 +1049,8 @@ function renderTomorrowComparison(duration) {
   els.tomorrowHint.textContent = `${formatMoney(best.cost)} estimados si esperas a mañana.`;
 }
 
-async function loadTomorrowComparison(dateValue) {
+async function loadTomorrowComparison(dateValue, requestId = state.loadRequestId) {
+  if (requestId !== state.loadRequestId) return;
   const selected = parseDateInput(dateValue);
   const today = startOfDay(new Date());
   if (!isSameDay(selected, today)) {
@@ -973,11 +1062,13 @@ async function loadTomorrowComparison(dateValue) {
   const tomorrowValue = formatDateInput(addDays(today, 1));
   try {
     const response = await getMarketData(tomorrowValue);
+    if (requestId !== state.loadRequestId) return;
     const points = parseMarketData(response.payload);
     if (!points.length) throw new Error("Sin datos de mañana");
 
     state.tomorrow = { status: "ready", points, best: null };
   } catch {
+    if (requestId !== state.loadRequestId) return;
     state.tomorrow = { status: "unavailable", points: [], best: null };
   }
 
@@ -1055,13 +1146,36 @@ function makeDemoData(dateValue) {
 }
 
 function setLoading(isLoading) {
+  document.querySelector("#plan-results")?.setAttribute("aria-busy", String(isLoading));
   els.refreshButton.disabled = isLoading;
-  els.refreshButton.textContent = isLoading ? "Actualizando" : "Actualizar";
+  els.refreshButton.textContent = isLoading ? "Actualizando datos…" : "Actualizar datos";
   if (isLoading) {
+    els.reminderButton.disabled = true;
+    renderConnectorPanel();
+    els.scoreValue.textContent = "—";
+    els.scoreMeter.style.width = "0%";
+    els.gradeValue.textContent = "—";
+    els.gradeValue.className = "grade-badge";
+    els.gradeHint.textContent = "";
+    els.bestWindow.textContent = "—";
+    els.bestReason.textContent = "";
+    els.costEstimate.textContent = "—";
+    els.costHint.textContent = "";
+    els.nowVsBest.textContent = "—";
+    els.savingsHint.textContent = "";
+    els.lastUpdated.textContent = "";
+    els.loadLabel.textContent = "—";
+    els.loadHint.textContent = "";
+    els.hourChart.replaceChildren();
+    document.querySelector("#hourPriceTable")?.replaceChildren();
+    els.windowList.replaceChildren();
+    renderGridPressure(null);
+    renderTomorrowComparison(Number(els.durationInput.value) || 1);
     els.recommendationTitle.textContent = "Cargando datos de REE...";
     els.dataStatus.textContent = "Conectando";
     els.dataNote.textContent = "Las fechas están disponibles hasta mañana";
     els.dataStatus.className = "";
+    els.dataNote.className = "";
   }
 }
 
@@ -1216,6 +1330,11 @@ function indirectTaxLabel(settings) {
 }
 
 function initVehiclePlanner() {
+  [els.vehicleBatteryInput, els.chargeFromInput, els.chargeToInput].forEach((input) => {
+    input.required = true;
+  });
+  els.chargeFromInput.max = "99";
+  els.chargeToInput.min = "1";
   renderVehicleBrands();
   loadVehicleSettings();
   updateVehicleHint();
@@ -1246,21 +1365,47 @@ function handleVehicleModelChange() {
 }
 
 function handleVehicleSettingsChange() {
-  saveVehicleSettings();
   updateVehicleHint();
+  if (validateVehicleInputs()) saveVehicleSettings();
+}
+
+function validateVehicleInputs(report = false) {
+  const inputs = [els.vehicleBatteryInput, els.chargeFromInput, els.chargeToInput];
+  const invalidRange = els.chargeFromInput.value !== "" && els.chargeToInput.value !== "" &&
+    Number(els.chargeToInput.value) <= Number(els.chargeFromInput.value);
+  els.chargeToInput.setCustomValidity(invalidRange ? "El objetivo de carga debe ser mayor que la carga actual." : "");
+  inputs.forEach((input) => input.setAttribute("aria-invalid", String(!input.validity.valid)));
+  const invalid = inputs.find((input) => !input.validity.valid);
+  if (invalid && report) invalid.reportValidity();
+  return !invalid;
+}
+
+function focusRecommendation() {
+  els.recommendationTitle.tabIndex = -1;
+  els.recommendationTitle.focus({ preventScroll: true });
+  els.recommendationTitle.scrollIntoView({ behavior: "instant", block: "center" });
 }
 
 function applyVehiclePlanner() {
+  if (!validateVehicleInputs(true)) return;
   const estimate = vehicleChargeEstimate();
   els.profileInput.value = "";
   setApplianceByKw(estimate.kw);
   els.durationInput.value = String(estimate.duration);
+  els.vehicleBatteryInput.value = String(estimate.batteryKwh);
+  els.chargeFromInput.value = String(estimate.from);
+  els.chargeToInput.value = String(estimate.to);
   saveVehicleSettings();
   updateVehicleHint();
   render();
+  focusRecommendation();
 }
 
 function updateVehicleHint() {
+  if (!validateVehicleInputs()) {
+    els.vehicleHint.textContent = "Revisa la batería (10–130 kWh) y el nivel de carga. El objetivo debe ser mayor que el nivel actual.";
+    return;
+  }
   const vehicle = selectedVehicle();
   const estimate = vehicleChargeEstimate();
   const cappedText =
@@ -1284,9 +1429,6 @@ function vehicleChargeEstimate() {
   );
   const from = clamp(Number.isFinite(parsedFrom) ? Math.round(parsedFrom) : 50, 0, 99);
   const to = clamp(Number.isFinite(parsedTo) ? Math.round(parsedTo) : 80, from + 1, 100);
-  els.vehicleBatteryInput.value = String(batteryKwh);
-  els.chargeFromInput.value = String(from);
-  els.chargeToInput.value = String(to);
   const kwh = Math.max(0.5, batteryKwh * ((to - from) / 100));
   const kw = clamp(Number.isFinite(parsedKw) && parsedKw > 0 ? parsedKw : 3.7, 1, 22);
   const rawDuration = Math.ceil(kwh / kw);
@@ -1373,6 +1515,7 @@ function saveVehicleSettings() {
 }
 
 async function loadConnectorDevices() {
+  if (!els.chargerDeviceInput) return;
   try {
     const url = backendUrl("/devices");
     url.searchParams.set("userId", connectorUserId());
@@ -1389,6 +1532,7 @@ async function loadConnectorDevices() {
 }
 
 function renderConnectorDevices() {
+  if (!els.chargerDeviceInput) return;
   const current = els.chargerDeviceInput.value;
   const options = state.devices.length
     ? state.devices
@@ -1406,6 +1550,7 @@ function renderConnectorDevices() {
 }
 
 function renderConnectorPanel() {
+  if (!els.chargerDeviceInput) return;
   const device = selectedConnectorDevice();
   const canCommand = Boolean(device);
   const canPlan = Boolean(device && state.best);
@@ -1510,7 +1655,7 @@ async function sendDeviceCommand(command) {
 }
 
 function selectedConnectorDevice() {
-  return state.devices.find((device) => device.id === els.chargerDeviceInput.value) || state.devices[0] || null;
+  return state.devices.find((device) => device.id === els.chargerDeviceInput?.value) || state.devices[0] || null;
 }
 
 function upsertConnectorDevice(device) {
@@ -1561,6 +1706,7 @@ function connectorUserId() {
 }
 
 function setConnectorBusy(isBusy, text = "") {
+  if (!els.chargerDeviceInput) return;
   els.connectMockButton.disabled = isBusy;
   els.sendPlanButton.disabled = isBusy || !selectedConnectorDevice() || !state.best;
   els.startMockButton.disabled = isBusy || !selectedConnectorDevice();
@@ -1598,6 +1744,7 @@ function saveCurrentProfile() {
 
   const profile = {
     name: name.trim().slice(0, 40),
+    applianceId: els.applianceInput.selectedOptions[0]?.dataset.applianceId || null,
     kw: Number(els.applianceInput.value) || 1,
     duration: clamp(Math.round(Number(els.durationInput.value) || 1), 1, MAX_DURATION),
   };
@@ -1614,11 +1761,12 @@ function saveCurrentProfile() {
 }
 
 function applySelectedProfile() {
+  if (els.profileInput.value === "") return;
   const profile = state.profiles[Number(els.profileInput.value)];
   if (!profile) return;
 
   els.durationInput.value = String(profile.duration);
-  setApplianceByKw(profile.kw);
+  if (!selectApplianceById(profile.applianceId)) setApplianceByKw(profile.kw);
   render();
 }
 
@@ -1627,7 +1775,7 @@ function setApplianceByKw(kw) {
     (option) => Number(option.value) === kw
   );
   if (existing) {
-    els.applianceInput.value = existing.value;
+    els.applianceInput.selectedIndex = existing.index;
   }
 }
 
@@ -1688,16 +1836,12 @@ function escapeHTML(value) {
 
 function formatHour(hour) {
   const normalized = ((hour % 24) + 24) % 24;
-  const suffix = normalized >= 12 ? "PM" : "AM";
-  const display = normalized % 12 || 12;
-  return `${display} ${suffix}`;
+  return `${pad(normalized)}:00`;
 }
 
 function formatHourShort(hour) {
   const normalized = ((hour % 24) + 24) % 24;
-  const suffix = normalized >= 12 ? "p" : "a";
-  const display = normalized % 12 || 12;
-  return `${display}${suffix}`;
+  return pad(normalized);
 }
 
 function formatPrice(value, compact = false) {

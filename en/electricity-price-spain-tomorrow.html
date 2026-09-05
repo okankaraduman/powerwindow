@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#101412" />
+    <meta name="theme-color" content="#173e30" />
     <title>Electricity Price in Spain Tomorrow by Hour | Power Window</title>
     <meta
       name="description"
@@ -32,6 +32,8 @@
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <link rel="manifest" href="/manifest.en.webmanifest" />
     <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/navigation.css" />
+    <script defer src="/navigation.js"></script>
     <script defer src="/analytics.en.js"></script>
     <script
       async
@@ -107,27 +109,53 @@
     </script>
   </head>
   <body data-daily-seo data-lang="en" data-day-offset="1">
-    <main class="app-shell">
-      <section class="toolbar">
-        <div class="brand">
-          <span class="brand-mark" aria-hidden="true">P</span>
-          <div>
-            <span class="brand-title">Power Window</span>
-            <p>Plan flexible loads when tomorrow's PVPC data is published.</p>
-          </div>
-        </div>
-        <nav class="app-nav" aria-label="App pages">
-          <a href="/en/">Planner</a>
-          <a href="/en/electricity-price-spain-today">Today</a>
-          <a href="/en/compare">Compare</a>
-          <a href="/en/statistics">Statistics</a>
-          <a href="/precio-luz-manana">Español</a>
+    <a class="site-skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="site-brand" href="/en/" aria-label="Power Window — planner">
+          <span class="site-brand-mark" aria-hidden="true"></span>
+          <span>Power Window</span>
+        </a>
+        <nav class="site-nav" aria-label="Main navigation">
+          <a class="site-nav-link" href="/en/">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-11 5 2 2 4-4"/></svg>
+            <span>Planner</span>
+          </a>
+          <a class="site-nav-link" href="/en/compare">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg>
+            <span class="site-nav-full">Compare tariffs</span><span class="site-nav-short">Compare</span>
+          </a>
+          <a class="site-nav-link" href="/en/statistics">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 20h16M7 16v-5m5 5V5m5 11V8"/></svg>
+            <span>Statistics</span>
+          </a>
+          <details class="site-more" data-current="true">
+            <summary><svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span>More</span></summary>
+            <div class="site-menu">
+              <div class="site-menu-group">
+                <span class="site-menu-label">Prices & guides</span>
+                <a href="/en/electricity-price-spain-today">Today’s electricity prices</a>
+                <a href="/en/electricity-price-spain-tomorrow" aria-current="page">Tomorrow’s electricity prices</a>
+                <a href="/en/ev-charging-electricity-price-spain">EV charging guide</a>
+                <a href="/en/best-time-washing-machine-spain">Laundry guide</a>
+              </div>
+              <div class="site-menu-group">
+                <span class="site-menu-label">About Power Window</span>
+                <a href="/en/methodology">How it works</a>
+                <a href="/en/mission">Our mission</a>
+                <a href="/en/privacy">Privacy</a>
+              </div>
+            </div>
+          </details>
         </nav>
-      </section>
+        <a class="site-language" href="/precio-luz-manana" lang="es" hreflang="es">Español</a>
+      </div>
+    </header>
+    <main id="main-content" class="app-shell site-content" tabindex="-1">
+      <p class="site-page-intro">Plan flexible loads when tomorrow's PVPC data is published.</p>
 
       <section class="hero-panel guide-hero daily-hero">
         <div>
-          <span class="eyebrow">Electricity price tomorrow</span>
           <h1>Electricity price in Spain tomorrow by hour</h1>
           <p>
             When the next day's PVPC curve is available, you can schedule long flexible loads
@@ -171,7 +199,6 @@
       <section class="chart-section seo-section">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Planning</span>
             <h2>What to do when tomorrow's PVPC is available</h2>
           </div>
           <p id="seoSummary" class="section-note">
@@ -181,7 +208,6 @@
         </div>
         <div class="method-grid">
           <article class="method-card">
-            <span class="eyebrow">EV charging</span>
             <h3>Prepare overnight or solar-hour charging</h3>
             <p>
               For EV charging, tomorrow's data is especially useful: you can schedule complete
@@ -190,7 +216,6 @@
             <strong id="seoEvCost" class="inline-stat">--</strong>
           </article>
           <article class="method-card">
-            <span class="eyebrow">Appliances</span>
             <h3>Organize laundry and dishwashing</h3>
             <p>
               If tomorrow has a clear cheap block, keep long appliance cycles for that window.
@@ -199,7 +224,6 @@
             <strong id="seoDishwasherCost" class="inline-stat">--</strong>
           </article>
           <article class="method-card method-card--wide">
-            <span class="eyebrow">Cooling</span>
             <h3>Plan around afternoon peaks</h3>
             <p>
               In summer, tomorrow's curve can help decide whether pre-cooling during cheaper
@@ -213,7 +237,6 @@
       <section class="chart-section">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Hourly table</span>
             <h2>Tomorrow's PVPC hour by hour</h2>
           </div>
           <p class="section-note">
@@ -229,7 +252,6 @@
       <section class="chart-section seo-section" aria-labelledby="tomorrow-faq-title">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Frequently asked questions</span>
             <h2 id="tomorrow-faq-title">Tomorrow's price and scheduled loads</h2>
           </div>
         </div>

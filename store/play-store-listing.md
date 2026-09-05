@@ -15,7 +15,7 @@ La página de estadísticas muestra la forma del precio PVPC del día selecciona
 
 Para cargar el coche eléctrico, selecciona marca y modelo, porcentaje actual de batería, porcentaje objetivo y potencia del cargador. Power Window estima la energía necesaria y sugiere la mejor franja de carga disponible.
 
-El conector de carga inteligente actual es solo de demostración. Permite probar cómo funcionarían la programación y los comandos de inicio y parada sin controlar hardware real. Las integraciones con cargadores reales están previstas para futuras versiones.
+El planificador de coche eléctrico calcula cuándo cargar. Las integraciones para programar o controlar cargadores reales todavía no están disponibles.
 
 Power Window es independiente y no está afiliada ni respaldada por Red Eléctrica.
 

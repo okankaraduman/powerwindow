@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#101412" />
+    <meta name="theme-color" content="#173e30" />
     <title>Precio de la luz mañana por horas en España | Power Window</title>
     <meta
       name="description"
@@ -32,6 +32,8 @@
     <link rel="apple-touch-icon" href="favicon.svg" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/navigation.css" />
+    <script defer src="/navigation.js"></script>
     <script defer src="analytics.js"></script>
     <script
       async
@@ -107,27 +109,53 @@
     </script>
   </head>
   <body data-daily-seo data-lang="es" data-day-offset="1">
-    <main class="app-shell">
-      <section class="toolbar">
-        <div class="brand">
-          <span class="brand-mark" aria-hidden="true">P</span>
-          <div>
-            <span class="brand-title">Power Window</span>
-            <p>Planifica consumos cuando el PVPC de mañana esté publicado.</p>
-          </div>
-        </div>
-        <nav class="app-nav" aria-label="Páginas de la app">
-          <a href="/">Planificador</a>
-          <a href="/precio-luz-hoy">Hoy</a>
-          <a href="/compare">Comparador</a>
-          <a href="/statistics">Estadísticas</a>
-          <a href="/en/electricity-price-spain-tomorrow">English</a>
+    <a class="site-skip-link" href="#main-content">Saltar al contenido</a>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="site-brand" href="/" aria-label="Power Window — planificador">
+          <span class="site-brand-mark" aria-hidden="true"></span>
+          <span>Power Window</span>
+        </a>
+        <nav class="site-nav" aria-label="Navegación principal">
+          <a class="site-nav-link" href="/">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-11 5 2 2 4-4"/></svg>
+            <span>Planificador</span>
+          </a>
+          <a class="site-nav-link" href="/compare">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg>
+            <span class="site-nav-full">Comparar tarifas</span><span class="site-nav-short">Comparar</span>
+          </a>
+          <a class="site-nav-link" href="/statistics">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 20h16M7 16v-5m5 5V5m5 11V8"/></svg>
+            <span>Estadísticas</span>
+          </a>
+          <details class="site-more" data-current="true">
+            <summary><svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span>Más</span></summary>
+            <div class="site-menu">
+              <div class="site-menu-group">
+                <span class="site-menu-label">Precios y guías</span>
+                <a href="/precio-luz-hoy">Precio de la luz hoy</a>
+                <a href="/precio-luz-manana" aria-current="page">Precio de la luz mañana</a>
+                <a href="/precio-luz-coche-electrico">Guía para cargar el coche</a>
+                <a href="/mejor-hora-lavadora">Guía para poner la lavadora</a>
+              </div>
+              <div class="site-menu-group">
+                <span class="site-menu-label">Sobre Power Window</span>
+                <a href="/methodology">Cómo funciona</a>
+                <a href="/mission">Nuestra misión</a>
+                <a href="/privacy">Privacidad</a>
+              </div>
+            </div>
+          </details>
         </nav>
-      </section>
+        <a class="site-language" href="/en/electricity-price-spain-tomorrow" lang="en" hreflang="en">English</a>
+      </div>
+    </header>
+    <main id="main-content" class="app-shell site-content" tabindex="-1">
+      <p class="site-page-intro">Planifica consumos cuando el PVPC de mañana esté publicado.</p>
 
       <section class="hero-panel guide-hero daily-hero">
         <div>
-          <span class="eyebrow">Precio luz mañana</span>
           <h1>Precio de la luz mañana por horas en España</h1>
           <p>
             Cuando el PVPC del día siguiente está disponible, puedes dejar programados consumos
@@ -171,7 +199,6 @@
       <section class="chart-section seo-section">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Planificación</span>
             <h2>Qué hacer cuando sale el PVPC de mañana</h2>
           </div>
           <p id="seoSummary" class="section-note">
@@ -181,7 +208,6 @@
         </div>
         <div class="method-grid">
           <article class="method-card">
-            <span class="eyebrow">Coche eléctrico</span>
             <h3>Deja preparada la carga nocturna o solar</h3>
             <p>
               Para un coche eléctrico, mirar mañana tiene mucho sentido: puedes programar el
@@ -190,7 +216,6 @@
             <strong id="seoEvCost" class="inline-stat">--</strong>
           </article>
           <article class="method-card">
-            <span class="eyebrow">Electrodomésticos</span>
             <h3>Organiza lavadora y lavavajillas</h3>
             <p>
               Si mañana tiene un tramo barato claro, guarda el ciclo largo para esa ventana. La
@@ -199,7 +224,6 @@
             <strong id="seoDishwasherCost" class="inline-stat">--</strong>
           </article>
           <article class="method-card method-card--wide">
-            <span class="eyebrow">Climatización</span>
             <h3>Anticipa los picos de la tarde</h3>
             <p>
               En verano, revisar mañana puede ayudarte a decidir si conviene preenfriar en horas
@@ -213,7 +237,6 @@
       <section class="chart-section">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Tabla horaria</span>
             <h2>PVPC de mañana hora a hora</h2>
           </div>
           <p class="section-note">
@@ -229,7 +252,6 @@
       <section class="chart-section seo-section" aria-labelledby="tomorrow-faq-title">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Preguntas frecuentes</span>
             <h2 id="tomorrow-faq-title">Precio de mañana y consumos programables</h2>
           </div>
         </div>

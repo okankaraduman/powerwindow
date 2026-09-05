@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#101412" />
+    <meta name="theme-color" content="#173e30" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Power Window" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -38,6 +38,8 @@
     <link rel="apple-touch-icon" href="favicon.svg" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/navigation.css" />
+    <script defer src="/navigation.js"></script>
     <script defer src="analytics.js"></script>
     <script
       async
@@ -46,31 +48,54 @@
     ></script>
   </head>
   <body>
-    <main class="app-shell">
-      <section class="toolbar">
-        <div class="brand">
-          <span class="brand-mark" aria-hidden="true">P</span>
-          <div>
-            <h1>Power Window</h1>
-            <p>Por qué importa mover los consumos flexibles.</p>
-          </div>
-        </div>
-
-        <nav class="app-nav" aria-label="Páginas de la app">
-          <a href="/">Planificador</a>
-          <a href="/compare">Comparador</a>
-          <a href="/statistics">Estadísticas</a>
-          <a href="/methodology">Cómo funciona</a>
-          <a href="/mission" aria-current="page">Misión</a>
-          <a href="/privacy">Privacidad</a>
-          <a href="/en/mission">English</a>
+    <a class="site-skip-link" href="#main-content">Saltar al contenido</a>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="site-brand" href="/" aria-label="Power Window — planificador">
+          <span class="site-brand-mark" aria-hidden="true"></span>
+          <span>Power Window</span>
+        </a>
+        <nav class="site-nav" aria-label="Navegación principal">
+          <a class="site-nav-link" href="/">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-11 5 2 2 4-4"/></svg>
+            <span>Planificador</span>
+          </a>
+          <a class="site-nav-link" href="/compare">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg>
+            <span class="site-nav-full">Comparar tarifas</span><span class="site-nav-short">Comparar</span>
+          </a>
+          <a class="site-nav-link" href="/statistics">
+            <svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><path d="M4 20h16M7 16v-5m5 5V5m5 11V8"/></svg>
+            <span>Estadísticas</span>
+          </a>
+          <details class="site-more" data-current="true">
+            <summary><svg class="site-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span>Más</span></summary>
+            <div class="site-menu">
+              <div class="site-menu-group">
+                <span class="site-menu-label">Precios y guías</span>
+                <a href="/precio-luz-hoy">Precio de la luz hoy</a>
+                <a href="/precio-luz-manana">Precio de la luz mañana</a>
+                <a href="/precio-luz-coche-electrico">Guía para cargar el coche</a>
+                <a href="/mejor-hora-lavadora">Guía para poner la lavadora</a>
+              </div>
+              <div class="site-menu-group">
+                <span class="site-menu-label">Sobre Power Window</span>
+                <a href="/methodology">Cómo funciona</a>
+                <a href="/mission" aria-current="page">Nuestra misión</a>
+                <a href="/privacy">Privacidad</a>
+              </div>
+            </div>
+          </details>
         </nav>
-      </section>
+        <a class="site-language" href="/en/mission" lang="en" hreflang="en">English</a>
+      </div>
+    </header>
+    <main id="main-content" class="app-shell site-content" tabindex="-1">
+      <p class="site-page-intro">Por qué importa mover los consumos flexibles.</p>
 
       <section class="hero-panel mission-hero">
         <div>
-          <span class="eyebrow">Misión</span>
-          <h2>Encontrar horas más baratas para la electricidad flexible.</h2>
+          <h1>Encontrar horas más baratas para la electricidad flexible.</h1>
           <p>
             Power Window existe para usos donde la hora exacta puede moverse: cargar el coche,
             poner el lavavajillas, secar ropa o calentar agua. Si una tarea no tiene que empezar
@@ -81,7 +106,6 @@
 
       <section class="mission-grid">
         <article class="method-card mission-card mission-card--wide">
-          <span class="eyebrow">Economía doméstica</span>
           <h3>Las pequeñas decisiones de horario se acumulan</h3>
           <p>
             Un solo lavavajillas no cambia una economía familiar. Una carga de coche eléctrico
@@ -123,7 +147,6 @@
         </article>
 
         <article class="method-card mission-card">
-          <span class="eyebrow">Utilidad para la red</span>
           <h3>Por qué hay horas baratas en España</h3>
           <p>
             España es uno de los grandes sistemas eléctricos solares y eólicos de Europa. Las
@@ -148,7 +171,6 @@
         </article>
 
         <article class="method-card mission-card">
-          <span class="eyebrow">Por qué importan los coches eléctricos</span>
           <h3>Los coches son demanda flexible de gran tamaño</h3>
           <p>
             La carga del coche eléctrico suele ser el mayor consumo flexible en casa. Una recarga
@@ -163,7 +185,6 @@
         </article>
 
         <article class="method-card mission-card">
-          <span class="eyebrow">Lo que no afirmamos</span>
           <h3>Es una señal, no una garantía</h3>
           <p>
             Power Window no conoce las restricciones de tu red, tu contrato concreto, las
@@ -180,7 +201,6 @@
       <section class="chart-section mission-sources">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Fuentes</span>
             <h2>En qué se basa esta página</h2>
           </div>
         </div>

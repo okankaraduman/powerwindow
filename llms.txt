@@ -8,9 +8,9 @@ Power Window is a free, independent planning tool. It is not affiliated with or 
 
 - [Spanish planner](https://powerwindow.energy/): Find the cheapest available window for a selected date, duration, and electrical load.
 - [English planner](https://powerwindow.energy/en/): English version of the planner.
-- [Price today](https://powerwindow.energy/precio-luz-hoy): Today's hourly PVPC prices and practical examples.
+- [Price today](https://powerwindow.energy/precio-luz-hoy): Today's hourly PVPC prices, cheapest hour, and cheapest continuous window.
 - [Price tomorrow](https://powerwindow.energy/precio-luz-manana): Tomorrow's prices when REE has published them.
-- [EV charging guide](https://powerwindow.energy/precio-luz-coche-electrico): Plan a home charging session by battery, charge level, and charger power.
+- [EV charging guide](https://powerwindow.energy/precio-luz-coche-electrico): Calculate the cost and best time to charge an electric car at home by battery, charge level, and charger power.
 - [Washing machine guide](https://powerwindow.energy/mejor-hora-lavadora): Find lower-price hours for movable household loads.
 - [Tariff comparison](https://powerwindow.energy/compare): Compare PVPC with editable supplier-offer assumptions.
 - [Statistics](https://powerwindow.energy/statistics): Seasonal electricity-price and generation comparisons.

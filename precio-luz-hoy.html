@@ -51,7 +51,7 @@
             "name": "Precio de la luz hoy por horas en España",
             "description": "Precio PVPC de hoy por horas para planificar consumos eléctricos flexibles en España.",
             "inLanguage": "es",
-            "dateModified": "2026-09-04",
+            "dateModified": "2026-09-07",
             "isPartOf": {
               "@id": "https://powerwindow.energy/#website"
             }
@@ -100,6 +100,14 @@
                 "acceptedAnswer": {
                   "@type": "Answer",
                   "text": "Sí. La página muestra una estimación para una carga de coche eléctrico y enlaza al planificador, donde puedes ajustar batería, potencia y duración."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "¿Qué significa PVPC hoy?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Es el precio horario de referencia del mercado regulado para hoy. Power Window lo muestra en €/kWh y lo usa para comparar horas y ventanas continuas de consumo."
                 }
               }
             ]
@@ -250,6 +258,35 @@
         </ul>
       </section>
 
+      <section class="chart-section seo-section" aria-labelledby="pvpc-explainer-title">
+        <div class="section-heading">
+          <div>
+            <h2 id="pvpc-explainer-title">PVPC hoy: precio por horas y ventana más barata</h2>
+          </div>
+          <p class="section-note">
+            El mínimo diario sirve como referencia rápida, pero un consumo largo necesita varias
+            horas seguidas. Power Window calcula ambos datos para evitar decisiones engañosas.
+          </p>
+        </div>
+        <div class="method-grid">
+          <article class="method-card">
+            <h3>Qué dato estás viendo</h3>
+            <p>
+              El PVPC es el precio horario de referencia del mercado regulado. Aquí se expresa en
+              €/kWh para que puedas comparar cada hora con tu tarifa y con el precio de tu factura.
+            </p>
+          </article>
+          <article class="method-card">
+            <h3>Hora barata frente a ventana barata</h3>
+            <p>
+              La hora más barata es el mínimo aislado del día. La mejor ventana es el bloque
+              continuo con menor coste medio para la duración real de tu lavadora, climatización
+              o carga del coche.
+            </p>
+          </article>
+        </div>
+      </section>
+
       <section class="chart-section seo-section" aria-labelledby="today-faq-title">
         <div class="section-heading">
           <div>
@@ -271,11 +308,18 @@
               en la que la mayoría de usuarios compara precios de electricidad.
             </p>
           </article>
-          <article class="method-card method-card--wide">
+          <article class="method-card">
             <h3>¿Puedo usarlo para cargar un coche eléctrico?</h3>
             <p>
               Sí. Esta página da una referencia rápida; el planificador permite ajustar marca,
               modelo, batería, porcentaje objetivo y potencia del cargador.
+            </p>
+          </article>
+          <article class="method-card">
+            <h3>¿Qué significa PVPC hoy?</h3>
+            <p>
+              Es el precio horario de referencia del mercado regulado para hoy. Lo mostramos en
+              €/kWh y lo usamos para comparar horas sueltas y ventanas continuas de consumo.
             </p>
           </article>
         </div>

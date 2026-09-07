@@ -5,9 +5,15 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const origin = "https://powerwindow.energy";
-const retiredComparators = [
-  "/comparador-tarifas-luz-pvpc",
-  "/en/compare-pvpc-electricity-tariffs-spain",
+const aliases = [
+  ["/comparador-tarifas-luz-pvpc", "/compare"],
+  ["/en/compare-pvpc-electricity-tariffs-spain", "/en/compare"],
+  ["/precio-luz-por-horas", "/precio-luz-hoy"],
+  ["/hora-mas-barata-luz-hoy", "/precio-luz-hoy"],
+  ["/pvpc-hoy", "/precio-luz-hoy"],
+  ["/cargar-coche-electrico-en-casa", "/precio-luz-coche-electrico"],
+  ["/mejor-hora-poner-lavadora", "/mejor-hora-lavadora"],
+  ["/comparador-tarifas-luz", "/compare"],
 ];
 
 const sitemap = await readFile(path.join(root, "sitemap.xml"), "utf8");
@@ -15,8 +21,8 @@ const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[
 assert.ok(urls.length, "sitemap.xml must contain at least one URL");
 assert.equal(new Set(urls).size, urls.length, "sitemap.xml contains duplicate URLs");
 
-for (const retired of retiredComparators) {
-  assert.ok(!urls.includes(`${origin}${retired}`), `${retired} must not remain in sitemap.xml`);
+for (const [alias] of aliases) {
+  assert.ok(!urls.includes(`${origin}${alias}`), `${alias} must not appear in sitemap.xml`);
 }
 
 for (const url of urls) {
@@ -49,16 +55,34 @@ for (const url of urls) {
   }
 
   const internalLinks = [...html.matchAll(/href="(\/[^"]*)"/g)].map((match) => match[1]);
-  for (const retired of retiredComparators) {
+  for (const [alias] of aliases) {
     assert.ok(
-      !internalLinks.some((link) => link === retired || link.startsWith(`${retired}/`)),
-      `${relativeFile} links to retired comparator ${retired}`,
+      !internalLinks.some(
+        (link) => link === alias || link === `${alias}.html` || link.startsWith(`${alias}/`),
+      ),
+      `${relativeFile} links to non-canonical alias ${alias}`,
     );
   }
 }
 
 const redirects = await readFile(path.join(root, "_redirects"), "utf8");
-assert.match(redirects, /^\/comparador-tarifas-luz-pvpc \/compare 301$/m);
-assert.match(redirects, /^\/en\/compare-pvpc-electricity-tariffs-spain \/en\/compare 301$/m);
+for (const [alias, destination] of aliases) {
+  const escapedAlias = alias.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const escapedDestination = destination.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  for (const suffix of ["", "/", ".html"]) {
+    const escapedSuffix = suffix.replace(".", "\\.");
+    assert.match(
+      redirects,
+      new RegExp(`^${escapedAlias}${escapedSuffix} ${escapedDestination} 301$`, "m"),
+      `${alias}${suffix} must redirect to ${destination}`,
+    );
+  }
+}
+
+const todayPage = await readFile(path.join(root, "precio-luz-hoy.html"), "utf8");
+assert.match(todayPage, /<h3>¿Qué significa PVPC hoy\?<\/h3>/);
+
+const evPage = await readFile(path.join(root, "precio-luz-coche-electrico.html"), "utf8");
+assert.match(evPage, /<h3>¿Cuánto cuesta cargar un coche eléctrico en casa\?<\/h3>/);
 
 console.log(`SEO validation passed for ${urls.length} sitemap URLs.`);

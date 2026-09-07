@@ -134,8 +134,15 @@ from our persistence indefinitely, while today and tomorrow can return cached da
 immediately and refresh in the background. The mission page uses the month endpoint so
 visitors do not fan out separate requests for every day in the current month.
 
-The statistics page uses the same backend cache to show daily PVPC price shape, lowest price
-hour, renewable generation rate, wind plus solar share, and the generation mix.
+The statistics page uses the same backend cache to compare summer and winter PVPC prices,
+hourly price shapes, renewable share, and generation mix. Each season shows total, renewable,
+and wind plus solar generation in kWh, along with kWh and share for the five largest technologies.
+REE generation values are summed in MWh and converted to kWh for display. A separate annual
+line chart shows renewable and non-renewable kWh totals and shares for the last five complete
+calendar years plus the current year to date, cached at `/api/statistics/years`.
+The current-year segment is dashed, with exact kWh totals and shares below the chart.
+The current year is labeled as partial and requests data through today in Madrid; the cache
+is refreshed after 30 minutes or when the Madrid calendar date changes.
 
 ## Notes
 

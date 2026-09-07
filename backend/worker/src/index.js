@@ -1,3 +1,5 @@
+import { annualGenerationRange, annualGenerationPeriods, mergeAnnualGenerationPayloads, summarizeAnnualGeneration } from "../../../shared/annual-generation.mjs";
+
 const MARKET_WIDGET = "mercados/precios-mercados-tiempo-real";
 const GENERATION_WIDGET = "generacion/estructura-generacion";
 const DEMAND_WIDGET = "demanda/demanda-tiempo-real";
@@ -41,6 +43,10 @@ export default {
 
     if (url.pathname === "/api/statistics/seasons") {
       return handleSeasonStatistics(request, env, url, ctx);
+    }
+
+    if (url.pathname === "/api/statistics/years") {
+      return handleAnnualStatistics(request, env, url);
     }
 
     if (url.pathname === "/api/connectors") {
@@ -530,6 +536,42 @@ async function handleDemand(request, env, url, ctx) {
     );
   } catch (error) {
     return jsonResponse({ error: error.message || "la solicitud a REE ha fallado" }, 502, request);
+  }
+}
+
+async function handleAnnualStatistics(request, env, url) {
+  if (request.method !== "GET") {
+    return jsonResponse({ error: "método no permitido" }, 405, request);
+  }
+
+  const range = annualGenerationRange();
+  const cacheKey = `statistics:years:ytd:${range.startYear}:${range.endYear}`;
+  const cached = await readCache(env, cacheKey);
+  const respond = (entry, cacheStatus) => jsonResponse({
+    source: "ree", cacheStatus, cachedAt: entry.cachedAt, ...range,
+    endDate: entry.endDate, payload: entry.payload
+  }, 200, request);
+  if (cached && cached.endDate === range.endDate && isFreshCacheEntry(cached, 30 * MINUTE) &&
+      url.searchParams.get("refresh") !== "1") return respond(cached, "hit");
+
+  try {
+    const payloads = await Promise.allSettled(annualGenerationPeriods(range).map((period) =>
+      fetchREERangeWidget(GENERATION_WIDGET, period.startDate, period.endDate, "year")
+    ));
+    if (cached && payloads.some((result) => result.status === "rejected")) return respond(cached, "stale");
+    const payload = mergeAnnualGenerationPayloads(payloads
+      .filter((result) => result.status === "fulfilled").map((result) => result.value));
+    const years = summarizeAnnualGeneration(payload, range);
+    if (!years.some((year) => year.available)) throw new Error("No annual generation data");
+    const entry = { cachedAt: new Date().toISOString(), endDate: range.endDate, payload };
+    // Missing years must not displace a complete cached response.
+    if (years.every((year) => year.available) && env.MARKET_CACHE) {
+      await writeCache(env, cacheKey, entry);
+    }
+    return respond(entry, "miss");
+  } catch (error) {
+    if (cached) return respond(cached, "stale");
+    return jsonResponse({ error: error.message || "REE request failed" }, 502, request);
   }
 }
 

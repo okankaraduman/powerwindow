@@ -2124,6 +2124,45 @@ h1 {
 
 .season-card {
   align-content: start;
+  min-width: 0;
+}
+
+.season-card .mix-row-header {
+  flex-wrap: wrap;
+}
+
+.season-generation-totals {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.season-generation-totals dt {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.season-generation-totals dd {
+  margin: 4px 0 0;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.season-generation-totals > div:first-child dd {
+  font-size: clamp(1.2rem, 2.5vw, 1.65rem);
+}
+
+.season-tech-values {
+  display: grid;
+  flex-shrink: 0;
+  gap: 2px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 .season-card-summary {
@@ -2135,6 +2174,114 @@ h1 {
 .season-tech-list {
   display: grid;
   gap: 8px;
+}
+
+.annual-generation-list {
+  display: grid;
+  gap: 14px;
+}
+
+.annual-generation-card {
+  display: grid;
+  grid-template-columns: 60px minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+  background: #fff;
+}
+
+.annual-generation-card h3 {
+  margin: 0;
+}
+
+.annual-generation-period {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.annual-generation-chart {
+  margin: 24px 0;
+  min-width: 0;
+}
+
+.annual-generation-chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.annual-chart-grid {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.annual-chart-axis {
+  fill: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.annual-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+
+.annual-chart-legend span::before {
+  content: "";
+  display: inline-block;
+  width: 24px;
+  height: 3px;
+  margin-right: 8px;
+  vertical-align: middle;
+  background: currentColor;
+}
+
+.annual-chart-renewable {
+  color: #176b50;
+}
+
+.annual-chart-nonrenewable {
+  color: #925718;
+}
+
+.annual-generation-values {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 12px 0 0;
+}
+
+.annual-generation-values dt {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.annual-generation-values dd {
+  margin: 4px 0 0;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.annual-generation-values > div:nth-child(1) dt {
+  color: #176b50;
+}
+
+.annual-generation-values > div:nth-child(2) dt {
+  color: #925718;
+}
+
+@media (max-width: 650px) {
+  .annual-generation-card,
+  .annual-generation-values {
+    grid-template-columns: 1fr;
+  }
 }
 
 .season-tech-row {

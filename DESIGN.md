@@ -9,4 +9,6 @@ A practical energy planner with quiet, warm surfaces and clear evergreen actions
 - Use system sans typography, background `#f5f6f2`, ink `#172e2b`, secondary text `#5b6b63`, borders `#d9dfd6`, and active green `#176b50`. The recommendation uses `#173e30` with light text.
 - Give controls at least 44px touch targets, visible keyboard focus, accessible names, and reduced-motion support. Mark live, cached, demonstration, loading, and unavailable data accurately.
 
+Annual generation statistics inherit these warm surfaces and green accents. Show renewable generation as a green line and non-renewable generation as an amber line, with the vertical axis labeled in billions of kWh. Distinguish the current, partial year with a dashed incoming segment, open points, and an explicit year-to-date label. Keep exact kWh totals and shares below the chart. Preserve equivalent Spanish and English labels and readable chart spacing on mobile.
+
 The implementation lives in styles.css, navigation.css, navigation.js, and the static route markup. Product facts and scope decisions live in PRODUCT.md.

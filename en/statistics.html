@@ -114,6 +114,7 @@
         ]
       }
     </script>
+    <script type="module" src="/statistics-annual.js"></script>
   </head>
   <body>
     <a class="site-skip-link" href="#main-content">Skip to content</a>
@@ -209,7 +210,7 @@
       <section class="chart-section">
         <div class="section-heading">
           <div>
-            <h2>Renewables and top technologies by season</h2>
+            <h2>Electricity generation in kWh by season</h2>
           </div>
           <p id="generationMixNote" class="section-note">Values are grouped from REE generation structure data for each range.</p>
         </div>
@@ -218,6 +219,7 @@
           <span id="nonRenewableStack" class="mix-stack-nonrenewable"></span>
         </div>
         <div id="generationMixList" class="generation-mix-list" aria-live="polite"></div>
+        <p class="section-note">Totals cover the dates shown. Renewable and solar + wind generation are parts of the total. The five largest technologies are shown. Values are converted from MWh to kWh and rounded to the nearest kWh.</p>
       </section>
 
       <section class="chart-section">
@@ -228,6 +230,16 @@
           <p id="priceShapeNote" class="section-note">Two bars per hour: summer and winter. Prices in €/kWh.</p>
         </div>
         <div id="statsPriceChart" class="stats-price-chart" aria-live="polite"></div>
+      </section>
+
+      <section class="chart-section" aria-labelledby="annualGenerationTitle">
+        <div class="section-heading">
+          <div><h2 id="annualGenerationTitle">Renewable vs non-renewable generation by year</h2></div>
+          <p id="annualGenerationStatus" class="section-note" role="status">Loading annual generation…</p>
+        </div>
+        <p class="section-note">The last five complete calendar years plus the current year to date. The current year is partial and uses the latest available REE data; its total is not directly comparable to a full year. The lines show renewable (green) and non-renewable (amber) generation. The dashed segment marks the partial current year. Exact kWh totals and percentage shares are listed below.</p>
+        <div id="annualGenerationChart" class="annual-generation-chart"></div>
+        <div id="annualGenerationList" class="annual-generation-list" aria-live="polite" aria-busy="true"></div>
       </section>
 
       <section class="chart-section seo-section" aria-labelledby="stats-explainer-title">

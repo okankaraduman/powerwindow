@@ -305,7 +305,15 @@ function renderGenerationRows(seasons) {
     const summary = document.createElement("p");
     summary.className = "season-card-summary";
     summary.textContent =
-      `${formatPercent(season.generation.renewableShare)} renewable · ${formatPercent(season.generation.windSolarShare)} solar + wind · ${formatEnergy(season.generation.total)} total`;
+      `${formatPercent(season.generation.renewableShare)} renewable · ${formatPercent(season.generation.windSolarShare)} solar + wind`;
+
+    const energy = document.createElement("dl");
+    energy.className = "season-generation-totals";
+    energy.innerHTML = `
+      <div><dt>Total generated</dt><dd>${formatEnergy(season.generation.total)}</dd></div>
+      <div><dt>Renewable generation</dt><dd>${formatEnergy(season.generation.renewable)}</dd></div>
+      <div><dt>Solar + wind generation</dt><dd>${formatEnergy(season.generation.windSolar)}</dd></div>
+    `;
 
     const rows = document.createElement("div");
     rows.className = "season-tech-list";
@@ -314,12 +322,15 @@ function renderGenerationRows(seasons) {
       rowEl.className = "season-tech-row";
       rowEl.innerHTML = `
         <span>${escapeHTML(row.title)}</span>
-        <strong>${formatPercent(row.share)}</strong>
+        <span class="season-tech-values">
+          <strong>${formatEnergy(row.value)}</strong>
+          <small>${formatPercent(row.share)}</small>
+        </span>
       `;
       rows.append(rowEl);
     });
 
-    item.append(header, summary, rows);
+    item.append(header, energy, summary, rows);
     statsEls.generationMixList.append(item);
   });
 }
@@ -631,11 +642,12 @@ function formatPriceKwh(value) {
   return formatEuroPerKwh((value || 0) / 1000);
 }
 
-function formatEnergy(value) {
-  if (!Number.isFinite(value)) return "--";
-  if (value >= 1000000) return `${(value / 1000000).toFixed(2)} TWh`;
-  if (value >= 1000) return `${(value / 1000).toFixed(1)} GWh`;
-  return `${value.toFixed(0)} MWh`;
+function formatEnergy(valueMwh) {
+  if (!Number.isFinite(valueMwh)) return "--";
+  // REE generation values are energy in MWh; 1 MWh = 1,000 kWh.
+  return `${new Intl.NumberFormat("en-GB", {
+    maximumFractionDigits: 0
+  }).format(valueMwh * 1000)} kWh`;
 }
 
 function formatHour(hour) {

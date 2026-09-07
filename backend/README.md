@@ -18,6 +18,8 @@ GET http://localhost:8787/api/market?date=2026-07-06&refresh=1
 GET http://localhost:8787/api/market/month?date=2026-07-06
 GET http://localhost:8787/api/generation?date=2026-07-06
 GET http://localhost:8787/api/demand?date=2026-07-06
+GET http://localhost:8787/api/statistics/years
+GET http://localhost:8787/api/statistics/years?refresh=1
 GET http://localhost:8787/api/connectors
 POST http://localhost:8787/api/connectors/mock/pair
 GET http://localhost:8787/api/devices?userId=pw_example_user
@@ -133,3 +135,13 @@ GET http://localhost:8080/api/market?date=2026-07-06
 GET http://localhost:8080/api/market?date=2026-07-06&refresh=1
 GET http://localhost:8080/healthz
 ```
+
+## Annual generation statistics
+
+`/api/statistics/years` requests REE generation structure with `time_trunc=year` for the
+last five complete calendar years plus the current year through today in Europe/Madrid.
+Historical and current-year ranges use separate REE requests to stay within its five-year limit.
+Results are cached in KV by year range and refreshed after 30 minutes or at a Madrid date change.
+The response includes `endDate`, the requested cutoff; stale fallback keeps its original cutoff. `refresh=1` refreshes the data; an upstream failure returns existing cache with
+`cacheStatus: "stale"`. Missing years are not cached as complete data. The bilingual frontend
+converts MWh to kWh and loads this comparison independently from seasonal prices.

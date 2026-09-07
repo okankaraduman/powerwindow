@@ -216,6 +216,39 @@
         }
       }
     },
+    "/api/statistics/years": {
+      "get": {
+        "operationId": "getAnnualGenerationStatistics",
+        "summary": "Get generation data for five complete years plus the current year to date",
+        "description": "Includes the last five complete years and the current year through today in Europe/Madrid. Returns the REE generation structure with annual MWh values classified as Renovable or No-Renovable, plus the source total. Results are cached in KV for 30 minutes and refreshed on a Madrid date change; a failed forced refresh returns existing cache with cacheStatus stale.",
+        "tags": ["Electricity data"],
+        "parameters": [{ "$ref": "#/components/parameters/Refresh" }],
+        "responses": {
+          "200": {
+            "description": "Annual REE generation payload and year range",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["source", "cacheStatus", "cachedAt", "startYear", "endYear", "endDate", "payload"],
+                  "properties": {
+                    "source": { "type": "string", "const": "ree" },
+                    "cacheStatus": { "type": "string", "enum": ["hit", "miss", "stale"] },
+                    "cachedAt": { "type": "string", "format": "date-time" },
+                    "startYear": { "type": "integer" },
+                    "endYear": { "type": "integer" },
+                    "endDate": { "type": "string", "format": "date", "description": "Requested cutoff date; upstream generation may lag behind this date." },
+                    "payload": { "type": "object", "additionalProperties": true }
+                  }
+                }
+              }
+            }
+          },
+          "405": { "$ref": "#/components/responses/Error" },
+          "502": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
     "/api/connectors": {
       "get": {
         "operationId": "listDemoConnectors",

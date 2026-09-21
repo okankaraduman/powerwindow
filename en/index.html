@@ -150,6 +150,8 @@
             <div class="site-menu">
               <div class="site-menu-group">
                 <span class="site-menu-label">Prices & guides</span>
+                <a href="/en/home-electricity-use-spain">Home electricity use</a>
+                <a href="/en/electricity-charges-spain">Electricity charges explained</a>
                 <a href="/en/electricity-price-spain-today">Today’s electricity prices</a>
                 <a href="/en/electricity-price-spain-tomorrow">Tomorrow’s electricity prices</a>
                 <a href="/en/ev-charging-electricity-price-spain">EV charging guide</a>
@@ -179,7 +181,7 @@
           <div class="appliance-choices" role="group" aria-label="Common appliances"><button type="button" class="appliance-choice" data-appliance-id="washing-machine" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="13" r="5"/><path d="M4 7h16M7 5h.01M10 5h.01M8 13c2-3 5 3 8 0"/></svg><span>Washing machine</span></button><button type="button" class="appliance-choice" data-appliance-id="dishwasher" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 8h16M7 5.5h.01M10 5.5h.01M8 12v5M12 12v5M16 12v5M7 18h10"/></svg><span>Dishwasher</span></button><button type="button" class="appliance-choice" data-appliance-id="ev-wallbox" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 8 2-4h8l2 4M5 8h14l1 8H4l1-8ZM6 16v3M18 16v3M7 11h.01M17 11h.01M12 9l-2 4h4l-2 3"/></svg><span>Electric vehicle</span></button><button type="button" class="appliance-choice" data-appliance-id="air-conditioning" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="8" rx="2"/><path d="M6 9h12M8 15v4M12 15v6M16 15v4"/></svg><span>Air conditioning</span></button></div>
           <div class="setup-fields"><label class="field">
             <span>Appliance</span>
-            <select id="applianceInput">
+            <select id="applianceInput" aria-describedby="applianceEstimateNote">
               <option value="0.8">Dishwasher - 0.8 kW</option>
               <option value="1.2">Washing machine - 1.2 kW</option>
               <option value="2.2">Dryer - 2.2 kW</option>
@@ -189,7 +191,11 @@
               <option value="7.4">EV home charger - 7.4 kW</option>
               <option value="11">EV three-phase - 11.0 kW</option>
               <option value="1.5">Heat pump - 1.5 kW</option>
+              <option value="1.5">Electric storage water heater - 1.5 kW</option>
+              <option value="2">Electric oven - 2 kW</option>
+              <option value="2">Electric room heater - 2 kW</option>
             </select>
+            <small id="applianceEstimateNote">Preset power is approximate; the estimate assumes a constant load. Set the duration for your actual use. Thermostat-controlled appliances can consume less.</small>
           </label><label class="field">
             <span>Duration</span>
             <select id="durationInput">
@@ -469,6 +475,7 @@
           </p>
         </div>
         <div class="source-grid">
+          <a href="/en/home-electricity-use-spain"><strong>What uses the most electricity at home in Spain?</strong><small>Water heating, cooking, laundry, cooling, and continuous household loads.</small></a>
           <a href="/en/electricity-price-spain-today">
             <strong>Electricity price today</strong>
             <small>Check hourly PVPC, the minimum, maximum, and cost examples for today.</small>

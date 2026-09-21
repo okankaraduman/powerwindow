@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Power Window" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <title>Estadísticas de precio luz y renovables en España | Power Window</title>
+    <title>Histórico y evolución del PVPC en España | Power Window</title>
     <meta
       name="description"
       content="Compara verano e invierno con precios PVPC medios por hora, mix de generación renovable y señales estacionales del sistema eléctrico español."
@@ -20,7 +20,7 @@
     <meta property="og:locale" content="es_ES" />
     <meta property="og:locale:alternate" content="en_GB" />
     <meta property="og:site_name" content="Power Window" />
-    <meta property="og:title" content="Estadísticas de precio luz y renovables en España" />
+    <meta property="og:title" content="Histórico y evolución del PVPC en España" />
     <meta
       property="og:description"
       content="Datos estacionales de PVPC, renovables y mix de generación para entender cuándo conviene mover consumo flexible."
@@ -28,7 +28,7 @@
     <meta property="og:url" content="https://powerwindow.energy/statistics" />
     <meta property="og:image" content="https://powerwindow.energy/store/assets/feature-graphic.png" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Estadísticas de precio luz y renovables en España" />
+    <meta name="twitter:title" content="Histórico y evolución del PVPC en España" />
     <meta
       name="twitter:description"
       content="Compara verano e invierno con datos PVPC y generación renovable."
@@ -55,10 +55,10 @@
             "@type": "WebPage",
             "@id": "https://powerwindow.energy/statistics#webpage",
             "url": "https://powerwindow.energy/statistics",
-            "name": "Estadísticas de precio luz y renovables en España",
+            "name": "Histórico y evolución del PVPC en España",
             "description": "Comparativa estacional de precios PVPC y generación renovable en España.",
             "inLanguage": "es",
-            "dateModified": "2026-09-04",
+            "dateModified": "2026-09-21",
             "isPartOf": {
               "@id": "https://powerwindow.energy/#website"
             }
@@ -142,6 +142,7 @@
             <div class="site-menu">
               <div class="site-menu-group">
                 <span class="site-menu-label">Precios y guías</span>
+                <a href="/consumo-electrico-hogar">Consumo eléctrico en casa</a>
                 <a href="/precio-luz-hoy">Precio de la luz hoy</a>
                 <a href="/precio-luz-manana">Precio de la luz mañana</a>
                 <a href="/precio-luz-coche-electrico">Guía para cargar el coche</a>
@@ -164,7 +165,7 @@
 
       <section class="planner-panel stats-filter-panel" aria-label="Controles de estadísticas">
         <div class="planner-copy">
-          <h1>Estadísticas de precio de la luz y renovables en España</h1>
+          <h1>Histórico del PVPC y generación eléctrica en España</h1>
         </div>
         <div class="stats-controls">
           <button id="statsRefreshButton" class="primary-button refresh-button" type="button">Actualizar</button>
@@ -278,6 +279,16 @@
               decidir la hora real de una carga o electrodoméstico.
             </p>
           </article>
+        </div>
+      </section>
+
+      <section class="chart-section seo-section" aria-labelledby="historico-pvpc">
+        <div class="section-heading"><div><h2 id="historico-pvpc">Evolución del PVPC: cómo interpretar el histórico</h2></div></div>
+        <div class="method-grid">
+          <article class="method-card"><h3>Compara periodos y unidades equivalentes</h3><p>Estas gráficas comparan el precio PVPC medio por hora entre verano e invierno. Antes de interpretar una diferencia, revisa las fechas y si el periodo está completo. Un verano parcial y un invierno completo no describen exactamente la misma cobertura. Los precios se muestran en €/kWh; para convertir €/MWh a €/kWh, divide entre 1.000.</p></article>
+          <article class="method-card"><h3>La media histórica no es tu precio pagado</h3><p>Una media de precios describe el periodo observado. Tu coste depende también del consumo de cada hora: multiplicar los kWh horarios por sus precios y sumar los resultados permite estimar el componente de energía. El término de potencia y los demás conceptos del recibo requieren un cálculo separado.</p></article>
+          <article class="method-card"><h3>Ten en cuenta el cambio de cálculo de 2024</h3><p>Desde enero de 2024, el cálculo del PVPC incorpora una referencia a mercados a plazo. Una comparación con años anteriores debe tener en cuenta ese cambio de metodología. Consulta la <a href="https://www.ree.es/es/operacion/sistema-electrico/pvpc">explicación del PVPC de Red Eléctrica</a> antes de atribuir toda la evolución al mercado diario.</p></article>
+          <article class="method-card"><h3>Usa el histórico para entender, y el día para planificar</h3><p>La curva estacional ayuda a reconocer patrones; no predice la hora más barata de mañana. Para programar una lavadora o una carga, consulta el <a href="/precio-luz-hoy">PVPC de hoy</a> o el <a href="/precio-luz-manana">precio de mañana</a> cuando esté publicado. La gráfica anual de esta página representa generación eléctrica, no una serie anual de precios PVPC.</p></article>
         </div>
       </section>
 

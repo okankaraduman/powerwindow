@@ -1,6 +1,6 @@
 export const CATALOG_METADATA = Object.freeze({
-  version: 1,
-  lastReviewed: "2026-09-04",
+  version: 2,
+  lastReviewed: "2026-09-21",
   vehiclePublicationStatus: "planner-only",
   vehiclePublicationNote:
     "Battery values are approximate planner defaults. Verify each variant against a primary manufacturer source before publishing an indexable vehicle page.",
@@ -16,6 +16,9 @@ export const APPLIANCES = Object.freeze([
   catalogItem("ev-wallbox", 7.4, 3, "Cargador doméstico de coche eléctrico", "Home EV wallbox"),
   catalogItem("ev-three-phase", 11, 2, "Carga trifásica de coche eléctrico", "Three-phase EV charging"),
   catalogItem("heat-pump", 1.5, 4, "Bomba de calor", "Heat pump"),
+  catalogItem("water-heater", 1.5, 2, "Termo eléctrico de acumulación", "Electric storage water heater"),
+  catalogItem("oven", 2, 1, "Horno eléctrico", "Electric oven"),
+  catalogItem("electric-heater", 2, 2, "Calefactor eléctrico", "Electric room heater"),
 ]);
 
 export const VEHICLE_BRANDS = deepFreeze({

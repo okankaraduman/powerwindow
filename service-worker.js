@@ -1,4 +1,4 @@
-const CACHE_NAME = "power-window-v60";
+const CACHE_NAME = "power-window-v61";
 const APP_ASSETS = [
   "/",
   "/index.html",
@@ -20,6 +20,12 @@ const APP_ASSETS = [
   "/en/index.html",
   "/en/compare",
   "/en/compare.html",
+  "/consumo-electrico-hogar",
+  "/consumo-electrico-hogar.html",
+  "/en/home-electricity-use-spain",
+  "/en/home-electricity-use-spain.html",
+  "/en/electricity-charges-spain",
+  "/en/electricity-charges-spain.html",
   "/en/electricity-price-spain-today",
   "/en/electricity-price-spain-today.html",
   "/en/electricity-price-spain-tomorrow",

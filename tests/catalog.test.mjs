@@ -8,7 +8,7 @@ test("catalog keeps the existing planner coverage in one source", () => {
     models.map((model) => ({ brand, ...model }))
   );
 
-  assert.equal(APPLIANCES.length, 9);
+  assert.equal(APPLIANCES.length, 12);
   assert.equal(Object.keys(VEHICLE_BRANDS).length, 24);
   assert.equal(vehicles.length, 79);
   assert.ok(APPLIANCES.every((item) => item.id && item.kw > 0 && item.defaultDuration > 0));

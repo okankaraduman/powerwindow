@@ -18,6 +18,11 @@ Power Window is a free, independent planning tool. It is not affiliated with or 
 - [Mission and sources](https://powerwindow.energy/mission): Purpose, evidence, examples, and source links.
 - [Privacy](https://powerwindow.energy/privacy): Data handling, analytics, permissions, and contact details.
 
+- [Electricity charges in Spain](https://powerwindow.energy/en/electricity-charges-spain): English guide to kWh, contracted power, tariff types, and illustrative energy costs.
+
+- [Consumo eléctrico del hogar](https://powerwindow.energy/consumo-electrico-hogar): Spanish guide to household electricity uses and which loads can be scheduled.
+- [Home electricity use](https://powerwindow.energy/en/home-electricity-use-spain): English guide with IDAE consumption shares and practical planning advice.
+
 ## Machine-readable access
 
 - [OpenAPI specification](https://powerwindow.energy/openapi.json): Public contract for the Power Window API.

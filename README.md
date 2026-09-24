@@ -119,6 +119,23 @@ energy needed = battery kWh * ((target % - current %) / 100)
 Charger power is in kW. Energy added is in kWh. Preset vehicle battery sizes are approximate,
 and the `Custom` option lets users enter a different battery size for missing models or trims.
 
+## Contract-first planning and provider offers
+
+The planner stores the visitor's entered energy rates only in local browser storage. A flat
+contract has no timing savings; a three-period contract uses the entered peak, shoulder and
+valley rates on standard weekdays and weekend valley hours. National holidays are not yet
+included. Hourly mode requires actual REE PVPC data, so spot or demonstration data cannot
+produce a contract savings claim. The hourly chart uses contract rates after entry and is
+labelled as a market reference before entry.
+
+`GET /api/provider-offers` checks public Octopus Energy and TotalEnergies prices each day
+through a Worker cron, and on demand when the comparator is opened after the cache expires.
+The Worker caches checks for 24 hours and serves a previously verified
+offer for no longer than 72 hours. Parsing fails closed when a provider changes its markup or
+required prices are missing. TotalEnergies rates are split by annual consumption tier; the
+comparator only shows the tier matching the visitor's monthly kWh estimate. Public offers are
+new-customer prices and do not replace the customer's existing contract prices.
+
 ## Data
 
 The backend requests:

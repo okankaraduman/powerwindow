@@ -78,6 +78,31 @@
         }
       }
     },
+    "/api/provider-offers": {
+      "get": {
+        "operationId": "getProviderOffers",
+        "summary": "Get recently verified public electricity offers",
+        "description": "Checks published Octopus Energy and TotalEnergies prices at most once per day. Offers older than 72 hours are omitted. These are public offers, not a customer's existing contract prices.",
+        "tags": ["Electricity data"],
+        "responses": {
+          "200": {
+            "description": "Recently verified offers; an empty array means no source passed verification",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "checkedAt": { "type": ["string", "null"], "format": "date-time" },
+                    "offers": { "type": "array", "items": { "type": "object" } }
+                  },
+                  "required": ["offers"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/market/month": {
       "get": {
         "operationId": "getMarketMonthToDate",

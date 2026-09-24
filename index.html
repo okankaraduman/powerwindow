@@ -10,7 +10,7 @@
     <title>Mejor hora para usar electricidad en España | Power Window</title>
     <meta
       name="description"
-      content="Consulta precios PVPC por horas y encuentra la mejor hora para cargar el coche eléctrico, poner lavadora o mover consumos flexibles en España."
+      content="Planifica lavadora, coche eléctrico y otros consumos con los precios de tu contrato de luz. Consulta también el PVPC horario en España."
     />
     <link rel="canonical" href="https://powerwindow.energy/" />
     <link rel="alternate" hreflang="es" href="https://powerwindow.energy/" />
@@ -23,7 +23,7 @@
     <meta property="og:title" content="Mejor hora para usar electricidad en España" />
     <meta
       property="og:description"
-      content="Planifica coche eléctrico, lavadora, lavavajillas y climatización con precios PVPC horarios de España."
+      content="Planifica coche eléctrico y electrodomésticos según tu contrato: precio fijo, tres periodos o PVPC horario."
     />
     <meta property="og:url" content="https://powerwindow.energy/" />
     <meta property="og:image" content="https://powerwindow.energy/store/assets/feature-graphic.png" />
@@ -31,7 +31,7 @@
     <meta name="twitter:title" content="Mejor hora para usar electricidad en España" />
     <meta
       name="twitter:description"
-      content="Encuentra horas baratas para consumos flexibles con datos PVPC horarios."
+      content="Encuentra horas que ahorran según tu contrato eléctrico."
     />
     <meta name="twitter:image" content="https://powerwindow.energy/store/assets/feature-graphic.png" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
@@ -99,7 +99,7 @@
                 "name": "¿Cuál es la mejor hora para usar electricidad en España?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "La mejor hora cambia cada día. Power Window ordena las horas del PVPC publicado por Red Eléctrica y recomienda la ventana más barata para la duración y el consumo elegidos."
+                  "text": "Depende de tu contrato. Con precio fijo 24 horas no hay ahorro por cambiar de hora. Con tres periodos se usan tus precios punta, llano y valle. Para PVPC se consulta la serie horaria de Red Eléctrica."
                 }
               },
               {
@@ -107,7 +107,7 @@
                 "name": "¿Sirve para cargar un coche eléctrico?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Sí. Puedes elegir marca, modelo, batería, nivel actual y objetivo de carga para estimar cuántas horas necesitas y buscar la ventana PVPC más barata."
+                  "text": "Sí. Puedes estimar la duración con la batería y el cargador, y comparar horas con los precios de tu contrato."
                 }
               },
               {
@@ -171,8 +171,8 @@
     <main class="app-shell planner-app" id="main-content" tabindex="-1">
 
       <header class="planner-heading">
-        <div><h1>Tu consumo, a la mejor hora.</h1><p>Encuentra las horas más baratas para usar electricidad en España.</p></div>
-        <a class="data-source-link" href="/methodology">Datos PVPC · Red Eléctrica <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+        <div><h1>Tu consumo, según tu contrato.</h1><p>Descubre si cambiar la hora reduce lo que pagas por electricidad.</p></div>
+        <a class="data-source-link" href="/methodology">Referencia PVPC · Red Eléctrica <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
       </header>
       <div class="planner-workspace">
         <section class="planner-panel planner-setup" aria-labelledby="setup-title">
@@ -216,6 +216,16 @@
             <span>Fecha</span>
             <input id="dateInput" type="date" />
           </label></div>
+          <div class="contract-setup" id="contractSetup">
+            <label class="field"><span>¿Cómo te cobra la energía tu contrato?</span><select id="contractTypeInput"><option value="unknown">Aún no lo sé</option><option value="flat">Precio fijo 24 h</option><option value="period">Tres periodos</option><option value="hourly">Precio horario / PVPC</option></select></label>
+            <div class="contract-rates" id="contractRates">
+              <label class="field contract-flat"><span>Precio de energía €/kWh</span><input id="contractFlatInput" type="number" min="0.001" max="1" step="0.001" inputmode="decimal" placeholder="Según tu factura" /></label>
+              <label class="field contract-period"><span>Punta €/kWh</span><input id="contractPeakInput" type="number" min="0.001" max="1" step="0.001" inputmode="decimal" placeholder="Según tu factura" /></label>
+              <label class="field contract-period"><span>Llano €/kWh</span><input id="contractMidInput" type="number" min="0.001" max="1" step="0.001" inputmode="decimal" placeholder="Según tu factura" /></label>
+              <label class="field contract-period"><span>Valle €/kWh</span><input id="contractValleyInput" type="number" min="0.001" max="1" step="0.001" inputmode="decimal" placeholder="Según tu factura" /></label>
+            </div>
+            <small id="contractHint">Introduce los precios de energía de tu contrato para calcular el ahorro. Las ofertas públicas pueden diferir de tu contrato.</small>
+          </div>
           <p class="auto-update-note">El plan se actualiza al cambiar tus opciones.</p>
           <a class="see-plan-link" href="#recommendationTitle">Ver mi mejor hora <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
 
@@ -261,7 +271,7 @@
         </section>
         <div class="planner-results" id="plan-results" tabindex="-1">
           <section class="hero-panel recommendation-panel" aria-label="Tu mejor ventana">
-            <div class="recommendation-top"><span class="recommendation-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Tu mejor ventana</span><span id="dataStatus" role="status">Conectando</span></div>
+            <div class="recommendation-top"><span class="recommendation-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Resultado de tu contrato</span><span id="dataStatus" role="status">Conectando</span></div>
             <div class="recommendation-answer" aria-live="polite" aria-atomic="true"><h2 id="recommendationTitle">Buscando tu mejor hora…</h2><p id="bestReason">Consultando los precios horarios de Red Eléctrica.</p></div>
             <div class="recommendation-bottom"><div class="recommendation-cost"><span>Coste estimado del consumo</span><strong id="costEstimate">—</strong><small id="costHint">Solo componente de energía</small></div><div class="reminder-action"><button id="reminderButton" class="secondary-button" type="button" disabled>Recordarme</button><small id="reminderStatus">Sin recordatorio</small></div></div>
           <a class="mobile-edit-plan" href="#setup-title">Cambiar aparato o día<span aria-hidden="true">↓</span></a></section>
@@ -434,23 +444,23 @@
             <h2 id="seo-home-title">Precio de la luz por horas, coche eléctrico y consumo flexible</h2>
           </div>
           <p class="section-note">
-            Power Window usa datos horarios PVPC publicados por Red Eléctrica para ayudar a mover
-            consumos flexibles como coche eléctrico, lavadora, lavavajillas o climatización.
+            Power Window usa los precios introducidos de tu contrato para planificar consumos
+            flexibles. Consulta el PVPC de Red Eléctrica cuando eliges una tarifa horaria.
           </p>
         </div>
         <div class="method-grid seo-faq-grid">
           <article class="method-card">
             <h3>¿Cuál es la mejor hora para usar electricidad en España?</h3>
             <p>
-              No hay una única hora buena todos los días. La app compara la serie horaria PVPC del
-              día seleccionado y busca la ventana más barata para la duración elegida.
+              Depende de tu contrato. Con un precio fijo 24 h todas cuestan lo mismo. Con tres
+              periodos o PVPC, la app compara el coste de cada ventana disponible.
             </p>
           </article>
           <article class="method-card">
             <h3>¿Sirve para cargar un coche eléctrico?</h3>
             <p>
               Sí. El planificador de coche eléctrico estima la energía necesaria desde batería,
-              porcentaje actual, objetivo y potencia del cargador, y luego busca las horas más baratas.
+              porcentaje actual, objetivo y potencia del cargador, y después calcula el coste según tu contrato.
             </p>
           </article>
           <article class="method-card method-card--wide">

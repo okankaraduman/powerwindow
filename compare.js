@@ -42,10 +42,6 @@ const compareText = COMPARE_IS_ES
       savingHint: "Diferencia mensual estimada entre la opción más barata y la más cara.",
       pvpcHint: "Estimación regulada moviendo los kWh flexibles a las horas más baratas del día.",
       flexHint: "Consumo mensual que el comparador recoloca en valle o en horas baratas.",
-      noLinks: "Sin enlaces",
-      withLinks: " enlaces",
-      affiliateNoLinks: "No hay acuerdos de referencia activos en esta versión.",
-      affiliateWithLinks: "Las ofertas con enlace deben marcarse como referido o afiliado.",
       monthly: "mes",
       annual: "año",
       energy: "Energía",
@@ -65,8 +61,6 @@ const compareText = COMPARE_IS_ES
       estimate: "Estimación",
       versusWorst: "menos que la opción más cara",
       bestBadge: "Mejor",
-      cta: "Ver oferta",
-      noCta: "Sin enlace comercial",
       sampleFlat: "Oferta fija editable",
       sampleThree: "Oferta tres periodos editable",
       sampleEv: "Oferta nocturna para EV editable",
@@ -82,12 +76,15 @@ const compareText = COMPARE_IS_ES
       valleyRate: "Valle €/kWh",
       powerDay: "Potencia €/kW/día",
       monthlyFee: "Cuota €/mes",
-      referralUrl: "Enlace referido",
       remove: "Eliminar",
       pvpcNote: "PVPC usa precios horarios publicados por REE; periodos simplificados 2.0TD sin festivos.",
       fallbackNote: "REE no devolvió PVPC útil, así que usamos un supuesto editable de referencia.",
       updated: "Actualizado",
       resetDone: "Supuestos restablecidos",
+      offersLoading: "Comprobando precios publicados por las comercializadoras…",
+      offersUnavailable: "No hay ofertas verificadas recientemente. Consulta las fuentes o introduce una oferta manualmente.",
+      importedSource: "Oferta importada",
+      staleSource: "Verificación caducada; no se incluye en el ranking. Edita los precios para usarla como supuesto manual.",
     }
   : {
       loading: "Calculating comparison...",
@@ -106,10 +103,6 @@ const compareText = COMPARE_IS_ES
       savingHint: "Estimated monthly difference between the cheapest and most expensive option.",
       pvpcHint: "Regulated estimate moving flexible kWh into the day's cheapest hours.",
       flexHint: "Monthly usage the comparator shifts to valley or cheap hours.",
-      noLinks: "No links",
-      withLinks: " links",
-      affiliateNoLinks: "No active referral agreements in this version.",
-      affiliateWithLinks: "Offers with links should be labelled as referral or affiliate.",
       monthly: "month",
       annual: "year",
       energy: "Energy",
@@ -129,8 +122,6 @@ const compareText = COMPARE_IS_ES
       estimate: "Estimate",
       versusWorst: "less than the most expensive option",
       bestBadge: "Best",
-      cta: "View offer",
-      noCta: "No commercial link",
       sampleFlat: "Editable flat offer",
       sampleThree: "Editable three-period offer",
       sampleEv: "Editable EV night offer",
@@ -146,131 +137,18 @@ const compareText = COMPARE_IS_ES
       valleyRate: "Valley €/kWh",
       powerDay: "Power €/kW/day",
       monthlyFee: "Fee €/month",
-      referralUrl: "Referral link",
       remove: "Remove",
       pvpcNote: "PVPC uses hourly prices published by REE; simplified 2.0TD periods without holidays.",
       fallbackNote: "REE did not return usable PVPC, so we are using an editable reference assumption.",
       updated: "Updated",
       resetDone: "Assumptions reset",
+      offersLoading: "Checking prices published by providers…",
+      offersUnavailable: "No recently verified offers are available. Check the sources or enter an offer manually.",
+      importedSource: "Imported offer",
+      staleSource: "Verification expired; excluded from the ranking. Edit prices to use it as a manual assumption.",
     };
 
-const PUBLIC_OFFERS = [
-  {
-    id: "octopus-relax-2026-07-21",
-    company: "Octopus Energy",
-    name: "Octopus Relax",
-    type: "flat",
-    flatRate: 0.122,
-    peakRate: 0.122,
-    midRate: 0.122,
-    valleyRate: 0.122,
-    powerDay: 0.124,
-    monthlyFee: 0,
-    taxMode: "included",
-    checkedAt: "2026-07-21",
-    sourceUrl: "https://octopusenergy.es/precios",
-    note: {
-      es: "Precio fijo 24h. La página mostraba precios con impuestos.",
-      en: "Flat 24h price. The page showed tax-included prices.",
-    },
-  },
-  {
-    id: "octopus-3-2026-07-21",
-    company: "Octopus Energy",
-    name: "Octopus 3",
-    type: "period",
-    flatRate: 0.116,
-    peakRate: 0.195,
-    midRate: 0.116,
-    valleyRate: 0.085,
-    powerDay: 0.124,
-    monthlyFee: 0,
-    taxMode: "included",
-    checkedAt: "2026-07-21",
-    sourceUrl: "https://octopusenergy.es/precios",
-    note: {
-      es: "Tres periodos. Potencia combinada P1+P2.",
-      en: "Three periods. Combined P1+P2 power term.",
-    },
-  },
-  {
-    id: "octopus-flexi-2026-07-21",
-    company: "Octopus Energy",
-    name: "Octopus Flexi",
-    type: "flat",
-    flatRate: 0.129,
-    peakRate: 0.129,
-    midRate: 0.129,
-    valleyRate: 0.129,
-    powerDay: 0.078,
-    monthlyFee: 3.75,
-    taxMode: "included",
-    checkedAt: "2026-07-21",
-    sourceUrl: "https://octopusenergy.es/precios",
-    note: {
-      es: "Precio medio del último mes + costes de gestión.",
-      en: "Last-month average price + management fee.",
-    },
-  },
-  {
-    id: "totalenergies-siempre-2026-07-21",
-    company: "TotalEnergies",
-    name: "A tu Aire Siempre Luz",
-    type: "flat",
-    flatRate: 0.0999,
-    peakRate: 0.0999,
-    midRate: 0.0999,
-    valleyRate: 0.0999,
-    powerDay: 0.172548,
-    monthlyFee: 0,
-    taxMode: "preTax",
-    checkedAt: "2026-07-21",
-    sourceUrl: "https://www.totalenergies.es/es/hogares/tarifas-luz-gas",
-    note: {
-      es: "Precio fijo anual 24h. Precios sin impuestos.",
-      en: "Flat annual 24h price. Prices before tax.",
-    },
-  },
-  {
-    id: "totalenergies-programa-2026-07-21",
-    company: "TotalEnergies",
-    name: "A tu Aire Programa tu Ahorro Luz",
-    type: "period",
-    flatRate: 0.092051,
-    peakRate: 0.160301,
-    midRate: 0.092051,
-    valleyRate: 0.064852,
-    powerDay: 0.172548,
-    monthlyFee: 0,
-    taxMode: "preTax",
-    checkedAt: "2026-07-21",
-    sourceUrl: "https://www.totalenergies.es/es/hogares/tarifas-luz-gas",
-    note: {
-      es: "Valle, llano y punta. Precios sin impuestos.",
-      en: "Valley, shoulder, and peak. Prices before tax.",
-    },
-  },
-  {
-    id: "endesa-conecta-3p-2026-07-21",
-    company: "Endesa",
-    name: "Conecta 3 periodos",
-    type: "period",
-    flatRate: 0.11781,
-    peakRate: 0.18621,
-    midRate: 0.11781,
-    valleyRate: 0.09441,
-    powerDay: COMPARE_DEFAULT_POWER_DAY,
-    powerEstimated: true,
-    monthlyFee: 0,
-    taxMode: "preTax",
-    checkedAt: "2026-07-21",
-    sourceUrl: "https://www.endesa.com/es/luz-y-gas/luz",
-    note: {
-      es: "La fuente mostraba precios de energía sin impuestos; revisa la potencia antes de contratar.",
-      en: "The source showed energy prices before tax; verify the power term before signing.",
-    },
-  },
-];
+let PUBLIC_OFFERS = [];
 
 const compareState = {
   settings: loadCompareSettings(),
@@ -307,8 +185,6 @@ const compareEls = {
   pvpcHint: document.querySelector("#pvpcHint"),
   flexibleShare: document.querySelector("#flexibleShare"),
   flexibleHint: document.querySelector("#flexibleHint"),
-  affiliateStatus: document.querySelector("#affiliateStatus"),
-  affiliateHint: document.querySelector("#affiliateHint"),
   tariffEditor: document.querySelector("#tariffEditor"),
   results: document.querySelector("#comparisonResults"),
   resultsNote: document.querySelector("#compareResultsNote"),
@@ -318,11 +194,32 @@ initCompare();
 
 function initCompare() {
   populateSettingsInputs();
-  renderOfferLibrary();
+  compareEls.offerLibrary.textContent = compareText.offersLoading;
   renderTariffEditor();
   bindCompareEvents();
   renderCompare();
   loadPvpcRates();
+  loadPublicOffers();
+}
+
+async function loadPublicOffers() {
+  const url = new URL(`${COMPARE_BACKEND_API_BASE.replace(/\/$/, "")}/provider-offers`, window.location.origin);
+  try {
+    const response = await fetch(url, { headers: { Accept: "application/json" } });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    PUBLIC_OFFERS = Array.isArray(data.offers)
+      ? data.offers.filter((offer) => isRecentlyVerified(offer.checkedAt) && isSafeUrl(offer.sourceUrl))
+      : [];
+  } catch {
+    PUBLIC_OFFERS = [];
+  }
+  renderOfferLibrary();
+}
+
+function isRecentlyVerified(checkedAt) {
+  const age = Date.now() - Date.parse(checkedAt);
+  return Number.isFinite(age) && age >= 0 && age < 72 * 60 * 60 * 1000;
 }
 
 function bindCompareEvents() {
@@ -367,7 +264,14 @@ function populateSettingsInputs() {
 function handleSettingsInput() {
   compareState.settings = readCompareSettingsFromInputs();
   saveCompareSettings();
+  renderOfferLibrary();
   renderCompare();
+}
+
+function offerFitsUsage(offer) {
+  const annualKwh = Number(compareState.settings.monthlyKwh) * 12;
+  return (!Number.isFinite(offer.minAnnualKwh) || annualKwh >= offer.minAnnualKwh) &&
+    (!Number.isFinite(offer.maxAnnualKwh) || annualKwh < offer.maxAnnualKwh);
 }
 
 function handleCompareTaxRegionChange() {
@@ -392,10 +296,16 @@ function handleTariffInput(event) {
   const tariff = compareState.tariffs.find((item) => item.id === tariffId);
   if (!tariff) return;
 
-  if (field === "name" || field === "type" || field === "taxMode" || field === "referralUrl") {
+  if (field === "name" || field === "type" || field === "taxMode") {
     tariff[field] = target.value;
   } else {
     tariff[field] = readInputNumber(target, 0);
+  }
+
+  if (tariff.sourceCheckedAt) {
+    tariff.sourceCheckedAt = "";
+    tariff.sourceUrl = "";
+    target.closest(".tariff-editor-card")?.querySelector(".imported-source-note")?.remove();
   }
 
   saveCompareTariffs();
@@ -425,7 +335,6 @@ function addTariff() {
     powerDay: COMPARE_DEFAULT_POWER_DAY,
     monthlyFee: 0,
     taxMode: "preTax",
-    referralUrl: "",
   };
   compareState.tariffs.push(tariff);
   saveCompareTariffs();
@@ -549,6 +458,7 @@ function renderTariffEditor() {
               ${compareText.remove}
             </button>
           </div>
+          ${tariff.sourceCheckedAt ? `<small class="imported-source-note">${compareText.importedSource}: ${formatShortDate(tariff.sourceCheckedAt)}. ${isRecentlyVerified(tariff.sourceCheckedAt) ? "" : compareText.staleSource}</small>` : ""}
           <label class="field">
             <span>${compareText.name}</span>
             <input data-tariff-id="${escapeHTML(tariff.id)}" data-field="name" type="text" value="${escapeAttr(tariff.name)}" />
@@ -576,17 +486,6 @@ function renderTariffEditor() {
             ${rateInput(tariff, "powerDay", compareText.powerDay)}
             ${rateInput(tariff, "monthlyFee", compareText.monthlyFee)}
           </div>
-          <label class="field">
-            <span>${compareText.referralUrl}</span>
-            <input
-              data-tariff-id="${escapeHTML(tariff.id)}"
-              data-field="referralUrl"
-              type="url"
-              inputmode="url"
-              value="${escapeAttr(tariff.referralUrl || "")}"
-              placeholder="https://"
-            />
-          </label>
         </article>
       `
     )
@@ -594,7 +493,10 @@ function renderTariffEditor() {
 }
 
 function renderOfferLibrary() {
-  compareEls.offerLibrary.innerHTML = PUBLIC_OFFERS.map(publicOfferCard).join("");
+  const matchingOffers = PUBLIC_OFFERS.filter(offerFitsUsage);
+  compareEls.offerLibrary.innerHTML = matchingOffers.length
+    ? matchingOffers.map(publicOfferCard).join("")
+    : `<p>${compareText.offersUnavailable}</p>`;
 }
 
 function publicOfferCard(offer) {
@@ -640,7 +542,8 @@ function tariffFromPublicOffer(offer) {
     taxMode: offer.taxMode,
     sourceUrl: offer.sourceUrl,
     sourceCheckedAt: offer.checkedAt,
-    referralUrl: "",
+    minAnnualKwh: offer.minAnnualKwh,
+    maxAnnualKwh: offer.maxAnnualKwh,
   });
 }
 
@@ -668,7 +571,6 @@ function renderCompare(statusMessage = "") {
   const savings = worst.total - best.total;
   const pvpc = results.find((result) => result.id === "pvpc");
   const settings = normalizeSettings(compareState.settings);
-  const referralCount = compareState.tariffs.filter((tariff) => isSafeUrl(tariff.referralUrl)).length;
 
   compareEls.heroTitle.textContent = `${compareText.bestPrefix}${best.name}`;
   compareEls.heroReason.textContent = compareText.bestReason;
@@ -683,19 +585,11 @@ function renderCompare(statusMessage = "") {
   compareEls.pvpcHint.textContent = `${formatRate(compareState.pvpc.flexRate)} ${compareText.pvpcHint}`;
   compareEls.flexibleShare.textContent = `${Math.round((settings.flexKwh / settings.monthlyKwh) * 100)}%`;
   compareEls.flexibleHint.textContent = `${settings.flexKwh.toFixed(0)} kWh/${compareText.monthly}. ${compareText.flexHint}`;
-  compareEls.affiliateStatus.textContent =
-    referralCount > 0 ? `${referralCount}${compareText.withLinks}` : compareText.noLinks;
-  compareEls.affiliateHint.textContent =
-    referralCount > 0 ? compareText.affiliateWithLinks : compareText.affiliateNoLinks;
   compareEls.results.innerHTML = results.map((result, index) => resultCard(result, index, worst)).join("");
 }
 
 function resultCard(result, index, worst) {
-  const url = isSafeUrl(result.referralUrl) ? result.referralUrl : "";
   const saving = worst.total - result.total;
-  const cta = url
-    ? `<a class="primary-button compare-cta" href="${escapeAttr(url)}" target="_blank" rel="noopener sponsored nofollow">${compareText.cta}</a>`
-    : `<span class="compare-no-link">${compareText.noCta}</span>`;
 
   return `
     <article class="comparison-result-card ${index === 0 ? "best" : ""}">
@@ -716,7 +610,6 @@ function resultCard(result, index, worst) {
       </div>
       <div class="comparison-footer">
         <small>${formatMoney(saving)} ${compareText.versusWorst}</small>
-        ${cta}
       </div>
     </article>
   `;
@@ -726,7 +619,9 @@ function calculateResults() {
   const settings = normalizeSettings(compareState.settings);
   const usage = usageBreakdown(settings);
   const pvpcResult = calculatePvpcResult(settings, usage);
-  const tariffResults = compareState.tariffs.map((tariff) => calculateTariffResult(tariff, settings, usage));
+  const tariffResults = compareState.tariffs
+    .filter((tariff) => (!tariff.sourceCheckedAt || isRecentlyVerified(tariff.sourceCheckedAt)) && offerFitsUsage(tariff))
+    .map((tariff) => calculateTariffResult(tariff, settings, usage));
   return [pvpcResult, ...tariffResults].sort((a, b) => a.total - b.total);
 }
 
@@ -744,7 +639,6 @@ function calculatePvpcResult(settings, usage) {
     energyCost,
     powerCost: settings.powerKw * COMPARE_DEFAULT_POWER_DAY * COMPARE_DAYS_PER_MONTH,
     monthlyFee: 0,
-    referralUrl: "",
     settings,
     taxMode: "preTax",
   });
@@ -770,7 +664,6 @@ function calculateTariffResult(tariff, settings, usage) {
     energyCost,
     powerCost: settings.powerKw * tariff.powerDay * COMPARE_DAYS_PER_MONTH,
     monthlyFee: tariff.monthlyFee,
-    referralUrl: tariff.referralUrl,
     settings,
     taxMode: tariff.taxMode,
   });
@@ -996,7 +889,8 @@ function normalizeTariff(tariff) {
     taxMode: tariff.taxMode === "included" ? "included" : "preTax",
     sourceUrl: String(tariff.sourceUrl || ""),
     sourceCheckedAt: String(tariff.sourceCheckedAt || ""),
-    referralUrl: String(tariff.referralUrl || ""),
+    minAnnualKwh: tariff.minAnnualKwh == null ? null : Number(tariff.minAnnualKwh),
+    maxAnnualKwh: tariff.maxAnnualKwh == null ? null : Number(tariff.maxAnnualKwh),
   };
 }
 
@@ -1028,7 +922,6 @@ function defaultTariffs() {
       powerDay: COMPARE_DEFAULT_POWER_DAY,
       monthlyFee: 0,
       taxMode: "preTax",
-      referralUrl: "",
     },
     {
       id: "period-sample",
@@ -1041,7 +934,6 @@ function defaultTariffs() {
       powerDay: COMPARE_DEFAULT_POWER_DAY,
       monthlyFee: 0,
       taxMode: "preTax",
-      referralUrl: "",
     },
     {
       id: "ev-sample",
@@ -1054,7 +946,6 @@ function defaultTariffs() {
       powerDay: COMPARE_DEFAULT_POWER_DAY,
       monthlyFee: 0,
       taxMode: "preTax",
-      referralUrl: "",
     },
   ];
 }
@@ -1130,7 +1021,7 @@ function formatShortDate(value) {
     month: "short",
     year: "numeric",
     timeZone: "Europe/Madrid",
-  }).format(new Date(`${value}T12:00:00`));
+  }).format(new Date(value.length === 10 ? `${value}T12:00:00` : value));
 }
 
 function localized(value) {

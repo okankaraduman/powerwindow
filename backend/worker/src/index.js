@@ -1,4 +1,5 @@
 import { annualGenerationRange, annualGenerationPeriods, mergeAnnualGenerationPayloads, summarizeAnnualGeneration } from "../../../shared/annual-generation.mjs";
+import { getProviderOffers } from "./provider-offers.js";
 
 const MARKET_WIDGET = "mercados/precios-mercados-tiempo-real";
 const GENERATION_WIDGET = "generacion/estructura-generacion";
@@ -14,6 +15,9 @@ const REE_RANGE_CHUNK_DAYS = 30;
 const MINUTE = 60;
 
 export default {
+  async scheduled(controller, env) {
+    await getProviderOffers(env, fetch, controller.scheduledTime);
+  },
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
@@ -27,6 +31,12 @@ export default {
 
     if (url.pathname === "/api/market") {
       return handleMarket(request, env, url, ctx);
+    }
+
+    if (url.pathname === "/api/provider-offers") {
+      if (request.method !== "GET") return jsonResponse({ error: "Method not allowed" }, 405, request);
+      const result = await getProviderOffers(env);
+      return jsonResponse(result, 200, request);
     }
 
     if (url.pathname === "/api/market/month") {

@@ -99,14 +99,6 @@
                   "@type": "Answer",
                   "text": "Sí. Puedes introducir precios de energía, potencia, cuota mensual, impuestos y si el precio de la oferta aparece con impuestos incluidos o no."
                 }
-              },
-              {
-                "@type": "Question",
-                "name": "¿El ranking depende de enlaces de referido?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "No. El ranking se calcula por coste estimado. Los enlaces de referido, si existen, deben estar marcados y no deben decidir qué tarifa aparece como mejor."
-                }
               }
             ]
           }
@@ -178,8 +170,9 @@
             <input id="flexKwhInput" type="number" min="0" max="2500" step="1" value="140" />
           </label>
           <label class="field compact-field">
-            <span>Potencia kW</span>
+            <span>Potencia contratada (kW)</span>
             <input id="powerKwInput" type="number" min="1" max="20" step="0.1" value="4.6" />
+            <small>Figura en tu factura. El cálculo supone los mismos kW en punta y valle.</small>
           </label>
           <details class="site-disclosure compare-advanced">
             <summary>Reparto horario e impuestos</summary>
@@ -258,7 +251,7 @@
 
       <section class="dashboard-grid compare-kpi-grid">
         <article class="metric-card">
-          <span class="eyebrow">Ahorro estimado</span>
+          <span class="eyebrow">Diferencia entre escenarios</span>
           <strong id="compareSavings">--</strong>
           <small id="compareSavingsHint">Comparando mejor y peor resultado mensual.</small>
         </article>
@@ -271,11 +264,6 @@
           <span class="eyebrow">Consumo flexible</span>
           <strong id="flexibleShare">--</strong>
           <small id="flexibleHint">Parte del consumo que puede moverse a valle o a horas baratas.</small>
-        </article>
-        <article class="metric-card">
-          <span class="eyebrow">Aviso comercial</span>
-          <strong id="affiliateStatus">Sin enlaces</strong>
-          <small id="affiliateHint">No hay acuerdos de referencia activos en esta versión.</small>
         </article>
       </section>
 
@@ -308,26 +296,12 @@
             <h2>Añade una oferta publicada por una comercializadora</h2>
           </div>
           <p class="section-note">
-            Precios vistos en páginas públicas de las compañías. Verifica siempre la fuente antes
-            de contratar: las promociones, impuestos y servicios pueden cambiar.
+            Precios consultados en páginas públicas de Octopus Energy y TotalEnergies, con fecha de
+            verificación. Una oferta desaparece si no puede comprobarse durante 72 horas. Verifica
+            condiciones, descuentos y servicios antes de contratar.
           </p>
         </div>
         <div id="offerLibrary" class="offer-library-grid" aria-live="polite"></div>
-      </section>
-
-      <section class="method-grid">
-        <article class="method-card method-card--wide">
-          <h3>Los referidos pueden existir, pero no deben decidir el ranking.</h3>
-          <p>
-            Power Window puede usar enlaces de referencia o afiliación cuando un proveedor los ofrezca.
-            La comparación debe marcar esos enlaces, mantener visibles los supuestos y permitir ordenar por
-            coste estimado aunque una oferta no pague comisión.
-          </p>
-          <p>
-            Siguiente paso comercial: sustituir los ejemplos por una tabla de ofertas verificadas, con fecha
-            de actualización, términos básicos, permanencia, fuente del precio y enlace de referido cuando exista.
-          </p>
-        </article>
       </section>
 
       <section class="chart-section seo-section" aria-labelledby="compare-faq-title">
@@ -353,13 +327,6 @@
             <p>
               Sí. Introduce el precio de energía, potencia, cuota mensual e impuestos que ves en
               una oferta real, y marca si esos precios ya incluyen impuestos.
-            </p>
-          </article>
-          <article class="method-card method-card--wide">
-            <h3>¿El ranking depende de enlaces de referido?</h3>
-            <p>
-              No. El ranking debe salir del coste mensual estimado. Si hay enlaces de referido o
-              afiliación en el futuro, se marcarán como comerciales y no decidirán el orden.
             </p>
           </article>
         </div>

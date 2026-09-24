@@ -10,7 +10,7 @@
     <title>Best Time to Use Electricity in Spain | Power Window</title>
     <meta
       name="description"
-      content="Find the best hour to charge an EV, run appliances, or shift flexible electricity use in Spain with hourly PVPC price data."
+      content="Plan EV charging, laundry, and other loads using your electricity contract's rates. See Spain's hourly PVPC prices too."
     />
     <link rel="canonical" href="https://powerwindow.energy/en/" />
     <link rel="alternate" hreflang="es" href="https://powerwindow.energy/" />
@@ -23,7 +23,7 @@
     <meta property="og:title" content="Best Time to Use Electricity in Spain" />
     <meta
       property="og:description"
-      content="Plan EV charging, laundry, dishwashing, and cooling around hourly Spanish electricity prices."
+      content="Plan EV charging and appliances around your flat, three-period, or hourly electricity contract."
     />
     <meta property="og:url" content="https://powerwindow.energy/en/" />
     <meta property="og:image" content="https://powerwindow.energy/store/assets/feature-graphic.png" />
@@ -31,7 +31,7 @@
     <meta name="twitter:title" content="Best Time to Use Electricity in Spain" />
     <meta
       name="twitter:description"
-      content="Find low-price hours for flexible electricity use with hourly PVPC data."
+      content="Find hours that save money under your electricity contract."
     />
     <meta name="twitter:image" content="https://powerwindow.energy/store/assets/feature-graphic.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -99,7 +99,7 @@
                 "name": "What is the best time to use electricity in Spain?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "The best time changes every day. Power Window ranks the hourly PVPC prices published by Red Electrica and recommends the cheapest window for the selected duration and load."
+                  "text": "It depends on your contract. A flat 24-hour price has no timing savings. Three-period plans use your peak, shoulder and valley rates. PVPC plans use Red Electrica hourly prices."
                 }
               },
               {
@@ -107,7 +107,7 @@
                 "name": "Can I use it for EV charging?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Yes. You can choose a car brand, model, battery size, current charge, target charge, and charger power to estimate the session length and find the cheapest PVPC window."
+                  "text": "Yes. Estimate the session length from the battery and charger, then compare times using your contract's prices."
                 }
               },
               {
@@ -172,8 +172,8 @@
     <main class="app-shell planner-app" id="main-content" tabindex="-1">
 
       <header class="planner-heading">
-        <div><h1>Better timing. Lower energy costs.</h1><p>Find the cheapest hours to use electricity in Spain.</p></div>
-        <a class="data-source-link" href="/en/methodology">PVPC data · Red Eléctrica <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+        <div><h1>Plan around your contract.</h1><p>See whether changing the hour actually lowers your electricity cost.</p></div>
+        <a class="data-source-link" href="/en/methodology">PVPC reference · Red Eléctrica <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
       </header>
       <div class="planner-workspace">
         <section class="planner-panel planner-setup" aria-labelledby="setup-title">
@@ -217,6 +217,16 @@
             <span>Date</span>
             <input id="dateInput" type="date" />
           </label></div>
+          <div class="contract-setup" id="contractSetup">
+            <label class="field"><span>How does your contract price electricity?</span><select id="contractTypeInput"><option value="unknown">I don't know yet</option><option value="flat">Flat 24-hour price</option><option value="period">Three time periods</option><option value="hourly">Hourly price / PVPC</option></select></label>
+            <div class="contract-rates" id="contractRates">
+              <label class="field contract-flat"><span>Energy price €/kWh</span><input id="contractFlatInput" type="number" min="0.001" max="1" step="0.001" inputmode="decimal" placeholder="From your bill" /></label>
+              <label class="field contract-period"><span>Peak €/kWh</span><input id="contractPeakInput" type="number" min="0.001" max="1" step="0.001" inputmode="decimal" placeholder="From your bill" /></label>
+              <label class="field contract-period"><span>Shoulder €/kWh</span><input id="contractMidInput" type="number" min="0.001" max="1" step="0.001" inputmode="decimal" placeholder="From your bill" /></label>
+              <label class="field contract-period"><span>Valley €/kWh</span><input id="contractValleyInput" type="number" min="0.001" max="1" step="0.001" inputmode="decimal" placeholder="From your bill" /></label>
+            </div>
+            <small id="contractHint">Enter your contract's energy prices to calculate savings. Public offers may differ from your contract.</small>
+          </div>
           <p class="auto-update-note">Your plan updates as you change your choices.</p>
           <a class="see-plan-link" href="#recommendationTitle">See my best time <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
 
@@ -262,7 +272,7 @@
         </section>
         <div class="planner-results" id="plan-results" tabindex="-1">
           <section class="hero-panel recommendation-panel" aria-label="Your best window">
-            <div class="recommendation-top"><span class="recommendation-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Your best window</span><span id="dataStatus" role="status">Connecting</span></div>
+            <div class="recommendation-top"><span class="recommendation-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Your contract result</span><span id="dataStatus" role="status">Connecting</span></div>
             <div class="recommendation-answer" aria-live="polite" aria-atomic="true"><h2 id="recommendationTitle">Finding your best time…</h2><p id="bestReason">Checking hourly prices from Red Eléctrica.</p></div>
             <div class="recommendation-bottom"><div class="recommendation-cost"><span>Estimated cost for this run</span><strong id="costEstimate">—</strong><small id="costHint">Energy component only</small></div><div class="reminder-action"><button id="reminderButton" class="secondary-button" type="button" disabled>Remind me</button><small id="reminderStatus">No reminder set</small></div></div>
           <a class="mobile-edit-plan" href="#setup-title">Change appliance or day<span aria-hidden="true">↓</span></a></section>
@@ -435,23 +445,23 @@
             <h2 id="seo-home-title">Hourly electricity prices, EV charging, and flexible loads in Spain</h2>
           </div>
           <p class="section-note">
-            Power Window uses hourly PVPC data published by Red Electrica to help shift flexible
-            electricity use such as EV charging, laundry, dishwashing, or cooling.
+            Power Window uses your entered contract prices to plan flexible electricity use.
+            It checks Red Electrica's hourly PVPC data when you choose an hourly plan.
           </p>
         </div>
         <div class="method-grid seo-faq-grid">
           <article class="method-card">
             <h3>What is the best time to use electricity in Spain?</h3>
             <p>
-              There is no single best hour every day. The app compares the selected day's hourly
-              PVPC series and finds the cheapest window for the selected duration.
+              It depends on your contract. A flat 24-hour price costs the same at every hour.
+              With three periods or PVPC, the app compares the cost of available windows.
             </p>
           </article>
           <article class="method-card">
             <h3>Can I use it for EV charging?</h3>
             <p>
               Yes. The EV planner estimates energy from battery size, current charge, target charge,
-              and charger power, then finds the lowest-price hours for that session.
+              and charger power, then estimates the session cost under your contract.
             </p>
           </article>
           <article class="method-card method-card--wide">

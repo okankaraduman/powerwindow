@@ -99,14 +99,6 @@
                   "@type": "Answer",
                   "text": "Yes. You can enter energy prices, power terms, monthly fees, taxes, and whether the advertised offer prices include taxes."
                 }
-              },
-              {
-                "@type": "Question",
-                "name": "Does the ranking depend on referral links?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "No. The ranking is calculated by estimated cost. Referral links, if added, should be labelled and should not decide which tariff appears best."
-                }
               }
             ]
           }
@@ -180,8 +172,9 @@
             <input id="flexKwhInput" type="number" min="0" max="2500" step="1" value="140" />
           </label>
           <label class="field compact-field">
-            <span>Power kW</span>
+            <span>Contracted power (kW)</span>
             <input id="powerKwInput" type="number" min="1" max="20" step="0.1" value="4.6" />
+            <small>Find this on your bill. The estimate assumes the same kW in both power periods.</small>
           </label>
           <details class="site-disclosure compare-advanced">
             <summary>Tariff periods &amp; taxes</summary>
@@ -260,7 +253,7 @@
 
       <section class="dashboard-grid compare-kpi-grid">
         <article class="metric-card">
-          <span class="eyebrow">Estimated saving</span>
+          <span class="eyebrow">Difference between scenarios</span>
           <strong id="compareSavings">--</strong>
           <small id="compareSavingsHint">Comparing the best and worst monthly result.</small>
         </article>
@@ -273,11 +266,6 @@
           <span class="eyebrow">Flexible usage</span>
           <strong id="flexibleShare">--</strong>
           <small id="flexibleHint">Consumption share that can move to valley or cheap hours.</small>
-        </article>
-        <article class="metric-card">
-          <span class="eyebrow">Commercial note</span>
-          <strong id="affiliateStatus">No links</strong>
-          <small id="affiliateHint">No active referral agreements in this version.</small>
         </article>
       </section>
 
@@ -310,26 +298,12 @@
             <h2>Add an offer published by an energy company</h2>
           </div>
           <p class="section-note">
-            Prices seen on public company pages. Always verify the source before signing: promotions,
-            taxes, and services can change.
+            Prices checked on public Octopus Energy and TotalEnergies pages, with the verification
+            date shown. An offer disappears if it cannot be checked for 72 hours. Confirm terms,
+            discounts and services before signing.
           </p>
         </div>
         <div id="offerLibrary" class="offer-library-grid" aria-live="polite"></div>
-      </section>
-
-      <section class="method-grid">
-        <article class="method-card method-card--wide">
-          <h3>Referrals can exist, but they should not decide the ranking.</h3>
-          <p>
-            Power Window can use referral or affiliate links when a supplier offers them. The
-            comparison should label those links, keep assumptions visible, and allow sorting by
-            estimated cost even when an offer pays no commission.
-          </p>
-          <p>
-            Commercial next step: replace the examples with verified offers, update date, core
-            terms, contract lock-in, price source, and referral link when one exists.
-          </p>
-        </article>
       </section>
 
       <section class="chart-section seo-section" aria-labelledby="compare-faq-title">
@@ -355,13 +329,6 @@
             <p>
               Yes. Enter the energy price, power term, monthly fee, and taxes from a real offer,
               then mark whether those prices already include taxes.
-            </p>
-          </article>
-          <article class="method-card method-card--wide">
-            <h3>Does the ranking depend on referral links?</h3>
-            <p>
-              No. The ranking should come from estimated monthly cost. Future referral or
-              affiliate links will be labelled as commercial and will not decide the order.
             </p>
           </article>
         </div>

@@ -8,7 +8,7 @@ web
 
 ## Product Purpose
 
-Power Window helps people find lower-price hours for flexible electricity use in Spain, using hourly PVPC data from Red Eléctrica. The website, installed PWA, and Android Trusted Web Activity share the web interface. The SwiftUI sketch is parked (README.md).
+Power Window helps people plan flexible electricity use against the prices in their existing contract. Hourly PVPC data from Red Eléctrica is used only for hourly/PVPC plans and as a labelled market reference. The website, installed PWA, and Android Trusted Web Activity share the web interface. The SwiftUI sketch is parked (README.md).
 
 ## Users
 
@@ -21,6 +21,8 @@ Appliance/duration/day planning, EV battery and charge-target estimation, locall
 ## Confirmed Direction
 
 The user requested improved navigation and usability across the app and website. The user considers the demo unhelpful until a real integration is connected. Remove the synthetic walkthrough and demo charger controls from the interface; retain EV timing calculations. Backend connector infrastructure remains available for later integration.
+
+The user identified that most households already have provider contracts. The planner must use the customer's entered flat, three-period, or PVPC pricing before claiming timing savings. Provider offer prices are a separate switching comparison and need regular source checks, visible dates, and exclusion when verification fails or becomes stale.
 
 ## Evidence on Hand
 

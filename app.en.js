@@ -1,4 +1,5 @@
 import { APPLIANCES, VEHICLE_BRANDS } from "./data/catalog.mjs";
+import { contractRate } from "./shared/contract-pricing.mjs";
 
 const API_BASE = "https://apidatos.ree.es/en/datos";
 const DEFAULT_BACKEND_API_BASE =
@@ -14,6 +15,7 @@ const GENERATION_WIDGET = "generacion/estructura-generacion";
 const MARKET_CACHE_PREFIX = "power-window:market:";
 const PROFILE_STORAGE_KEY = "power-window:profiles";
 const SETTINGS_STORAGE_KEY = "power-window:bill-settings";
+const CONTRACT_STORAGE_KEY = "power-window:contract";
 const VEHICLE_STORAGE_KEY = "power-window:vehicle";
 const CONNECTOR_USER_STORAGE_KEY = "power-window:connector-user";
 const MAX_DURATION = 12;
@@ -41,6 +43,7 @@ const state = {
   apiMeta: null,
   selectedDate: "",
   loadRequestId: 0,
+  contractUpdatedAt: "",
   profiles: [],
   ranked: [],
   allRanked: [],
@@ -79,6 +82,13 @@ const els = {
   connectorStatus: document.querySelector("#connectorStatus"),
   saveProfileButton: document.querySelector("#saveProfileButton"),
   costModeInput: document.querySelector("#costModeInput"),
+  contractSetup: document.querySelector("#contractSetup"),
+  contractTypeInput: document.querySelector("#contractTypeInput"),
+  contractFlatInput: document.querySelector("#contractFlatInput"),
+  contractPeakInput: document.querySelector("#contractPeakInput"),
+  contractMidInput: document.querySelector("#contractMidInput"),
+  contractValleyInput: document.querySelector("#contractValleyInput"),
+  contractHint: document.querySelector("#contractHint"),
   taxRegionInput: document.querySelector("#taxRegionInput"),
   vatInput: document.querySelector("#vatInput"),
   electricityTaxInput: document.querySelector("#electricityTaxInput"),
@@ -123,6 +133,7 @@ function init() {
   initApplianceCatalog();
   loadProfiles();
   loadBillSettings();
+  loadContract();
   initVehiclePlanner();
   initQuickChoices();
   initResponsivePlanner();
@@ -155,6 +166,9 @@ function init() {
     loadConnectorDevices();
   }
   els.costModeInput.addEventListener("change", handleBillSettingsChange);
+  [els.contractTypeInput, els.contractFlatInput, els.contractPeakInput, els.contractMidInput, els.contractValleyInput].forEach((input) => {
+    input.addEventListener("input", () => { saveContract(); renderContractControls(); render(); loadTomorrowComparison(state.selectedDate); });
+  });
   els.taxRegionInput.addEventListener("change", handleTaxRegionChange);
   els.vatInput.addEventListener("input", handleIndirectTaxInput);
   els.electricityTaxInput.addEventListener("input", handleBillSettingsChange);
@@ -659,6 +673,30 @@ function render() {
   const kw = Number(els.applianceInput.value) || 1;
   els.durationInput.value = String(duration);
 
+  if (!contractReady(state.points)) {
+    state.best = null;
+    state.ranked = [];
+    state.allRanked = [];
+    els.recommendationTitle.textContent = "Enter your contract";
+    els.bestReason.textContent = "Choose your tariff type and copy the energy price from your bill. This keeps us from showing savings your contract does not allow.";
+    els.costEstimate.textContent = "--";
+    els.costHint.textContent = "Waiting for your contract prices";
+    els.scoreValue.textContent = "--";
+    els.scoreMeter.style.width = "0%";
+    els.gradeValue.textContent = "--";
+    els.gradeHint.textContent = "Waiting for your contract";
+    els.bestWindow.textContent = "--";
+    els.nowVsBest.textContent = "Waiting";
+    els.savingsHint.textContent = "Enter your contract to compare times.";
+    els.tomorrowBest.textContent = "Waiting";
+    els.tomorrowHint.textContent = "Enter your contract to compare tomorrow.";
+    els.reminderButton.disabled = true;
+    els.windowList.replaceChildren();
+    renderDataStatus();
+    renderChart(state.points, new Set(), quantile(state.points.map((p) => p.price), 0.25), quantile(state.points.map((p) => p.price), 0.75), firstAvailableStartHour(state.selectedDate));
+    return;
+  }
+
   const allRanked = rankWindows(state.points, duration, kw);
   const firstStart = firstAvailableStartHour(state.selectedDate);
   const ranked = allRanked.filter((item) => item.start >= firstStart);
@@ -681,24 +719,33 @@ function render() {
   }
 
   const grade = gradeForScore(best.score);
+  const flatContract = els.contractTypeInput.value === "flat";
+  if (els.gridPressurePanel) els.gridPressurePanel.hidden = flatContract;
 
-  els.recommendationTitle.textContent = formatWindow(best.start, duration);
+  els.recommendationTitle.textContent = flatContract ? "Any hour costs the same" : formatWindow(best.start, duration);
   els.scoreValue.textContent = String(Math.round(best.score));
   els.scoreMeter.style.width = `${Math.round(best.score)}%`;
   els.gradeValue.textContent = grade.letter;
   els.gradeValue.className = `grade-badge grade-${grade.letter.toLowerCase()}`;
   els.gradeHint.textContent = grade.hint;
-  els.bestWindow.textContent = formatStartTime(best.start);
+  if (els.contractTypeInput.value === "flat") {
+    els.scoreValue.textContent = "--";
+    els.scoreMeter.style.width = "0%";
+    els.gradeValue.textContent = "--";
+    els.gradeHint.textContent = "All hours have the same energy price";
+  }
+  els.bestWindow.textContent = flatContract ? "Choose a convenient time" : formatStartTime(best.start);
   els.bestReason.textContent = makeReason(best, worst, duration, kw);
   els.costEstimate.textContent = formatMoney(best.cost);
   els.costHint.textContent = costHintText(kw, duration);
-  els.reminderButton.disabled = false;
+  els.reminderButton.disabled = flatContract;
   renderDataStatus();
   renderConnectorPanel();
   renderGridPressure(best);
 
   renderChart(state.points, bestHours, lowCut, highCut, firstStart);
-  renderWindowList(ranked.slice(0, 6), duration);
+  if (flatContract) els.windowList.innerHTML = "<p>No hour is cheaper under a flat 24-hour price.</p>";
+  else renderWindowList(ranked.slice(0, 6), duration);
   renderNowComparison(best, duration);
   renderTomorrowComparison(duration);
 }
@@ -725,6 +772,16 @@ function renderNoRemainingWindow(duration, kw, firstStart, bestHours, lowCut, hi
 }
 
 function renderDataStatus() {
+  if (["flat", "period"].includes(els.contractTypeInput.value) && contractReady(state.points)) {
+    els.dataStatus.textContent = "Your contract";
+    els.dataStatus.className = "";
+    els.dataNote.textContent = "The plan uses the contract prices you entered";
+    els.dataNote.className = "";
+    els.lastUpdated.textContent = state.contractUpdatedAt
+      ? `Contract entered: ${formatDateTime(state.contractUpdatedAt)}`
+      : "Prices saved on this device";
+    return;
+  }
   if (state.source === "api") {
     els.dataStatus.textContent = cacheStatusLabel();
     els.dataStatus.className = "";
@@ -878,25 +935,39 @@ function gridPressureMetaText() {
 }
 
 function renderChart(points, bestHours, lowCut, highCut, firstStart = 0) {
+  const hasContract = contractReady(points);
+  const flatContract = hasContract && els.contractTypeInput.value === "flat";
+  if (flatContract) bestHours = new Set();
+  document.querySelector(".chart-key").hidden = flatContract;
+  els.hourChart.setAttribute("aria-label", hasContract ? "Hourly energy prices from your contract" : "Hourly PVPC/market reference");
+  const chartPoints = hasContract
+    ? points.map((point) => ({ ...point, price: contractRateForPoint(point) * 1000 }))
+    : points;
+  const values = chartPoints.map((point) => point.price);
+  lowCut = quantile(values, 0.25);
+  highCut = quantile(values, 0.75);
+  document.querySelector(".chart-description").textContent = hasContract
+    ? "Hourly energy prices from your contract."
+    : "PVPC/market reference; this is not your contract.";
   const table = document.querySelector("#hourPriceTable");
   if (table) {
-    table.innerHTML = points.map((point) => {
-      const status = point.hour < firstStart ? "Past hour" : bestHours.has(point.hour) ? "Best window" :
+    table.innerHTML = chartPoints.map((point) => {
+      const status = point.hour < firstStart ? "Past hour" : flatContract ? "Same price" : bestHours.has(point.hour) ? "Best window" :
         point.price <= lowCut ? "Low price" : point.price >= highCut ? "High price" : "—";
       return `<tr${bestHours.has(point.hour) ? ' class="best-price-row"' : ""}><th scope="row">${formatHour(point.hour)}</th><td>${formatPrice(point.price, true)}</td><td>${status}</td></tr>`;
     }).join("");
   }
-  const max = Math.max(...points.map((point) => point.price));
-  const min = Math.min(...points.map((point) => point.price));
+  const max = Math.max(...values);
+  const min = Math.min(...values);
   const range = Math.max(max - min, 1);
 
-  els.hourChart.innerHTML = points
+  els.hourChart.innerHTML = chartPoints
     .map((point) => {
       const height = 18 + ((point.price - min) / range) * 182;
       const classes = ["hour-bar"];
       if (bestHours.has(point.hour)) classes.push("best");
-      else if (point.price <= lowCut) classes.push("low");
-      else if (point.price >= highCut) classes.push("high");
+      else if (!flatContract && point.price <= lowCut) classes.push("low");
+      else if (!flatContract && point.price >= highCut) classes.push("high");
       if (point.hour < firstStart) classes.push("past");
 
       return `
@@ -937,21 +1008,21 @@ function renderWindowList(windows, duration) {
     .join("");
 }
 
-function rankWindows(points, duration, kw) {
+function rankWindows(points, duration, kw, date = state.selectedDate) {
   const maxStart = Math.max(0, points.length - duration);
-  const prices = points.map((point) => point.price);
+  const prices = points.map((point) => contractRateForPoint(point, date));
+  if (prices.some((price) => price === null)) return [];
   const dailyMin = Math.min(...prices);
   const dailyMax = Math.max(...prices);
-  const dailyRange = Math.max(dailyMax - dailyMin, 1);
+  const dailyRange = Math.max(dailyMax - dailyMin, 0.001);
 
   return Array.from({ length: maxStart + 1 }, (_, start) => {
     const slice = points.slice(start, start + duration);
-    const avgPrice = average(slice.map((point) => point.price));
-    const marketCost = slice.reduce((sum, point) => sum + (point.price / 1000) * kw, 0);
+    const avgPrice = average(slice.map((point) => contractRateForPoint(point, date))) * 1000;
+    const marketCost = slice.reduce((sum, point) => sum + contractRateForPoint(point, date) * kw, 0);
     const kwh = kw * slice.length;
-    const costBreakdown = estimateBillBreakdown(marketCost, kwh);
-    const lowPriceScore = 100 - ((avgPrice - dailyMin) / dailyRange) * 100;
-    const middayBonus = slice.some((point) => point.hour >= 10 && point.hour <= 17) ? 4 : 0;
+    const costBreakdown = estimateBillBreakdown(marketCost, kwh, true);
+    const lowPriceScore = 100 - (((avgPrice / 1000) - dailyMin) / dailyRange) * 100;
 
     return {
       start,
@@ -961,7 +1032,7 @@ function rankWindows(points, duration, kw) {
       variableCost: costBreakdown.variable,
       fixedDailyCost: costBreakdown.fixedDaily,
       cost: costBreakdown.total,
-      score: clamp(lowPriceScore + middayBonus, 0, 100),
+      score: clamp(lowPriceScore, 0, 100),
     };
   }).sort((a, b) => {
     if (a.avgPrice !== b.avgPrice) return a.avgPrice - b.avgPrice;
@@ -970,18 +1041,25 @@ function rankWindows(points, duration, kw) {
 }
 
 function makeReason(best, worst, duration, kw) {
+  if (els.contractTypeInput.value === "flat") {
+    return "Your contract charges the same energy price all day. Moving this load does not reduce its energy cost.";
+  }
   const bestComparable = Number.isFinite(best.variableCost) ? best.variableCost : best.cost;
   const worstComparable = Number.isFinite(worst.variableCost) ? worst.variableCost : worst.cost;
   const saved = Math.max(0, worstComparable - bestComparable);
   const percent = worstComparable > 0 ? (saved / worstComparable) * 100 : 0;
-  const sourceText =
-    state.source === "api"
-      ? "Based on the REE market price series for the selected date."
-      : DEMO_NOTICE;
+  const sourceText = els.contractTypeInput.value === "period"
+    ? "Based on your three contract prices; standard weekday periods and weekend valley pricing apply. Public holidays are not included."
+    : "Based on REE hourly PVPC for the selected date.";
   return `${sourceText} For ${loadName()} at ${kw.toFixed(1)} kW, this ${duration}h window is about ${percent.toFixed(0)}% cheaper than the most expensive comparable window.`;
 }
 
 function renderNowComparison(best, duration) {
+  if (els.contractTypeInput.value === "flat") {
+    els.nowVsBest.textContent = "No timing savings";
+    els.savingsHint.textContent = "Energy costs the same now and later under your contract.";
+    return;
+  }
   const selected = parseDateInput(state.selectedDate);
   const today = startOfDay(new Date());
 
@@ -1023,6 +1101,11 @@ function renderNowComparison(best, duration) {
 }
 
 function renderTomorrowComparison(duration) {
+  if (els.contractTypeInput.value === "flat" && contractReady(state.points)) {
+    els.tomorrowBest.textContent = "Same price";
+    els.tomorrowHint.textContent = "Waiting until tomorrow does not lower your contract's energy price.";
+    return;
+  }
   if (state.tomorrow.status === "idle") {
     els.tomorrowBest.textContent = "Today view";
     els.tomorrowHint.textContent = "Select today to compare against tomorrow's day-ahead data.";
@@ -1042,7 +1125,12 @@ function renderTomorrowComparison(duration) {
   }
 
   const kw = Number(els.applianceInput.value) || 1;
-  const best = rankWindows(state.tomorrow.points, duration, kw)[0];
+  const best = rankWindows(state.tomorrow.points, duration, kw, formatDateInput(addDays(new Date(), 1)))[0];
+  if (!best) {
+    els.tomorrowBest.textContent = "Not available";
+    els.tomorrowHint.textContent = "Verified prices are missing for this tariff.";
+    return;
+  }
   state.tomorrow.best = best;
   els.tomorrowBest.textContent = formatWindow(best.start, duration);
   els.tomorrowHint.textContent = `${formatMoney(best.cost)} estimated if you wait until tomorrow.`;
@@ -1050,6 +1138,10 @@ function renderTomorrowComparison(duration) {
 
 async function loadTomorrowComparison(dateValue, requestId = state.loadRequestId) {
   if (requestId !== state.loadRequestId) return;
+  if (!contractReady(state.points)) {
+    state.tomorrow = { status: "idle", points: [], best: null };
+    return;
+  }
   const selected = parseDateInput(dateValue);
   const today = startOfDay(new Date());
   if (!isSameDay(selected, today)) {
@@ -1059,6 +1151,15 @@ async function loadTomorrowComparison(dateValue, requestId = state.loadRequestId
   }
 
   const tomorrowValue = formatDateInput(addDays(today, 1));
+  if (["flat", "period"].includes(els.contractTypeInput.value)) {
+    state.tomorrow = {
+      status: "ready",
+      points: Array.from({ length: 24 }, (_, hour) => ({ hour, price: 0, seriesType: "contract" })),
+      best: null,
+    };
+    renderTomorrowComparison(Number(els.durationInput.value) || 1);
+    return;
+  }
   try {
     const response = await getMarketData(tomorrowValue);
     if (requestId !== state.loadRequestId) return;
@@ -1211,13 +1312,13 @@ function loadName() {
   return els.applianceInput.selectedOptions[0]?.textContent.split(" - ")[0] || "this load";
 }
 
-function estimateBillBreakdown(marketCost, kwh) {
+function estimateBillBreakdown(marketCost, kwh, fromContract = false) {
   const settings = billSettings();
   if (settings.mode === "market") {
     return { variable: marketCost, fixedDaily: 0, total: marketCost };
   }
 
-  const beforeTaxes = marketCost + kwh * settings.adder;
+  const beforeTaxes = marketCost + (fromContract ? 0 : kwh * settings.adder);
   const taxCost = electricityTaxCost(beforeTaxes, kwh, settings.electricityTax);
   const variable = (beforeTaxes + taxCost) * (1 + settings.vat / 100);
   const fixedDaily = socialBonusDailyAfterVat(settings);
@@ -1240,17 +1341,66 @@ function billSettings() {
   };
 }
 
+function contractSettings() {
+  return {
+    type: els.contractTypeInput.value,
+    flat: els.contractFlatInput.value,
+    peak: els.contractPeakInput.value,
+    mid: els.contractMidInput.value,
+    valley: els.contractValleyInput.value,
+  };
+}
+
+function contractRateForPoint(point, date = state.selectedDate) {
+  const settings = contractSettings();
+  if (settings.type === "hourly" && (state.source === "demo" || point.seriesType !== "pvpc")) return null;
+  return contractRate(settings.type, settings, date, point.hour, point.price / 1000);
+}
+
+function contractReady(points) {
+  return points.length > 0 && points.every((point) => contractRateForPoint(point) !== null);
+}
+
+function renderContractControls() {
+  const type = els.contractTypeInput.value;
+  els.contractSetup.dataset.type = type;
+  els.contractHint.textContent = type === "flat"
+    ? "The energy price is the same all day, so moving a load cannot save on energy."
+    : type === "period"
+      ? "Copy your peak, shoulder and valley prices from your bill. Public holidays are not yet handled."
+      : type === "hourly"
+        ? "Uses published REE hourly PVPC only; indexed offers may add their own charges."
+        : "Enter your contract's energy prices to calculate savings.";
+}
+
+function loadContract() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(CONTRACT_STORAGE_KEY) || "{}");
+    state.contractUpdatedAt = Number.isFinite(Date.parse(stored.updatedAt)) ? stored.updatedAt : "";
+    if (["flat", "period", "hourly"].includes(stored.type)) els.contractTypeInput.value = stored.type;
+    for (const [field, input] of [["flat", els.contractFlatInput], ["peak", els.contractPeakInput], ["mid", els.contractMidInput], ["valley", els.contractValleyInput]]) {
+      if (stored[field] != null) input.value = String(stored[field]);
+    }
+  } catch { /* Ignore damaged local settings. */ }
+  renderContractControls();
+}
+
+function saveContract() {
+  state.contractUpdatedAt = new Date().toISOString();
+  try { localStorage.setItem(CONTRACT_STORAGE_KEY, JSON.stringify({ ...contractSettings(), updatedAt: state.contractUpdatedAt })); } catch { /* Optional local storage. */ }
+}
+
 function costHintText(kw, duration) {
   const settings = billSettings();
   if (settings.mode === "market") {
-    return `${kw.toFixed(1)} kW for ${duration}h, market component only`;
+    return `${kw.toFixed(1)} kW for ${duration}h, your contract's energy price before tax`;
   }
 
   const taxLabel = indirectTaxLabel(settings);
   const fixedText = settings.socialBonusDaily
     ? `. Fixed social bonus: ${formatMoney(socialBonusDailyAfterVat(settings))}/day after ${taxLabel}; it does not change the best hour`
     : "";
-  return `${kw.toFixed(1)} kW for ${duration}h incl. ${settings.vat}% ${taxLabel}, ${settings.electricityTax}% electricity tax, and ${formatEurKwh(settings.adder)} adders${fixedText}`;
+  return `${kw.toFixed(1)} kW for ${duration}h incl. ${settings.vat}% ${taxLabel} and ${settings.electricityTax}% electricity tax${fixedText}`;
 }
 
 function socialBonusDailyAfterVat(settings) {

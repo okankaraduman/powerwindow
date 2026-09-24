@@ -82,7 +82,7 @@
       "get": {
         "operationId": "getProviderOffers",
         "summary": "Get recently verified public electricity offers",
-        "description": "Checks published Octopus Energy and TotalEnergies prices at most once per day. Offers older than 72 hours are omitted. These are public offers, not a customer's existing contract prices.",
+        "description": "Checks published Octopus Energy, TotalEnergies, Naturgy, and Endesa prices at most once per day. Offers older than 72 hours are omitted. These are public offers, not a customer's existing contract prices.",
         "tags": ["Electricity data"],
         "responses": {
           "200": {

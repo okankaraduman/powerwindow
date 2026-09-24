@@ -82,7 +82,7 @@ const compareText = COMPARE_IS_ES
       updated: "Actualizado",
       resetDone: "Supuestos restablecidos",
       offersLoading: "Comprobando precios publicados por las comercializadoras…",
-      offersUnavailable: "No hay ofertas verificadas recientemente. Consulta las fuentes o introduce una oferta manualmente.",
+      offersUnavailable: "No hay precios de ofertas disponibles ahora. Puedes introducir los de tu contrato manualmente.",
       importedSource: "Oferta importada",
       staleSource: "Verificación caducada; no se incluye en el ranking. Edita los precios para usarla como supuesto manual.",
     }
@@ -143,7 +143,7 @@ const compareText = COMPARE_IS_ES
       updated: "Updated",
       resetDone: "Assumptions reset",
       offersLoading: "Checking prices published by providers…",
-      offersUnavailable: "No recently verified offers are available. Check the sources or enter an offer manually.",
+      offersUnavailable: "Live offer prices are unavailable right now. You can enter your contract prices manually.",
       importedSource: "Imported offer",
       staleSource: "Verification expired; excluded from the ranking. Edit prices to use it as a manual assumption.",
     };
@@ -271,7 +271,8 @@ function handleSettingsInput() {
 function offerFitsUsage(offer) {
   const annualKwh = Number(compareState.settings.monthlyKwh) * 12;
   return (!Number.isFinite(offer.minAnnualKwh) || annualKwh >= offer.minAnnualKwh) &&
-    (!Number.isFinite(offer.maxAnnualKwh) || annualKwh < offer.maxAnnualKwh);
+    (!Number.isFinite(offer.maxAnnualKwh) || annualKwh < offer.maxAnnualKwh) &&
+    (!Number.isFinite(offer.maxPowerKw) || compareState.settings.powerKw <= offer.maxPowerKw);
 }
 
 function handleCompareTaxRegionChange() {
@@ -544,6 +545,7 @@ function tariffFromPublicOffer(offer) {
     sourceCheckedAt: offer.checkedAt,
     minAnnualKwh: offer.minAnnualKwh,
     maxAnnualKwh: offer.maxAnnualKwh,
+    maxPowerKw: offer.maxPowerKw,
   });
 }
 
@@ -891,6 +893,7 @@ function normalizeTariff(tariff) {
     sourceCheckedAt: String(tariff.sourceCheckedAt || ""),
     minAnnualKwh: tariff.minAnnualKwh == null ? null : Number(tariff.minAnnualKwh),
     maxAnnualKwh: tariff.maxAnnualKwh == null ? null : Number(tariff.maxAnnualKwh),
+    maxPowerKw: tariff.maxPowerKw == null ? null : Number(tariff.maxPowerKw),
   };
 }
 

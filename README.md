@@ -128,7 +128,7 @@ included. Hourly mode requires actual REE PVPC data, so spot or demonstration da
 produce a contract savings claim. The hourly chart uses contract rates after entry and is
 labelled as a market reference before entry.
 
-`GET /api/provider-offers` checks public Octopus Energy and TotalEnergies prices each day
+`GET /api/provider-offers` checks public Octopus Energy, TotalEnergies, Naturgy, and Endesa prices each day
 through a Worker cron, and on demand when the comparator is opened after the cache expires.
 The Worker caches checks for 24 hours and serves a previously verified
 offer for no longer than 72 hours. Parsing fails closed when a provider changes its markup or

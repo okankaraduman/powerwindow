@@ -145,3 +145,6 @@ Results are cached in KV by year range and refreshed after 30 minutes or at a Ma
 The response includes `endDate`, the requested cutoff; stale fallback keeps its original cutoff. `refresh=1` refreshes the data; an upstream failure returns existing cache with
 `cacheStatus: "stale"`. Missing years are not cached as complete data. The bilingual frontend
 converts MWh to kWh and loads this comparison independently from seasonal prices.
+The endpoint also requests the same calendar cutoff in the three preceding years and returns
+their partial totals as `historicalYtd`. The frontend uses these totals to estimate the
+current year-end result when at least two comparable years are available.

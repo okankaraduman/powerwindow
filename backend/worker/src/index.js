@@ -1,4 +1,4 @@
-import { annualGenerationRange, annualGenerationPeriods, mergeAnnualGenerationPayloads, summarizeAnnualGeneration } from "../../../shared/annual-generation.mjs";
+import { annualGenerationRange, annualGenerationPeriods, annualForecastPeriods, mergeAnnualGenerationPayloads, summarizeAnnualGeneration } from "../../../shared/annual-generation.mjs";
 import { getProviderOffers } from "./provider-offers.js";
 
 const MARKET_WIDGET = "mercados/precios-mercados-tiempo-real";
@@ -559,7 +559,7 @@ async function handleAnnualStatistics(request, env, url) {
   const cached = await readCache(env, cacheKey);
   const respond = (entry, cacheStatus) => jsonResponse({
     source: "ree", cacheStatus, cachedAt: entry.cachedAt, ...range,
-    endDate: entry.endDate, payload: entry.payload
+    endDate: entry.endDate, payload: entry.payload, historicalYtd: entry.historicalYtd || []
   }, 200, request);
   if (cached && cached.endDate === range.endDate && isFreshCacheEntry(cached, 30 * MINUTE) &&
       url.searchParams.get("refresh") !== "1") return respond(cached, "hit");
@@ -573,7 +573,14 @@ async function handleAnnualStatistics(request, env, url) {
       .filter((result) => result.status === "fulfilled").map((result) => result.value));
     const years = summarizeAnnualGeneration(payload, range);
     if (!years.some((year) => year.available)) throw new Error("No annual generation data");
-    const entry = { cachedAt: new Date().toISOString(), endDate: range.endDate, payload };
+    const historicalResults = await Promise.allSettled(annualForecastPeriods(range).map(async (period) => {
+      const partialPayload = await fetchREERangeWidget(GENERATION_WIDGET, period.startDate, period.endDate, "year");
+      return summarizeAnnualGeneration(partialPayload, { startYear: period.year, endYear: period.year })[0];
+    }));
+    const historicalYtd = historicalResults
+      .filter((result) => result.status === "fulfilled" && result.value.available)
+      .map((result) => result.value);
+    const entry = { cachedAt: new Date().toISOString(), endDate: range.endDate, payload, historicalYtd };
     // Missing years must not displace a complete cached response.
     if (years.every((year) => year.available) && env.MARKET_CACHE) {
       await writeCache(env, cacheKey, entry);

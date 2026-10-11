@@ -2207,6 +2207,22 @@ h1 {
   height: auto;
 }
 
+.annual-forecast-card {
+  margin: 0 0 20px;
+  padding: 18px;
+  border: 1px dashed #8a9c91;
+  border-radius: 12px;
+  background: #f5f9f6;
+}
+
+.annual-forecast-card h3 {
+  margin: 0;
+}
+
+.annual-forecast-card .annual-generation-period {
+  margin: 12px 0 0;
+}
+
 .annual-chart-grid {
   stroke: var(--line);
   stroke-width: 1;

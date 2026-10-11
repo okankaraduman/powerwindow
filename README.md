@@ -160,6 +160,9 @@ calendar years plus the current year to date, cached at `/api/statistics/years`.
 The current-year segment is dashed, with exact kWh totals and shares below the chart.
 The current year is labeled as partial and requests data through today in Madrid; the cache
 is refreshed after 30 minutes or when the Madrid calendar date changes.
+The year-end estimate divides current year-to-date renewable and non-renewable generation
+by the median share produced by the same date in the three preceding years. It needs at
+least two comparable years and is labeled as an estimate, separate from observed totals.
 
 ## Notes
 

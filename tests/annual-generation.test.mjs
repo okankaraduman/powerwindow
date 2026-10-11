@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
-import { annualGenerationRange, annualGenerationPeriods, mergeAnnualGenerationPayloads, summarizeAnnualGeneration, formatGenerationKwh } from "../shared/annual-generation.mjs";
+import { annualGenerationRange, annualGenerationPeriods, annualForecastPeriods, mergeAnnualGenerationPayloads, summarizeAnnualGeneration, forecastAnnualGeneration, formatGenerationKwh } from "../shared/annual-generation.mjs";
 import worker from "../backend/worker/src/index.js";
 
 const range = { startYear: 2021, endYear: 2025 };
@@ -48,6 +48,29 @@ test("includes available current-year totals while keeping missing YTD data unav
   const missingYtd = summarizeAnnualGeneration(fixture(), ytdRange);
   assert.equal(missingYtd.filter((year) => year.available).length, 5);
   assert.deepEqual(missingYtd[5], { year: 2026, available: false });
+});
+
+test("projects each generation type from the median historical same-date fraction", () => {
+  const years = [
+    { year: 2023, available: true, renewableMwh: 100, nonRenewableMwh: 80 },
+    { year: 2024, available: true, renewableMwh: 120, nonRenewableMwh: 70 },
+    { year: 2025, available: true, renewableMwh: 140, nonRenewableMwh: 60 },
+    { year: 2026, available: true, renewableMwh: 90, nonRenewableMwh: 30 }
+  ];
+  const historical = [
+    { year: 2023, available: true, renewableMwh: 50, nonRenewableMwh: 40 },
+    { year: 2024, available: true, renewableMwh: 72, nonRenewableMwh: 42 },
+    { year: 2025, available: true, renewableMwh: 98, nonRenewableMwh: 42 }
+  ];
+  const estimate = forecastAnnualGeneration(years, historical, 2026);
+  assert.equal(estimate.renewableMwh, 150);
+  assert.equal(estimate.nonRenewableMwh, 50);
+  assert.equal(estimate.totalMwh, 200);
+  assert.deepEqual(estimate.referenceYears, [2023, 2024, 2025]);
+  assert.equal(forecastAnnualGeneration(years, historical.slice(0, 1), 2026), null);
+  assert.equal(forecastAnnualGeneration(years.slice(0, 3), historical, 2026), null);
+  assert.deepEqual(annualForecastPeriods({ endYear: 2024, endDate: "2024-02-29" })[0],
+    { year: 2023, startDate: "2023-01-01", endDate: "2023-02-28" });
 });
 
 test("sums classifications without double-counting totals or dropping signed corrections", () => {
@@ -109,7 +132,7 @@ test("annual endpoint caches full data and serves stale data on refresh failure"
   t.mock.method(globalThis, "fetch", async (url) => {
     calls++;
     assert.equal(url.searchParams.get("time_trunc"), "year");
-    assert.ok(annualGenerationPeriods(currentRange).some((period) =>
+    assert.ok([...annualGenerationPeriods(currentRange), ...annualForecastPeriods(currentRange)].some((period) =>
       url.searchParams.get("start_date") === `${period.startDate}T00:00` &&
       url.searchParams.get("end_date") === `${period.endDate}T23:59`));
     return Response.json(payloadForRequest(payload, url));
@@ -117,17 +140,19 @@ test("annual endpoint caches full data and serves stale data on refresh failure"
   const request = (query = "") => new Request(`https://api.powerwindow.energy/api/statistics/years${query}`);
   const fresh = await worker.fetch(request(), env, {});
   assert.equal(fresh.status, 200);
-  assert.equal((await fresh.json()).cacheStatus, "miss");
+  const freshData = await fresh.json();
+  assert.equal(freshData.cacheStatus, "miss");
+  assert.equal(freshData.historicalYtd.length, 3);
   assert.equal((await (await worker.fetch(request(), env, {})).json()).cacheStatus, "hit");
-  assert.equal(calls, 2);
+  assert.equal(calls, 5);
   const key = [...values.keys()][0];
   values.get(key).cachedAt = new Date(Date.now() - 31 * 60 * 1000).toISOString();
   assert.equal((await (await worker.fetch(request(), env, {})).json()).cacheStatus, "miss");
-  assert.equal(calls, 4, "YTD cache must refresh after 30 minutes");
+  assert.equal(calls, 10, "YTD cache must refresh after 30 minutes");
   values.get(key).endDate = `${currentRange.endYear}-01-01`;
   if (currentRange.endDate === values.get(key).endDate) values.get(key).endDate = `${currentRange.endYear - 1}-12-31`;
   assert.equal((await (await worker.fetch(request(), env, {})).json()).cacheStatus, "miss");
-  assert.equal(calls, 6, "YTD cache must refresh when its cutoff date changes");
+  assert.equal(calls, 15, "YTD cache must refresh when its cutoff date changes");
   globalThis.fetch.mock.mockImplementation(async () => { throw new Error("Upstream unavailable"); });
   const oldCutoff = `${currentRange.endYear}-01-01`;
   values.get(key).endDate = oldCutoff;

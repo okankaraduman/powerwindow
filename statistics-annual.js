@@ -1,4 +1,4 @@
-import { annualGenerationRange, annualGenerationPeriods, mergeAnnualGenerationPayloads, summarizeAnnualGeneration, formatGenerationKwh } from "./shared/annual-generation.mjs";
+import { annualGenerationRange, annualGenerationPeriods, annualForecastPeriods, mergeAnnualGenerationPayloads, summarizeAnnualGeneration, forecastAnnualGeneration, formatGenerationKwh } from "./shared/annual-generation.mjs";
 
 const english = document.documentElement.lang === "en";
 const locale = english ? "en-GB" : "es-ES";
@@ -8,18 +8,23 @@ const copy = english ? {
   total: "Total", cached: "Cached REE data", network: "REE data", stale: "Cached REE data; refresh unavailable",
   period: "Five complete years + current year to date", updated: "Updated",
   ytd: "Year to date", through: "Requested through", provisional: "Partial year; latest available REE data",
-  chart: "Yearly renewable and non-renewable generation", axis: "Billion kWh", partial: "Dashed lines: year to date"
+  chart: "Yearly renewable and non-renewable generation", axis: "Billion kWh", partial: "Dashed lines: year to date",
+  forecast: "Year-end estimate", forecastNote: "Estimate: current year-to-date generation divided by the median same-date share of annual generation in the three preceding years. Weather, demand and the generation mix can change; this is not an official REE forecast.",
+  forecastUnavailable: "Year-end estimate unavailable until at least two comparable prior years are available."
 } : {
   loading: "Cargando generación anual…", unavailable: "La generación anual no está disponible. Pulsa Actualizar para reintentar.",
   missing: "Datos no disponibles para este año", renewable: "Renovable", nonRenewable: "No renovable",
   total: "Total", cached: "Datos REE en caché", network: "Datos REE", stale: "Datos REE en caché; actualización no disponible",
   period: "Cinco años completos + año en curso", updated: "Actualizado",
   ytd: "En curso", through: "Solicitado hasta", provisional: "Año parcial; últimos datos disponibles de REE",
-  chart: "Generación anual renovable y no renovable", axis: "Miles de millones de kWh", partial: "Líneas discontinuas: año en curso"
+  chart: "Generación anual renovable y no renovable", axis: "Miles de millones de kWh", partial: "Líneas discontinuas: año en curso",
+  forecast: "Estimación de cierre de año", forecastNote: "Estimación: la generación acumulada del año se divide por la mediana de la proporción producida hasta la misma fecha en los tres años anteriores. El clima, la demanda y la mezcla de generación pueden cambiar; no es una previsión oficial de REE.",
+  forecastUnavailable: "Estimación no disponible hasta contar con al menos dos años anteriores comparables."
 };
 const status = document.querySelector("#annualGenerationStatus");
 const list = document.querySelector("#annualGenerationList");
 const chart = document.querySelector("#annualGenerationChart");
+const forecastPanel = document.querySelector("#annualGenerationForecast");
 let loading = false;
 let chartData = null;
 new ResizeObserver(() => {
@@ -36,6 +41,7 @@ async function loadAnnualGeneration(forceRefresh = false) {
   list.replaceChildren();
   chartData = null;
   chart.replaceChildren();
+  forecastPanel.replaceChildren();
   list.setAttribute("aria-busy", "true");
   try {
     const range = annualGenerationRange();
@@ -43,7 +49,9 @@ async function loadAnnualGeneration(forceRefresh = false) {
     const years = summarizeAnnualGeneration(response.payload, range);
     if (!years.some((year) => year.available)) throw new Error("No annual generation data");
     years.forEach((year) => renderYear(year, { ...range, endDate: response.endDate || range.endDate }));
-    chartData = [years, range];
+    const forecast = forecastAnnualGeneration(years, response.historicalYtd || [], range.endYear);
+    renderForecast(forecast, years.at(-1), response.endDate || range.endDate);
+    chartData = [years, range, forecast];
     renderAnnualChart(...chartData);
     const source = response.cacheStatus === "stale" ? copy.stale :
       response.cacheStatus === "hit" ? copy.cached : copy.network;
@@ -85,7 +93,52 @@ async function fetchAnnualGeneration(range, forceRefresh) {
   }));
   const payload = mergeAnnualGenerationPayloads(payloads
     .filter((result) => result.status === "fulfilled").map((result) => result.value));
-  return { ...range, payload, cacheStatus: "network", cachedAt: new Date().toISOString() };
+  const historicalResults = await Promise.allSettled(annualForecastPeriods(range).map(async (period) => {
+    const reeUrl = new URL("https://apidatos.ree.es/en/datos/generacion/estructura-generacion");
+    reeUrl.searchParams.set("start_date", `${period.startDate}T00:00`);
+    reeUrl.searchParams.set("end_date", `${period.endDate}T23:59`);
+    reeUrl.searchParams.set("time_trunc", "year");
+    const response = await fetch(reeUrl, { headers: { Accept: "application/json" } });
+    if (!response.ok) throw new Error("REE request failed");
+    return summarizeAnnualGeneration(await response.json(), { startYear: period.year, endYear: period.year })[0];
+  }));
+  const historicalYtd = historicalResults
+    .filter((result) => result.status === "fulfilled" && result.value.available)
+    .map((result) => result.value);
+  return { ...range, payload, historicalYtd, cacheStatus: "network", cachedAt: new Date().toISOString() };
+}
+
+function renderForecast(forecast, current, endDate) {
+  if (!current?.available) return;
+  const panel = document.createElement("article");
+  panel.className = "annual-forecast-card";
+  if (!forecast) {
+    panel.textContent = copy.forecastUnavailable;
+  } else {
+    const heading = document.createElement("h3");
+    heading.textContent = `${current.year} · ${copy.forecast}`;
+    const values = document.createElement("dl");
+    values.className = "annual-generation-values";
+    const percent = (value) => new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 1 }).format(value);
+    for (const [label, amount, share] of [
+      [copy.renewable, forecast.renewableMwh, forecast.renewableShare],
+      [copy.nonRenewable, forecast.nonRenewableMwh, forecast.nonRenewableShare],
+      [copy.total, forecast.totalMwh, null]
+    ]) {
+      const item = document.createElement("div");
+      const dt = document.createElement("dt");
+      dt.textContent = `${label}${share == null ? "" : ` · ${percent(share)}`}`;
+      const dd = document.createElement("dd");
+      dd.textContent = formatGenerationKwh(amount, locale);
+      item.append(dt, dd);
+      values.append(item);
+    }
+    const note = document.createElement("p");
+    note.className = "annual-generation-period";
+    note.textContent = `${copy.through} ${new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: "UTC" }).format(new Date(`${endDate}T12:00:00Z`))}. ${copy.forecastNote}`;
+    panel.append(heading, values, note);
+  }
+  forecastPanel.replaceChildren(panel);
 }
 
 function renderYear(year, range) {
@@ -129,7 +182,7 @@ function renderYear(year, range) {
   list.append(card);
 }
 
-function renderAnnualChart(years, range) {
+function renderAnnualChart(years, range, forecast) {
   const width = Math.max(280, chart.clientWidth);
   const height = 280;
   const left = 42;
@@ -137,7 +190,8 @@ function renderAnnualChart(years, range) {
   const top = 20;
   const bottom = height - 36;
   const available = years.filter((year) => year.available);
-  const maxValue = Math.max(...available.flatMap((year) => [year.renewableMwh, year.nonRenewableMwh]));
+  const maxValue = Math.max(...available.flatMap((year) => [year.renewableMwh, year.nonRenewableMwh]),
+    forecast?.renewableMwh || 0, forecast?.nonRenewableMwh || 0);
   const step = Math.max(1, Math.ceil(maxValue / 4 / 10000000)) * 10000000;
   const x = (index) => left + (index / (years.length - 1)) * (right - left);
   const y = (value) => bottom - (value / (step * 4)) * (bottom - top);
@@ -182,6 +236,14 @@ function renderAnnualChart(years, range) {
       title.textContent = `${year.year}${year.year === range.endYear ? ` · ${copy.ytd}` : ""} · ${label}: ${formatGenerationKwh(year[key], locale)}`;
       point.append(title);
     });
+    if (forecast) {
+      const point = add("rect", { x: x(years.length - 1) - 5, y: y(forecast[key]) - 5,
+        width: 10, height: 10, transform: `rotate(45 ${x(years.length - 1)} ${y(forecast[key])})`,
+        fill: "#fff", stroke: color, "stroke-width": 2 });
+      const title = document.createElementNS(svgNS, "title");
+      title.textContent = `${range.endYear} · ${copy.forecast} · ${label}: ${formatGenerationKwh(forecast[key], locale)}`;
+      point.append(title);
+    }
   }
   const legend = document.createElement("div");
   legend.className = "annual-chart-legend";
@@ -192,5 +254,6 @@ function renderAnnualChart(years, range) {
   const note = document.createElement("p");
   note.className = "annual-generation-period";
   note.textContent = `* ${range.endYear} · ${copy.partial}`;
+  if (forecast) note.textContent += ` · ◇ ${copy.forecast}`;
   chart.replaceChildren(legend, axisLabel, svg, note);
 }

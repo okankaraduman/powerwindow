@@ -1,0 +1,100 @@
+.about-page {
+  max-width: 960px;
+}
+
+.about-intro {
+  padding: clamp(28px, 5vw, 56px) 0 clamp(32px, 5vw, 56px);
+  border-bottom: 1px solid #d9dfd6;
+}
+
+.about-intro h1 {
+  max-width: 16ch;
+  margin: 0;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 1.06;
+}
+
+.about-intro p {
+  max-width: 61ch;
+  margin: 24px 0 0;
+  color: #3c5649;
+  font-size: clamp(1.125rem, 2vw, 1.375rem);
+  line-height: 1.55;
+}
+
+.about-story {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
+  gap: clamp(24px, 5vw, 72px);
+  padding: clamp(36px, 6vw, 72px) 0;
+  border-bottom: 1px solid #d9dfd6;
+}
+
+.about-story h2 {
+  margin: 0;
+}
+
+.about-story p {
+  margin: 0 0 1.25em;
+}
+
+.about-story p:last-child {
+  margin-bottom: 0;
+}
+
+.about-links {
+  padding: clamp(36px, 6vw, 72px) 0;
+}
+
+.about-links h2 {
+  margin: 0 0 24px;
+}
+
+.about-links ul {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-links a {
+  display: block;
+  height: 100%;
+  min-height: 100px;
+  padding: 20px;
+  border: 1px solid #d9dfd6;
+  border-radius: 12px;
+  color: #172e2b;
+  text-decoration: none;
+}
+
+.about-links a:hover,
+.about-links a:focus-visible {
+  border-color: #176b50;
+  background: #e5ede1;
+}
+
+.about-links strong,
+.about-links span {
+  display: block;
+}
+
+.about-links span {
+  margin-top: 8px;
+  color: #3c5649;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 700px) {
+  .about-story,
+  .about-links ul {
+    grid-template-columns: 1fr;
+  }
+
+  .about-links a {
+    min-height: 0;
+  }
+}

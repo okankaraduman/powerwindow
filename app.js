@@ -57,7 +57,6 @@ const state = {
     generationMix: null,
     cachedAt: "",
   },
-  deferredInstallPrompt: null,
   reminderTimer: null,
 };
 
@@ -123,8 +122,6 @@ const els = {
   tomorrowHint: document.querySelector("#tomorrowHint"),
   reminderButton: document.querySelector("#reminderButton"),
   reminderStatus: document.querySelector("#reminderStatus"),
-  installButton: document.querySelector("#installButton"),
-  installHint: document.querySelector("#installHint"),
   hourChart: document.querySelector("#hourChart"),
   windowList: document.querySelector("#windowList"),
 };
@@ -175,15 +172,6 @@ function init() {
   els.adderInput.addEventListener("input", handleBillSettingsChange);
   els.socialBonusInput.addEventListener("input", handleBillSettingsChange);
   els.reminderButton.addEventListener("click", scheduleReminder);
-  els.installButton.addEventListener("click", installApp);
-
-  window.addEventListener("beforeinstallprompt", (event) => {
-    event.preventDefault();
-    state.deferredInstallPrompt = event;
-    els.installButton.disabled = false;
-    els.installHint.textContent = "Listo para instalar en Chrome para Android.";
-  });
-
   loadDate(state.selectedDate);
 }
 
@@ -1962,19 +1950,6 @@ async function scheduleReminder() {
   }, delay);
 
   els.reminderStatus.textContent = `Programado para ${formatDateTime(reminderAt.toISOString())}`;
-}
-
-async function installApp() {
-  if (!state.deferredInstallPrompt) {
-    els.installHint.textContent = "Ábrelo en Chrome para Android y usa Añadir a pantalla de inicio.";
-    return;
-  }
-
-  state.deferredInstallPrompt.prompt();
-  await state.deferredInstallPrompt.userChoice;
-  state.deferredInstallPrompt = null;
-  els.installButton.disabled = true;
-  els.installHint.textContent = "La instalación la gestiona el navegador.";
 }
 
 function escapeHTML(value) {

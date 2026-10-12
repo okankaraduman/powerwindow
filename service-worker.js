@@ -1,4 +1,4 @@
-const CACHE_NAME = "power-window-v63";
+const CACHE_NAME = "power-window-v64";
 const APP_ASSETS = [
   "/",
   "/index.html",
@@ -62,7 +62,8 @@ const APP_ASSETS = [
   "/manifest.en.webmanifest",
   "/robots.txt",
   "/sitemap.xml",
-  "/store/assets/feature-graphic.png"
+  "/store/assets/feature-graphic.png",
+  "/store/assets/play-store-qr.png"
 ];
 
 self.addEventListener("install", (event) => {

@@ -2985,15 +2985,13 @@ a, button, input, select, summary { -webkit-tap-highlight-color: transparent; }
 .planner-extras .grid-pressure-panel { box-shadow: none; background: white; border-radius: 12px; }
 .planner-extras .grid-pressure-panel h2 { font-size: 1.5rem; line-height: 1.25; }
 .planner-extras .grid-pressure-metrics { grid-template-columns: 1fr 1fr; }
-.install-strip { display: flex; align-items: center; justify-content: space-between; gap: 28px; margin-top: 36px; padding: 24px 28px; background: #eaf0e4; border-radius: 12px; }
-.install-copy { max-width: 50ch; }
-.install-copy .eyebrow { display: block; margin-bottom: 8px; color: var(--accent); }
-.install-strip strong { display: block; font-size: 1.125rem; font-weight: 650; }
-.install-strip p { margin-top: 5px; color: var(--muted); font-size: 0.875rem; }
-.install-store-link { display: inline-flex; align-items: center; justify-content: center; margin-top: 18px; text-decoration: none; font-size: 0.875rem; }
-.install-qr { display: flex; flex-direction: column; align-items: center; gap: 7px; flex: 0 0 auto; color: var(--muted); text-decoration: none; font-size: 0.75rem; }
-.install-qr img { display: block; width: 128px; height: 128px; border-radius: 6px; }
-.install-qr:hover span { color: var(--accent); text-decoration: underline; }
+.install-strip { display: flex; align-items: center; gap: 16px; min-height: 104px; margin-top: 24px; padding: 8px 12px 8px 18px; background: #eaf0e4; border-radius: 12px; }
+.install-copy { flex: 1 1 auto; min-width: 0; }
+.install-strip strong { display: block; font-size: 0.9375rem; font-weight: 650; line-height: 1.3; }
+.install-strip p { margin-top: 2px; color: var(--muted); font-size: 0.75rem; }
+.install-store-link, .install-qr { display: block; flex: 0 0 auto; line-height: 0; }
+.install-store-link img { display: block; width: 148px; height: auto; }
+.install-qr img { display: block; width: 88px; height: 88px; border-radius: 4px; }
 @media (display-mode: standalone), (display-mode: fullscreen) {
   .install-strip { display: none; }
 }
@@ -3076,13 +3074,16 @@ a, button, input, select, summary { -webkit-tap-highlight-color: transparent; }
   .planner-extras .dashboard-grid { grid-template-columns: 1fr 1fr; }
   .planner-extras .grid-pressure-panel { grid-template-columns: 1fr; }
   .planner-extras .grid-pressure-panel h2 { font-size: 1.25rem; }
-  .install-strip { padding: 20px; }
+  .install-strip { min-height: 76px; padding: 8px 10px 8px 14px; }
+  .install-store-link img { width: 136px; }
   .install-qr { display: none; }
   .planner-page .seo-section .section-heading, .planner-app > .chart-section .section-heading { flex-direction: column; gap: 8px; }
   .planner-page .source-grid { grid-template-columns: 1fr; }
   .planner-page .method-grid { grid-template-columns: 1fr; gap: 0; }
 }
 @media (max-width: 360px) {
+  .install-strip { gap: 6px; }
+  .install-store-link img { width: 122px; }
   .planner-app { width: calc(100% - 24px); }
   .planner-setup.planner-panel { padding: 16px; }
   .planner-page .recommendation-panel { padding: 18px; }

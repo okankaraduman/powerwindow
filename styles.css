@@ -2985,7 +2985,7 @@ a, button, input, select, summary { -webkit-tap-highlight-color: transparent; }
 .planner-extras .grid-pressure-panel { box-shadow: none; background: white; border-radius: 12px; }
 .planner-extras .grid-pressure-panel h2 { font-size: 1.5rem; line-height: 1.25; }
 .planner-extras .grid-pressure-metrics { grid-template-columns: 1fr 1fr; }
-.install-strip { display: flex; align-items: center; gap: 16px; min-height: 104px; margin-top: 24px; padding: 8px 12px 8px 18px; background: #eaf0e4; border-radius: 12px; }
+.install-strip { display: flex; align-items: center; gap: 16px; min-height: 104px; margin: 0 0 20px; padding: 8px 12px 8px 18px; background: #eaf0e4; border-radius: 12px; }
 .install-copy { flex: 1 1 auto; min-width: 0; }
 .install-strip strong { display: block; font-size: 0.9375rem; font-weight: 650; line-height: 1.3; }
 .install-strip p { margin-top: 2px; color: var(--muted); font-size: 0.75rem; }
@@ -3074,7 +3074,7 @@ a, button, input, select, summary { -webkit-tap-highlight-color: transparent; }
   .planner-extras .dashboard-grid { grid-template-columns: 1fr 1fr; }
   .planner-extras .grid-pressure-panel { grid-template-columns: 1fr; }
   .planner-extras .grid-pressure-panel h2 { font-size: 1.25rem; }
-  .install-strip { min-height: 76px; padding: 8px 10px 8px 14px; }
+  .install-strip { min-height: 76px; margin-bottom: 14px; padding: 8px 10px 8px 14px; }
   .install-store-link img { width: 136px; }
   .install-qr { display: none; }
   .planner-page .seo-section .section-heading, .planner-app > .chart-section .section-heading { flex-direction: column; gap: 8px; }

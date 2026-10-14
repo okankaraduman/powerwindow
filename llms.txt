@@ -22,6 +22,8 @@ Power Window is a free, independent planning tool. It is not affiliated with or 
 
 - [Consumo eléctrico del hogar](https://powerwindow.energy/consumo-electrico-hogar): Spanish guide to household electricity uses and which loads can be scheduled.
 - [Home electricity use](https://powerwindow.energy/en/home-electricity-use-spain): English guide with IDAE consumption shares and practical planning advice.
+- [Reducir el consumo eléctrico](https://powerwindow.energy/reducir-consumo-electricidad): Spanish guide to measuring and lowering household electricity use.
+- [Reduce electricity use at home](https://powerwindow.energy/en/reduce-electricity-use-at-home): English guide to cutting household kWh and checking the result.
 
 ## Machine-readable access
 

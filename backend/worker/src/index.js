@@ -4,7 +4,7 @@ import { getProviderOffers } from "./provider-offers.js";
 
 const MARKET_WIDGET = "mercados/precios-mercados-tiempo-real";
 const GENERATION_WIDGET = "generacion/estructura-generacion";
-const CAPACITY_WIDGET = "generacion/potencia-instalada";
+const CAPACITY_WIDGET = "generacion/potencia-instalada-generacion";
 const DEMAND_WIDGET = "demanda/demanda-tiempo-real";
 const REE_BASE_URL = "https://apidatos.ree.es/en/datos";
 const TIME_ZONE = "Europe/Madrid";

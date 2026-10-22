@@ -14,6 +14,9 @@ const payload = { included: [
   ] } },
   { attributes: { title: "Total renewable", type: "total", values: [
     { datetime: "2026-09-01T00:00:00+02:00", value: 53000 }
+  ] } },
+  { attributes: { title: "Total installed capacity", type: "total", values: [
+    { datetime: "2026-09-01T00:00:00+02:00", value: 53000 }
   ] } }
 ] };
 
@@ -32,7 +35,7 @@ test("capacity endpoint caches a valid snapshot and serves stale data on upstrea
     put: async (key, value) => values.set(key, JSON.parse(value))
   } };
   t.mock.method(globalThis, "fetch", async (url) => {
-    assert.ok(String(url).includes("/generacion/potencia-instalada?"));
+    assert.ok(String(url).includes("/generacion/potencia-instalada-generacion?"));
     assert.equal(url.searchParams.get("time_trunc"), "month");
     return Response.json(payload);
   });

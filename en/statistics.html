@@ -115,6 +115,7 @@
       }
     </script>
     <script type="module" src="/statistics-annual.js"></script>
+    <script type="module" src="/statistics-capacity.js"></script>
   </head>
   <body>
     <a class="site-skip-link" href="#main-content">Skip to content</a>
@@ -242,6 +243,22 @@
         <div id="annualGenerationChart" class="annual-generation-chart"></div>
         <div id="annualGenerationForecast" aria-live="polite"></div>
         <div id="annualGenerationList" class="annual-generation-list" aria-live="polite" aria-busy="true"></div>
+      </section>
+
+      <section class="chart-section" aria-labelledby="installedCapacityTitle">
+        <div class="section-heading">
+          <div><h2 id="installedCapacityTitle">Installed generation capacity in Spain</h2></div>
+          <p id="installedCapacityStatus" class="section-note" role="status">Loading installed capacity…</p>
+        </div>
+        <p class="section-note">Installed capacity is generation capability, measured in MW. This is a snapshot of the latest value published by Red Eléctrica, not energy generated during the year.</p>
+        <div class="installed-capacity-summary">
+          <span>Total installed capacity</span>
+          <strong id="installedCapacityTotal">--</strong>
+          <small id="installedCapacityDate"></small>
+        </div>
+        <h3>Capacity by technology</h3>
+        <div id="installedCapacityList" class="installed-capacity-list" aria-live="polite" aria-busy="true"></div>
+        <p class="section-note"><a href="https://www.ree.es/es/datos/generacion/potencia-instalada-generacion">Source: Red Eléctrica installed capacity</a>. Values are rounded to the nearest MW.</p>
       </section>
 
       <section class="chart-section seo-section" aria-labelledby="stats-explainer-title">

@@ -1,8 +1,10 @@
 import { annualGenerationRange, annualGenerationPeriods, annualForecastPeriods, mergeAnnualGenerationPayloads, summarizeAnnualGeneration } from "../../../shared/annual-generation.mjs";
+import { summarizeInstalledCapacity } from "../../../shared/installed-capacity.mjs";
 import { getProviderOffers } from "./provider-offers.js";
 
 const MARKET_WIDGET = "mercados/precios-mercados-tiempo-real";
 const GENERATION_WIDGET = "generacion/estructura-generacion";
+const CAPACITY_WIDGET = "generacion/potencia-instalada";
 const DEMAND_WIDGET = "demanda/demanda-tiempo-real";
 const REE_BASE_URL = "https://apidatos.ree.es/en/datos";
 const TIME_ZONE = "Europe/Madrid";
@@ -57,6 +59,10 @@ export default {
 
     if (url.pathname === "/api/statistics/years") {
       return handleAnnualStatistics(request, env, url);
+    }
+
+    if (url.pathname === "/api/statistics/capacity") {
+      return handleInstalledCapacity(request, env, url);
     }
 
     if (url.pathname === "/api/connectors") {
@@ -585,6 +591,30 @@ async function handleAnnualStatistics(request, env, url) {
     if (years.every((year) => year.available) && env.MARKET_CACHE) {
       await writeCache(env, cacheKey, entry);
     }
+    return respond(entry, "miss");
+  } catch (error) {
+    if (cached) return respond(cached, "stale");
+    return jsonResponse({ error: error.message || "REE request failed" }, 502, request);
+  }
+}
+
+async function handleInstalledCapacity(request, env, url) {
+  if (request.method !== "GET") return jsonResponse({ error: "método no permitido" }, 405, request);
+  const { endYear, endDate } = annualGenerationRange();
+  const cacheKey = `statistics:capacity:${endYear}`;
+  const cached = await readCache(env, cacheKey);
+  const respond = (entry, cacheStatus) => jsonResponse({
+    source: "ree", cacheStatus, cachedAt: entry.cachedAt, ...entry.snapshot
+  }, 200, request);
+  if (cached && cached.requestedThrough === endDate && isFreshCacheEntry(cached, 30 * MINUTE) &&
+      url.searchParams.get("refresh") !== "1") return respond(cached, "hit");
+  try {
+    const payload = await fetchREERangeWidget(CAPACITY_WIDGET, `${endYear - 1}-12-01`, endDate, "month");
+    const snapshot = summarizeInstalledCapacity(payload);
+    if (!snapshot) throw new Error("No installed capacity data");
+    const entry = { cachedAt: new Date().toISOString(), requestedThrough: endDate,
+      payload: snapshot, snapshot };
+    if (env.MARKET_CACHE) await writeCache(env, cacheKey, entry);
     return respond(entry, "miss");
   } catch (error) {
     if (cached) return respond(cached, "stale");

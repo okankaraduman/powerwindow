@@ -1,4 +1,4 @@
-const CACHE_NAME = "power-window-v67";
+const CACHE_NAME = "power-window-v68";
 const APP_ASSETS = [
   "/",
   "/index.html",
@@ -56,7 +56,9 @@ const APP_ASSETS = [
   "/statistics.js",
   "/statistics.en.js",
   "/statistics-annual.js",
+  "/statistics-capacity.js",
   "/shared/annual-generation.mjs",
+  "/shared/installed-capacity.mjs",
   "/shared/contract-pricing.mjs",
   "/mission.js",
   "/mission.en.js",

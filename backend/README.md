@@ -138,6 +138,10 @@ GET http://localhost:8080/healthz
 
 ## Annual generation statistics
 
+`/api/statistics/capacity` requests REE's monthly installed-capacity widget and returns the
+latest published national snapshot by technology in MW. It is cached for 30 minutes;
+`refresh=1` forces an update, with stale cache served if REE is unavailable.
+
 `/api/statistics/years` requests REE generation structure with `time_trunc=year` for the
 last five complete calendar years plus the current year through today in Europe/Madrid.
 Historical and current-year ranges use separate REE requests to stay within its five-year limit.

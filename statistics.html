@@ -115,6 +115,7 @@
       }
     </script>
     <script type="module" src="/statistics-annual.js"></script>
+    <script type="module" src="/statistics-capacity.js"></script>
   </head>
   <body>
     <a class="site-skip-link" href="#main-content">Saltar al contenido</a>
@@ -243,6 +244,22 @@
         <div id="annualGenerationChart" class="annual-generation-chart"></div>
         <div id="annualGenerationForecast" aria-live="polite"></div>
         <div id="annualGenerationList" class="annual-generation-list" aria-live="polite" aria-busy="true"></div>
+      </section>
+
+      <section class="chart-section" aria-labelledby="installedCapacityTitle">
+        <div class="section-heading">
+          <div><h2 id="installedCapacityTitle">Potencia instalada de generación en España</h2></div>
+          <p id="installedCapacityStatus" class="section-note" role="status">Cargando potencia instalada…</p>
+        </div>
+        <p class="section-note">La potencia instalada es la capacidad de generación, medida en MW. Es una fotografía del último dato publicado por Red Eléctrica, no energía producida durante el año.</p>
+        <div class="installed-capacity-summary">
+          <span>Potencia instalada total</span>
+          <strong id="installedCapacityTotal">--</strong>
+          <small id="installedCapacityDate"></small>
+        </div>
+        <h3>Potencia por tecnología</h3>
+        <div id="installedCapacityList" class="installed-capacity-list" aria-live="polite" aria-busy="true"></div>
+        <p class="section-note"><a href="https://www.ree.es/es/datos/generacion/potencia-instalada-generacion">Fuente: Red Eléctrica, potencia instalada</a>. Los valores se redondean al MW más cercano.</p>
       </section>
 
       <section class="chart-section seo-section" aria-labelledby="stats-explainer-title">

@@ -1,4 +1,4 @@
-const CACHE_NAME = "power-window-v69";
+const CACHE_NAME = "power-window-v70";
 const APP_ASSETS = [
   "/",
   "/index.html",

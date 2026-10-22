@@ -1,9 +1,11 @@
-export function summarizeInstalledCapacity(payload) {
+export function summarizeInstalledCapacity(payload, { month } = {}) {
   const series = (Array.isArray(payload?.included) ? payload.included : [])
     .map((item) => item.attributes || {})
     .filter((item) => Array.isArray(item.values) && item.values.length);
   const dates = [...new Set(series.flatMap((item) => item.values.map((point) =>
-    String(point.datetime || "").slice(0, 10))))].filter((date) => /^\d{4}-\d{2}-\d{2}$/.test(date)).sort();
+    String(point.datetime || "").slice(0, 10))))]
+    .filter((date) => /^\d{4}-\d{2}-\d{2}$/.test(date) && (!month || date.startsWith(`${month}-`)))
+    .sort();
   for (const date of dates.reverse()) {
     const technologies = [];
     let reportedTotal = null;

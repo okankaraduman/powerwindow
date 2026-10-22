@@ -601,7 +601,7 @@ async function handleAnnualStatistics(request, env, url) {
 async function handleInstalledCapacity(request, env, url) {
   if (request.method !== "GET") return jsonResponse({ error: "método no permitido" }, 405, request);
   const { endYear, endDate } = annualGenerationRange();
-  const cacheKey = `statistics:capacity:${endYear}`;
+  const cacheKey = `statistics:capacity:yoy:${endYear}`;
   const cached = await readCache(env, cacheKey);
   const respond = (entry, cacheStatus) => jsonResponse({
     source: "ree", cacheStatus, cachedAt: entry.cachedAt, ...entry.snapshot
@@ -609,9 +609,11 @@ async function handleInstalledCapacity(request, env, url) {
   if (cached && cached.requestedThrough === endDate && isFreshCacheEntry(cached, 30 * MINUTE) &&
       url.searchParams.get("refresh") !== "1") return respond(cached, "hit");
   try {
-    const payload = await fetchREERangeWidget(CAPACITY_WIDGET, `${endYear - 1}-12-01`, endDate, "month");
+    const payload = await fetchREERangeWidget(CAPACITY_WIDGET, `${endYear - 1}-01-01`, endDate, "month");
     const snapshot = summarizeInstalledCapacity(payload);
     if (!snapshot) throw new Error("No installed capacity data");
+    const previousMonth = `${Number(snapshot.date.slice(0, 4)) - 1}${snapshot.date.slice(4, 7)}`;
+    snapshot.previous = summarizeInstalledCapacity(payload, { month: previousMonth });
     const entry = { cachedAt: new Date().toISOString(), requestedThrough: endDate,
       payload: snapshot, snapshot };
     if (env.MARKET_CACHE) await writeCache(env, cacheKey, entry);

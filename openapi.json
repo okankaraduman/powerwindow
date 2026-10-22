@@ -245,7 +245,7 @@
       "get": {
         "operationId": "getInstalledCapacityStatistics",
         "summary": "Get the latest installed generation capacity snapshot in Spain",
-        "description": "Returns the latest REE installed-capacity observation by technology in MW. Cached for 30 minutes; a failed refresh can serve stale data.",
+        "description": "Returns the latest REE installed-capacity observation and the same month a year earlier by technology in MW. Cached for 30 minutes; a failed refresh can serve stale data.",
         "tags": ["Electricity data"],
         "parameters": [{ "$ref": "#/components/parameters/Refresh" }],
         "responses": {
@@ -260,7 +260,8 @@
                 "cachedAt": { "type": "string", "format": "date-time" },
                 "date": { "type": "string", "format": "date" },
                 "totalMw": { "type": "number" },
-                "technologies": { "type": "array", "items": { "type": "object", "required": ["name", "mw"], "properties": { "name": { "type": "string" }, "mw": { "type": "number" } } } }
+                "technologies": { "type": "array", "items": { "type": "object", "required": ["name", "mw"], "properties": { "name": { "type": "string" }, "mw": { "type": "number" } } } },
+                "previous": { "type": ["object", "null"], "description": "Same-month observation from one year earlier, when available, with date, totalMw, and technologies." }
               }
             } } }
           },

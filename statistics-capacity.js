@@ -6,12 +6,14 @@ const copy = english ? {
   loading: "Loading installed capacity…", unavailable: "Installed capacity is unavailable. Try Update again.",
   other: "Other technologies",
   cached: "Cached REE data", network: "REE data", stale: "Cached REE data; refresh unavailable",
-  observed: "Latest observation"
+  observed: "Latest observation", change: "Change from the same month last year",
+  comparisonUnavailable: "Year-over-year comparison unavailable"
 } : {
   loading: "Cargando potencia instalada…", unavailable: "La potencia instalada no está disponible. Pulsa Actualizar para reintentar.",
   other: "Otras tecnologías",
   cached: "Datos REE en caché", network: "Datos REE", stale: "Datos REE en caché; actualización no disponible",
-  observed: "Último dato"
+  observed: "Último dato", change: "Cambio frente al mismo mes del año anterior",
+  comparisonUnavailable: "Comparación interanual no disponible"
 };
 const spanishTechnologyNames = {
   "Hydro": "Hidráulica", "Nuclear": "Nuclear", "Coal": "Carbón",
@@ -26,8 +28,12 @@ const spanishTechnologyNames = {
 const status = document.querySelector("#installedCapacityStatus");
 const total = document.querySelector("#installedCapacityTotal");
 const date = document.querySelector("#installedCapacityDate");
+const change = document.querySelector("#installedCapacityChange");
+const legend = document.querySelector("#installedCapacityLegend");
 const list = document.querySelector("#installedCapacityList");
 const formatMw = (mw) => `${new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(mw)} MW`;
+const formatMonth = (value) => new Intl.DateTimeFormat(locale, { month: "short", year: "numeric", timeZone: "UTC" })
+  .format(new Date(`${value}T12:00:00Z`));
 let loading = false;
 
 document.querySelector("#statsRefreshButton").addEventListener("click", () => loadInstalledCapacity(true));
@@ -54,20 +60,33 @@ async function loadInstalledCapacity(forceRefresh = false) {
       .format(new Date(`${snapshot.date}T12:00:00Z`));
     total.textContent = formatMw(snapshot.totalMw);
     date.textContent = `${copy.observed}: ${observed}`;
+    const previous = data.previous?.technologies?.length ? data.previous : null;
+    const delta = previous ? snapshot.totalMw - previous.totalMw : null;
+    const percent = previous ? delta / previous.totalMw : null;
+    change.textContent = previous
+      ? `${copy.change}: ${delta >= 0 ? "+" : "−"}${formatMw(Math.abs(delta))} (${new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 1, signDisplay: "always" }).format(percent)})`
+      : copy.comparisonUnavailable;
+    legend.replaceChildren(...(previous ? [
+      legendItem(formatMonth(previous.date), "previous"),
+      legendItem(formatMonth(snapshot.date), "current")
+    ] : [legendItem(formatMonth(snapshot.date), "current")]));
     const top = snapshot.technologies.slice(0, 8);
     const remaining = snapshot.technologies.slice(8).reduce((sum, item) => sum + item.mw, 0);
     const rows = remaining > 0 ? [...top, { name: copy.other, mw: remaining }] : top;
+    const previousByName = new Map(previous?.technologies.map((item) => [item.name, item.mw]) || []);
+    const previousOther = previous ? Math.max(0, previous.totalMw - top.reduce((sum, item) =>
+      sum + (previousByName.get(item.name) || 0), 0)) : 0;
+    const maximum = Math.max(...rows.flatMap((item) => [item.mw,
+      item.name === copy.other ? previousOther : (previousByName.get(item.name) || 0)]));
     list.replaceChildren(...rows.map((item) => {
       const row = document.createElement("div");
       row.className = "installed-capacity-row";
-      const label = document.createElement("span");
+      const label = document.createElement("h4");
       label.textContent = english ? item.name : (spanishTechnologyNames[item.name] || item.name);
-      const bar = document.createElement("span");
-      bar.className = "installed-capacity-bar";
-      bar.style.width = `${Math.min(100, item.mw / snapshot.totalMw * 100)}%`;
-      const value = document.createElement("strong");
-      value.textContent = formatMw(item.mw);
-      row.append(label, bar, value);
+      row.append(label);
+      if (previous) row.append(capacityBar(formatMonth(previous.date),
+        item.name === copy.other ? previousOther : (previousByName.get(item.name) || 0), maximum, "previous"));
+      row.append(capacityBar(formatMonth(snapshot.date), item.mw, maximum, "current"));
       return row;
     }));
     status.textContent = data.cacheStatus === "stale" ? copy.stale :
@@ -76,9 +95,36 @@ async function loadInstalledCapacity(forceRefresh = false) {
     status.textContent = copy.unavailable;
     total.textContent = "--";
     date.textContent = "";
+    change.textContent = "";
+    legend.replaceChildren();
     list.replaceChildren();
   } finally {
     list.setAttribute("aria-busy", "false");
     loading = false;
   }
+}
+
+function legendItem(label, kind) {
+  const item = document.createElement("span");
+  item.className = `installed-capacity-legend-${kind}`;
+  item.textContent = label;
+  return item;
+}
+
+function capacityBar(period, mw, maximum, kind) {
+  const line = document.createElement("div");
+  line.className = `installed-capacity-bar-line installed-capacity-bar-line-${kind}`;
+  const label = document.createElement("span");
+  label.textContent = period;
+  const track = document.createElement("span");
+  track.className = "installed-capacity-track";
+  track.setAttribute("aria-hidden", "true");
+  const bar = document.createElement("span");
+  bar.className = "installed-capacity-bar";
+  bar.style.width = `${Math.max(0, Math.min(100, mw / maximum * 100))}%`;
+  track.append(bar);
+  const value = document.createElement("strong");
+  value.textContent = formatMw(mw);
+  line.append(label, track, value);
+  return line;
 }

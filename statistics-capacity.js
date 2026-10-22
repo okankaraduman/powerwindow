@@ -7,13 +7,13 @@ const copy = english ? {
   other: "Other technologies",
   cached: "Cached REE data", network: "REE data", stale: "Cached REE data; refresh unavailable",
   observed: "Latest observation", change: "Change from the same month last year",
-  comparisonUnavailable: "Year-over-year comparison unavailable"
+  comparisonUnavailable: "Year-over-year comparison unavailable", trendUnavailable: "Long-term capacity trend unavailable"
 } : {
   loading: "Cargando potencia instalada…", unavailable: "La potencia instalada no está disponible. Pulsa Actualizar para reintentar.",
   other: "Otras tecnologías",
   cached: "Datos REE en caché", network: "Datos REE", stale: "Datos REE en caché; actualización no disponible",
   observed: "Último dato", change: "Cambio frente al mismo mes del año anterior",
-  comparisonUnavailable: "Comparación interanual no disponible"
+  comparisonUnavailable: "Comparación interanual no disponible", trendUnavailable: "Evolución histórica no disponible"
 };
 const spanishTechnologyNames = {
   "Hydro": "Hidráulica", "Nuclear": "Nuclear", "Coal": "Carbón",
@@ -29,6 +29,7 @@ const status = document.querySelector("#installedCapacityStatus");
 const total = document.querySelector("#installedCapacityTotal");
 const date = document.querySelector("#installedCapacityDate");
 const change = document.querySelector("#installedCapacityChange");
+const trend = document.querySelector("#installedCapacityTrend");
 const legend = document.querySelector("#installedCapacityLegend");
 const list = document.querySelector("#installedCapacityList");
 const formatMw = (mw) => `${new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(mw)} MW`;
@@ -66,6 +67,7 @@ async function loadInstalledCapacity(forceRefresh = false) {
     change.textContent = previous
       ? `${copy.change}: ${delta >= 0 ? "+" : "−"}${formatMw(Math.abs(delta))} (${new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 1, signDisplay: "always" }).format(percent)})`
       : copy.comparisonUnavailable;
+    renderCapacityTrend(data.history || []);
     legend.replaceChildren(...(previous ? [
       legendItem(formatMonth(previous.date), "previous"),
       legendItem(formatMonth(snapshot.date), "current")
@@ -96,12 +98,43 @@ async function loadInstalledCapacity(forceRefresh = false) {
     total.textContent = "--";
     date.textContent = "";
     change.textContent = "";
+    trend.replaceChildren();
     legend.replaceChildren();
     list.replaceChildren();
   } finally {
     list.setAttribute("aria-busy", "false");
     loading = false;
   }
+}
+
+function renderCapacityTrend(history) {
+  if (history.length < 2) {
+    trend.textContent = copy.trendUnavailable;
+    return;
+  }
+  const maximum = Math.max(...history.map((item) => item.totalMw));
+  trend.replaceChildren(...history.map((item, index) => {
+    const row = document.createElement("div");
+    row.className = `installed-capacity-trend-row${index === history.length - 1 ? " is-latest" : ""}`;
+    const year = document.createElement("span");
+    year.textContent = item.date.slice(0, 4);
+    const track = document.createElement("span");
+    track.className = "installed-capacity-trend-track";
+    track.setAttribute("aria-hidden", "true");
+    const bar = document.createElement("span");
+    bar.style.width = `${item.totalMw / maximum * 100}%`;
+    track.append(bar);
+    const value = document.createElement("strong");
+    value.textContent = formatMw(item.totalMw);
+    const change = document.createElement("small");
+    const previous = history[index - 1];
+    change.textContent = previous && Number(item.date.slice(0, 4)) === Number(previous.date.slice(0, 4)) + 1
+      ? new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 1, signDisplay: "always" })
+        .format((item.totalMw - previous.totalMw) / previous.totalMw)
+      : "";
+    row.append(year, track, value, change);
+    return row;
+  }));
 }
 
 function legendItem(label, kind) {

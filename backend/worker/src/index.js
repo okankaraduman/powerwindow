@@ -601,7 +601,7 @@ async function handleAnnualStatistics(request, env, url) {
 async function handleInstalledCapacity(request, env, url) {
   if (request.method !== "GET") return jsonResponse({ error: "método no permitido" }, 405, request);
   const { endYear, endDate } = annualGenerationRange();
-  const cacheKey = `statistics:capacity:yoy:${endYear}`;
+  const cacheKey = `statistics:capacity:trend:${endYear}`;
   const cached = await readCache(env, cacheKey);
   const respond = (entry, cacheStatus) => jsonResponse({
     source: "ree", cacheStatus, cachedAt: entry.cachedAt, ...entry.snapshot
@@ -609,11 +609,27 @@ async function handleInstalledCapacity(request, env, url) {
   if (cached && cached.requestedThrough === endDate && isFreshCacheEntry(cached, 30 * MINUTE) &&
       url.searchParams.get("refresh") !== "1") return respond(cached, "hit");
   try {
-    const payload = await fetchREERangeWidget(CAPACITY_WIDGET, `${endYear - 1}-01-01`, endDate, "month");
-    const snapshot = summarizeInstalledCapacity(payload);
+    const periods = [
+      { startYear: endYear - 5, endYear: endYear - 4 },
+      { startYear: endYear - 3, endYear: endYear - 2 },
+      { startYear: endYear - 1, endYear }
+    ];
+    const results = await Promise.allSettled(periods.map((period) => fetchREERangeWidget(
+      CAPACITY_WIDGET, `${period.startYear}-01-01`,
+      period.endYear === endYear ? endDate : `${period.endYear}-12-31`, "month"
+    )));
+    if (results[2].status !== "fulfilled") throw results[2].reason;
+    const snapshot = summarizeInstalledCapacity(results[2].value);
     if (!snapshot) throw new Error("No installed capacity data");
-    const previousMonth = `${Number(snapshot.date.slice(0, 4)) - 1}${snapshot.date.slice(4, 7)}`;
-    snapshot.previous = summarizeInstalledCapacity(payload, { month: previousMonth });
+    const month = snapshot.date.slice(5, 7);
+    snapshot.history = periods.flatMap((period, index) => {
+      if (results[index].status !== "fulfilled") return [];
+      return [period.startYear, period.endYear].map((year) =>
+        summarizeInstalledCapacity(results[index].value, { month: `${year}-${month}` }))
+        .filter(Boolean);
+    }).filter((item) => item.date <= snapshot.date);
+    snapshot.previous = snapshot.history.find((item) => Number(item.date.slice(0, 4)) ===
+      Number(snapshot.date.slice(0, 4)) - 1) || null;
     const entry = { cachedAt: new Date().toISOString(), requestedThrough: endDate,
       payload: snapshot, snapshot };
     if (env.MARKET_CACHE) await writeCache(env, cacheKey, entry);

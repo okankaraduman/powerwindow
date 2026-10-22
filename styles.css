@@ -2194,6 +2194,54 @@ h1 {
   color: var(--muted);
 }
 
+.installed-capacity-trend {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 32px;
+}
+
+.installed-capacity-trend-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 115px 54px;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.installed-capacity-trend-row strong,
+.installed-capacity-trend-row small {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.installed-capacity-trend-row small {
+  color: var(--muted);
+}
+
+.installed-capacity-trend-track {
+  display: block;
+  height: 16px;
+  border-radius: 8px;
+  background: #f2efe8;
+  overflow: hidden;
+}
+
+.installed-capacity-trend-track span {
+  display: block;
+  height: 100%;
+  border-radius: 8px;
+  background: #9bb7a4;
+}
+
+.installed-capacity-trend-row.is-latest {
+  font-weight: 750;
+}
+
+.installed-capacity-trend-row.is-latest .installed-capacity-trend-track span {
+  background: var(--accent);
+}
+
 .installed-capacity-list {
   display: grid;
   gap: 16px;
@@ -2271,6 +2319,12 @@ h1 {
 }
 
 @media (max-width: 650px) {
+  .installed-capacity-trend-row {
+    grid-template-columns: 36px minmax(0, 1fr) 95px 46px;
+    gap: 5px;
+    font-size: 0.72rem;
+  }
+
   .installed-capacity-bar-line {
     grid-template-columns: 66px minmax(0, 1fr) 98px;
     gap: 6px;

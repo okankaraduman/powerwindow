@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { summarizeInstalledCapacity } from "../shared/installed-capacity.mjs";
+import { annualGenerationRange } from "../shared/annual-generation.mjs";
 import worker from "../backend/worker/src/index.js";
 
 const payload = { included: [
@@ -38,6 +39,13 @@ test("capacity is a latest-date MW snapshot, not a sum across months or aggregat
 });
 
 test("capacity endpoint caches a valid snapshot and serves stale data on upstream failure", async (t) => {
+  const currentYear = annualGenerationRange().endYear;
+  const years = Array.from({ length: 6 }, (_, index) => currentYear - 5 + index);
+  const series = [
+    { title: "Wind", amount: (index) => 30000 + index * 1000 },
+    { title: "Solar photovoltaic", amount: (index) => 20000 + index * 2000 },
+    { title: "Total installed capacity", amount: (index) => 50000 + index * 3000, type: "total" }
+  ];
   const values = new Map();
   const env = { MARKET_CACHE: {
     get: async (key) => values.get(key),
@@ -46,15 +54,23 @@ test("capacity endpoint caches a valid snapshot and serves stale data on upstrea
   t.mock.method(globalThis, "fetch", async (url) => {
     assert.ok(String(url).includes("/generacion/potencia-instalada-generacion?"));
     assert.equal(url.searchParams.get("time_trunc"), "month");
-    assert.ok(url.searchParams.get("start_date").startsWith(String(new Date().getUTCFullYear() - 1)));
-    return Response.json(payload);
+    const startYear = Number(url.searchParams.get("start_date").slice(0, 4));
+    const endYear = Number(url.searchParams.get("end_date").slice(0, 4));
+    assert.equal(endYear - startYear, 1, "REE requests should cover two years each");
+    return Response.json({ included: series.map((item) => ({ attributes: {
+      title: item.title, type: item.type,
+      values: years.flatMap((year, index) => year >= startYear && year <= endYear ? [{
+        datetime: `${year}-09-01T00:00:00+02:00`, value: item.amount(index)
+      }] : [])
+    } })) });
   });
   const request = (query = "") => new Request(`https://api.powerwindow.energy/api/statistics/capacity${query}`);
   const first = await (await worker.fetch(request(), env, {})).json();
   assert.equal(first.cacheStatus, "miss");
-  assert.equal(first.totalMw, 53000);
-  assert.equal(first.previous.date, "2025-09-01");
-  assert.equal(first.previous.totalMw, 49000);
+  assert.equal(first.totalMw, 65000);
+  assert.equal(first.previous.date, `${currentYear - 1}-09-01`);
+  assert.equal(first.previous.totalMw, 62000);
+  assert.deepEqual(first.history.map((item) => item.date), years.map((year) => `${year}-09-01`));
   assert.equal((await (await worker.fetch(request(), env, {})).json()).cacheStatus, "hit");
   globalThis.fetch.mock.mockImplementation(async () => { throw new Error("Upstream unavailable"); });
   assert.equal((await (await worker.fetch(request("?refresh=1"), env, {})).json()).cacheStatus, "stale");

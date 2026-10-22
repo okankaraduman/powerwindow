@@ -13,6 +13,16 @@ const copy = english ? {
   cached: "Datos REE en caché", network: "Datos REE", stale: "Datos REE en caché; actualización no disponible",
   observed: "Último dato"
 };
+const spanishTechnologyNames = {
+  "Hydro": "Hidráulica", "Nuclear": "Nuclear", "Coal": "Carbón",
+  "Fuel + Gas": "Fuel + gas", "Diesel engines": "Motores diésel",
+  "Gas turbine": "Turbina de gas", "Steam turbine": "Turbina de vapor",
+  "Combined cycle": "Ciclo combinado", "Hydroeolian": "Hidroeólica",
+  "Wind": "Eólica", "Solar photovoltaic": "Solar fotovoltaica",
+  "Thermal solar": "Solar térmica", "Other renewables": "Otras renovables",
+  "Cogeneration": "Cogeneración", "Non-renewable waste": "Residuos no renovables",
+  "Renewable waste": "Residuos renovables"
+};
 const status = document.querySelector("#installedCapacityStatus");
 const total = document.querySelector("#installedCapacityTotal");
 const date = document.querySelector("#installedCapacityDate");
@@ -51,7 +61,7 @@ async function loadInstalledCapacity(forceRefresh = false) {
       const row = document.createElement("div");
       row.className = "installed-capacity-row";
       const label = document.createElement("span");
-      label.textContent = item.name;
+      label.textContent = english ? item.name : (spanishTechnologyNames[item.name] || item.name);
       const bar = document.createElement("span");
       bar.className = "installed-capacity-bar";
       bar.style.width = `${Math.min(100, item.mw / snapshot.totalMw * 100)}%`;

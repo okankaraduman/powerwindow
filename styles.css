@@ -3295,3 +3295,28 @@ a, button, input, select, summary { -webkit-tap-highlight-color: transparent; }
 .installed-capacity-legend-technology::before {
   background: var(--series-color);
 }
+
+.installed-capacity-legend button {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 1px solid var(--border, #d9dfd6);
+  border-radius: 6px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+.installed-capacity-legend button::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 4px;
+  margin-right: 7px;
+  vertical-align: middle;
+  background: var(--series-color);
+}
+.installed-capacity-legend button[aria-pressed="false"] { opacity: 0.5; text-decoration: line-through; }
+.installed-capacity-legend button:focus-visible,
+.capacity-chart-point:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.capacity-chart-point { cursor: pointer; stroke: transparent; stroke-width: 14px; paint-order: stroke; }
+.capacity-chart-point:hover, .capacity-chart-point:focus { r: 6; }
+.capacity-chart-readout { min-height: 3em; margin: 0; }

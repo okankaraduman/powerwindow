@@ -151,7 +151,7 @@ function renderTechnologyHistory(history) {
   const ns = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(ns, "svg");
   svg.setAttribute("viewBox", "0 0 800 380");
-  svg.setAttribute("role", "img");
+  svg.setAttribute("role", "group");
   svg.setAttribute("aria-label", english ? "Installed capacity by technology over six years, MW" : "Potencia instalada por tecnología durante seis años, MW");
   svg.style.cssText = "width:100%;height:auto;display:block";
   const add = (tag, attrs, label) => {
@@ -169,9 +169,25 @@ function renderTechnologyHistory(history) {
   }
   add("text", {x:70,y:16,fill:"#5b6b63","font-size":12}, "MW");
   periods.forEach((p,i) => add("text", {x:x(i),y:355,"text-anchor":"middle",fill:"#5b6b63","font-size":13}, p.date.slice(0,4)));
+  const hint = document.createElement("p");
+  hint.className = "section-note capacity-chart-readout";
+  const instruction = english ? "Select a technology to show or hide it. Hover, tap or focus a point for its value." : "Selecciona una tecnología para mostrarla u ocultarla. Pasa el cursor, toca o enfoca un punto para ver su valor.";
+  hint.textContent = instruction;
+  hint.setAttribute("aria-live", "polite");
   names.forEach((name,index) => {
     const label = english ? name : (spanishTechnologyNames[name] || name);
-    const key = legendItem(label, "technology");
+    const marks = [];
+    const key = document.createElement("button");
+    key.type = "button";
+    key.className = "installed-capacity-legend-technology";
+    key.textContent = label;
+    key.setAttribute("aria-pressed", "true");
+    key.addEventListener("click", () => {
+      const visible = key.getAttribute("aria-pressed") !== "true";
+      key.setAttribute("aria-pressed", String(visible));
+      marks.forEach(mark => { mark.style.display = visible ? "" : "none"; });
+      hint.textContent = instruction;
+    });
     key.style.setProperty("--series-color", colors[index]); legend.append(key);
     let path = "";
     periods.forEach((p,i) => {
@@ -179,9 +195,20 @@ function renderTechnologyHistory(history) {
       if (!point) { path += " "; return; }
       path += `${i && periods[i-1].technologies.some(t => t.name === name) ? "L" : "M"}${x(i)},${y(point.mw)} `;
       const dot = add("circle", {cx:x(i),cy:y(point.mw),r:4,fill:colors[index]});
-      const title = document.createElementNS(ns,"title"); title.textContent = `${label}, ${formatMonth(p.date)}: ${formatMw(point.mw)}`; dot.append(title);
+      const valueLabel = `${label}, ${formatMonth(p.date)}: ${formatMw(point.mw)}`;
+      dot.setAttribute("tabindex", "0");
+      dot.setAttribute("aria-label", valueLabel);
+      dot.classList.add("capacity-chart-point");
+      const inspect = () => { hint.textContent = valueLabel; };
+      dot.addEventListener("pointerenter", inspect);
+      dot.addEventListener("click", inspect);
+      dot.addEventListener("focus", inspect);
+      marks.push(dot);
+      const title = document.createElementNS(ns,"title"); title.textContent = valueLabel; dot.append(title);
     });
-    add("path", {d:path,fill:"none",stroke:colors[index],"stroke-width":2.5});
+    const line = add("path", {d:path,fill:"none",stroke:colors[index],"stroke-width":2.5,"pointer-events":"none"});
+    marks.push(line);
+    svg.insertBefore(line, marks[0]);
   });
-  list.append(svg);
+  list.append(svg, hint);
 }

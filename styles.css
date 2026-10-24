@@ -3291,3 +3291,7 @@ a, button, input, select, summary { -webkit-tap-highlight-color: transparent; }
 .contract-setup[data-type="hourly"] .contract-rates,
 .contract-setup[data-type="unknown"] .contract-rates { display: none; }
 .grid-pressure-panel[hidden], .chart-key[hidden] { display: none; }
+
+.installed-capacity-legend-technology::before {
+  background: var(--series-color);
+}

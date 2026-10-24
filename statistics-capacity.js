@@ -68,29 +68,7 @@ async function loadInstalledCapacity(forceRefresh = false) {
       ? `${copy.change}: ${delta >= 0 ? "+" : "−"}${formatMw(Math.abs(delta))} (${new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 1, signDisplay: "always" }).format(percent)})`
       : copy.comparisonUnavailable;
     renderCapacityTrend(data.history || []);
-    legend.replaceChildren(...(previous ? [
-      legendItem(formatMonth(previous.date), "previous"),
-      legendItem(formatMonth(snapshot.date), "current")
-    ] : [legendItem(formatMonth(snapshot.date), "current")]));
-    const top = snapshot.technologies.slice(0, 8);
-    const remaining = snapshot.technologies.slice(8).reduce((sum, item) => sum + item.mw, 0);
-    const rows = remaining > 0 ? [...top, { name: copy.other, mw: remaining }] : top;
-    const previousByName = new Map(previous?.technologies.map((item) => [item.name, item.mw]) || []);
-    const previousOther = previous ? Math.max(0, previous.totalMw - top.reduce((sum, item) =>
-      sum + (previousByName.get(item.name) || 0), 0)) : 0;
-    const maximum = Math.max(...rows.flatMap((item) => [item.mw,
-      item.name === copy.other ? previousOther : (previousByName.get(item.name) || 0)]));
-    list.replaceChildren(...rows.map((item) => {
-      const row = document.createElement("div");
-      row.className = "installed-capacity-row";
-      const label = document.createElement("h4");
-      label.textContent = english ? item.name : (spanishTechnologyNames[item.name] || item.name);
-      row.append(label);
-      if (previous) row.append(capacityBar(formatMonth(previous.date),
-        item.name === copy.other ? previousOther : (previousByName.get(item.name) || 0), maximum, "previous"));
-      row.append(capacityBar(formatMonth(snapshot.date), item.mw, maximum, "current"));
-      return row;
-    }));
+    renderTechnologyHistory(data.history || []);
     status.textContent = data.cacheStatus === "stale" ? copy.stale :
       data.cacheStatus === "hit" ? copy.cached : copy.network;
   } catch {
@@ -160,4 +138,50 @@ function capacityBar(period, mw, maximum, kind) {
   value.textContent = formatMw(mw);
   line.append(label, track, value);
   return line;
+}
+
+function renderTechnologyHistory(history) {
+  legend.replaceChildren();
+  list.replaceChildren();
+  const periods = [...history].sort((a, b) => a.date.localeCompare(b.date)).slice(-6);
+  if (periods.length < 2) { list.textContent = copy.trendUnavailable; return; }
+  const colors = ["#176b52", "#3379a0", "#ad652c", "#8163a3", "#b03e56", "#648126", "#397e80", "#776754"];
+  const names = periods.at(-1).technologies.slice(0, 8).map(item => item.name);
+  const maximum = Math.ceil(Math.max(...periods.flatMap(p => p.technologies.filter(t => names.includes(t.name)).map(t => t.mw))) / 10000) * 10000;
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", "0 0 800 380");
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", english ? "Installed capacity by technology over six years, MW" : "Potencia instalada por tecnología durante seis años, MW");
+  svg.style.cssText = "width:100%;height:auto;display:block";
+  const add = (tag, attrs, label) => {
+    const el = document.createElementNS(ns, tag);
+    Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k,v));
+    if (label) el.textContent = label;
+    svg.append(el); return el;
+  };
+  const x = i => 70 + i * 700 / (periods.length - 1);
+  const y = mw => 330 - mw / maximum * 300;
+  for (let i = 0; i <= 4; i++) {
+    const mw = maximum * i / 4;
+    add("line", {x1:70,x2:770,y1:y(mw),y2:y(mw),stroke:"#d9dfd6"});
+    add("text", {x:60,y:y(mw)+4,"text-anchor":"end",fill:"#5b6b63","font-size":12}, new Intl.NumberFormat(locale).format(mw));
+  }
+  add("text", {x:70,y:16,fill:"#5b6b63","font-size":12}, "MW");
+  periods.forEach((p,i) => add("text", {x:x(i),y:355,"text-anchor":"middle",fill:"#5b6b63","font-size":13}, p.date.slice(0,4)));
+  names.forEach((name,index) => {
+    const label = english ? name : (spanishTechnologyNames[name] || name);
+    const key = legendItem(label, "technology");
+    key.style.setProperty("--series-color", colors[index]); legend.append(key);
+    let path = "";
+    periods.forEach((p,i) => {
+      const point = p.technologies.find(t => t.name === name);
+      if (!point) { path += " "; return; }
+      path += `${i && periods[i-1].technologies.some(t => t.name === name) ? "L" : "M"}${x(i)},${y(point.mw)} `;
+      const dot = add("circle", {cx:x(i),cy:y(point.mw),r:4,fill:colors[index]});
+      const title = document.createElementNS(ns,"title"); title.textContent = `${label}, ${formatMonth(p.date)}: ${formatMw(point.mw)}`; dot.append(title);
+    });
+    add("path", {d:path,fill:"none",stroke:colors[index],"stroke-width":2.5});
+  });
+  list.append(svg);
 }

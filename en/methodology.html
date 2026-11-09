@@ -112,6 +112,26 @@
             selected date. It prefers PVPC hourly prices when available and otherwise uses
             the spot market price series averaged to hourly values.
           </p>
+          <p>
+            The spot fallback is a market signal, not a household tariff. The
+            <a href="https://www.iea.org/files/e559d3e0-de5f-4524-b32c-f8e2898465d6/Spain2026.pdf#page=94">IEA's Spain 2026 review</a>
+            says the PVPC energy component blends hourly prices with forward-market references;
+            the latter account for around 55% in 2026. This steadies prices but also softens
+            the tariff's response to each hour's wholesale conditions.
+          </p>
+        </article>
+
+        <article class="method-card">
+          <h3>PVPC hours and network-charge bands differ</h3>
+          <p>
+            PVPC's energy component changes by hour. Network tolls and regulated charges follow
+            fixed bands: off-peak from 00:00 to 08:00 and all weekend and national-holiday hours;
+            shoulder from 08:00 to 10:00, 14:00 to 18:00 and 22:00 to 00:00; and peak from
+            10:00 to 14:00 and 18:00 to 22:00 on working days. An off-peak band does not
+            guarantee the lowest total hourly price. The <a href="https://www.iea.org/files/e559d3e0-de5f-4524-b32c-f8e2898465d6/Spain2026.pdf#page=94">IEA</a>
+            notes that these bands reflect historical demand patterns rather than real-time
+            system conditions.
+          </p>
         </article>
 
         <article class="method-card method-card--wide price-driver-card">
